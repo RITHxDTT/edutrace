@@ -11,7 +11,7 @@ export default function AssessmentPage() {
           <p>Manage assessments, deadlines, and progress</p>
         </div>
         <div>
-            <PrimaryButton variant={"disable"} >Click Me</PrimaryButton>
+            <PrimaryButton >Click Me</PrimaryButton>
         </div>
       </div>
     </div>
