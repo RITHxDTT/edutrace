@@ -15,25 +15,25 @@
   --color-lavender: #edeaff;
   --color-purple: #04aced;
   --color-light-gray: #d2d2d2;
-  --color-red: #E62020;
+  --color-red: #e62020;
 
   /* LINEAR VARIABLE */
-    --background-image-linear-purple: linear-gradient(
+  --background-image-linear-purple: linear-gradient(
     to bottom,
     #241cab 37%,
     #5d53f9 82%
   );
+
   --background-image-accent-linear-purple: linear-gradient(
     0deg,
     #241cab 0%,
     #5d53f9 100%
   );
 
-
   /* BACKGROUND COLORS */
   --background-color-main: #d9d9d9;
   --background-color-white: #ffffff;
-  --background-color-gray: #F5F5F5;
+  --background-color-gray: #f5f5f5;
 
   /* TEXT COLORS */
   --text-color-primary: #3e3e3e;

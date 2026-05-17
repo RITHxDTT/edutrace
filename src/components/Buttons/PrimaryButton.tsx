@@ -1,36 +1,53 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@base-ui/react";
 import { cva, VariantProps } from "class-variance-authority";
+import { Icon } from "iconsax-react";
 
-const buttonVariants = cva("", {
-  variants: {
-    variant: {
-      default: "",
+const buttonVariants = cva(
+  "group/button flex items-center justify-center rounded-[8px] text-white gap-[8px]",
+  {
+    variants: {
+      variant: {
+        default: "bg-linear-purple hover:bg-none hover:bg-[#473FCE] hover:cursor-pointer active:bg-none active:bg-[#3F38B7]",
+      },
+      size: {
+        xs: "px-[12px] py-[6px]",
+        small: "px-[16px] py-[8px]",
+        medium: "px-[24px] py-[12px]",
+        large: "px-[32px] py-[20px]",
+      },
     },
-    size: {
-      default: "px-2 py-4",
+    defaultVariants: {
+      variant: "default",
+      size: "xs",
     },
   },
-  defaultVariants: {
-    variant: "default",
-    size: "default",
-  },
-});
+);
 
 type PrimaryButtonProps = React.ComponentProps<typeof Button> &
-  VariantProps<typeof buttonVariants>;
+  VariantProps<typeof buttonVariants> & {
+    iconPosition?: "right" | "left" | "none";
+    icon?: Icon;
+  };
 
 function PrimaryButton({
   className,
   variant = "default",
-  size = "default",
+  size = "xs",
+  iconPosition = "none",
+  icon: Icon,
+  children,
   ...props
 }: PrimaryButtonProps) {
   return (
     <Button
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
-    />
+    >
+      {iconPosition === "left" && Icon && <Icon color="white" size={20} />}
+      {children}
+      {iconPosition === "right" && Icon && <Icon color="white" size={20} />}
+    </Button>
   );
 }
 

@@ -1,4 +1,5 @@
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
+import { MusicDashboard, TaskSquare } from "iconsax-react";
 import React from "react";
 
 export default function AssessmentPage() {
@@ -10,7 +11,7 @@ export default function AssessmentPage() {
           <p>Manage assessments, deadlines, and progress</p>
         </div>
         <div>
-            <PrimaryButton>Click Me</PrimaryButton>
+            <PrimaryButton variant={"disable"} >Click Me</PrimaryButton>
         </div>
       </div>
     </div>
