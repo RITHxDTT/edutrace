@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
 import { Fredoka, Geist } from "next/font/google";
-import '../styles/globals.css'
+import "../styles/globals.css";
 import { cn } from "@/lib/utils";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/Sidebar/AppSidebar";
+import AppNavbar from "@/components/Topbar/AppNavbar";
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const fredoka = Fredoka({
   variable: "--font-fredoka-sans",
   subsets: ["latin"],
 });
-
 
 export const metadata: Metadata = {
   title: "Growthyflow",
@@ -26,14 +26,21 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", fredoka.variable, "font-sans", geist.variable)}
+      className={cn(
+        "h-full",
+        "antialiased",
+        fredoka.variable,
+        "font-sans",
+        geist.variable,
+      )}
     >
       <body className="min-h-full flex flex-col">
         <SidebarProvider>
           <AppSidebar />
-          <main>
-            {children}
-          </main>
+          <div className="flex flex-col flex-1">
+            <AppNavbar />
+            <main className="px-5 py-5 flex-1">{children}</main>
+          </div>
         </SidebarProvider>
       </body>
     </html>
