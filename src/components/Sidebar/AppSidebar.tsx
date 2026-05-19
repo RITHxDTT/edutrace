@@ -47,18 +47,19 @@ export default function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex justify-center">
-          <Image
-            width={0}
-            height={0}
-            src={"/images/logo/growthyflow-logo.png"}
-            alt="Growthyflow Logo"
-            className="w-5 h-5"
-            unoptimized
-          />
-          <span className="text-[26px] font-semibold text-transparent bg-clip-text bg-linear-purple">
+        <div className="flex items-baseline items justify-center">
+            <Image
+              width={0}
+              height={0}
+              src={"/images/logo/growthyflow-logo.png"}
+              alt="Growthyflow Logo"
+              className="w-9.5 h-9.5 relative top-0.75 -mr-0.5"
+              unoptimized
+            />
+
+          <p className="text-[26px] font-semibold text-transparent bg-clip-text bg-linear-purple">
             rowthyFlow
-          </span>
+          </p>
         </div>
       </SidebarHeader>
       <SidebarContent>
