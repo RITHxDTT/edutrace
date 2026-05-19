@@ -9,12 +9,13 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-linear-purple hover:bg-none hover:bg-[#473FCE] hover:cursor-pointer active:bg-none active:bg-[#3F38B7]",
+        disable: "border-2 border-[#5D53F9] text-primary",
       },
       size: {
         xs: "px-[12px] py-[6px]",
-        small: "px-[16px] py-[8px]",
-        medium: "px-[24px] py-[12px]",
-        large: "px-[32px] py-[20px]",
+        sm: "px-[16px] py-[8px]",
+        md: "px-[24px] py-[12px]",
+        lg: "px-[32px] py-[20px]",
       },
     },
     defaultVariants: {
