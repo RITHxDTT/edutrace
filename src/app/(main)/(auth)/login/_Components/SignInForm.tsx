@@ -2,7 +2,7 @@
 
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Mail, EyeOff } from 'lucide-react';
-import { LoginFormData } from '@/types/auth';
+import { LoginFormData } from '../../../../../types/auth';
 import { useRouter } from 'next/navigation';
 import SubmitButton from '../../_components/SubmitButton'; 
 import LogoComponent from '../../_components/Logo';
