@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import '@dayflow/core/dist/styles.components.css';
 @import "shadcn/tailwind.css";
 
 @plugin '../lib/hero.ts';
@@ -10,6 +11,15 @@
   /* BRAND / ACTION COLORS */
   --color-primary: #35b9ec;
 
+  /* ACCENT / SURFACE VARIANTS */
+  --color-accent-gray: #E4E3F1;
+  --color-accent-ice: #F1FDFF;
+  --color-accent-sand: #FFF7E2;
+  --color-accent-lavender: #EDEAFF;
+  --color-accent-purple: #04ACED;
+  --color-accent-light-gray: #D2D2D2;
+  --color-input-field: #F2F6FC;
+  --background-image-accent-linear-purple: linear-gradient(0deg, #241CAB 0%, #5D53F9 100%);
   /* SURFACE VARIANTS */
   --color-gray: #e4e3f1;
   --color-ice: #f1fdff;
@@ -38,9 +48,12 @@
   --background-color-light-gray: #EFEFEF
 
   /* TEXT COLORS */
-  --text-color-primary: #3e3e3e;
-  --text-color-strong: #3a3a3a;
-  --text-color-muted: #b3b4c0;
+  --text-color-primary: #000000;
+  --text-color-strong: #3A3A3A;
+  --text-color-muted: #B3B4C0;
+  --text-color-border-focus: #6B7280;
+  --text-color-tertiary: #999DCB;
+  
 }
 
 @theme inline {
