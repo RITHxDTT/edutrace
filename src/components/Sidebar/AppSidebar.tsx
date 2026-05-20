@@ -17,6 +17,9 @@ import {
 } from "iconsax-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useNavbar } from "@/context/NavbarContext";
+import { useEffect } from "react";
+import { getRoute } from "@/utils/getRouteLabel";
 
 const menuItems = [
   {
@@ -48,14 +51,14 @@ export default function AppSidebar() {
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-baseline items justify-center">
-            <Image
-              width={0}
-              height={0}
-              src={"/images/logo/growthyflow-logo.png"}
-              alt="Growthyflow Logo"
-              className="w-9.5 h-9.5 relative top-0.75 -mr-0.5"
-              unoptimized
-            />
+          <Image
+            width={0}
+            height={0}
+            src={"/images/logo/growthyflow-logo.png"}
+            alt="Growthyflow Logo"
+            className="w-9.5 h-9.5 relative top-0.75 -mr-0.5"
+            unoptimized
+          />
 
           <p className="text-[26px] font-semibold text-transparent bg-clip-text bg-linear-purple">
             rowthyFlow
@@ -65,7 +68,7 @@ export default function AppSidebar() {
       <SidebarContent>
         <SidebarMenu className="flex flex-col items-center gap-5.25 px-5">
           {menuItems.map((menuItem, index) => {
-            const isActive = pathname === menuItem.href;
+            const isActive = pathname.startsWith(menuItem.href);
             const Icon = menuItem.icon;
 
             return (

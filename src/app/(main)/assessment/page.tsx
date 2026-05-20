@@ -1,4 +1,6 @@
+
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
+import { Basic } from "@/components/Tabs/PrimaryTabs";
 
 export default function AssessmentPage() {
   return (
@@ -9,9 +11,10 @@ export default function AssessmentPage() {
           <p>Manage assessments, deadlines, and progress</p>
         </div>
         <div>
-            <PrimaryButton>Create Assessment</PrimaryButton>
+          <PrimaryButton>Create Assessment</PrimaryButton>
         </div>
       </div>
+      <Basic />
     </div>
   );
 }
