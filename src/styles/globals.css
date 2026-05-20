@@ -1,8 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-
-@custom-variant dark (&:is(.dark *));
+@import "@heroui/styles"; 
 
 @theme {
   /* BRAND / ACTION COLORS */
@@ -18,17 +17,13 @@
   --color-red: #e62020;
 
   /* LINEAR VARIABLE */
-  --background-image-linear-purple: linear-gradient(
-    to bottom,
-    #241cab 37%,
-    #5d53f9 82%
-  );
+  --background-image-linear-purple: linear-gradient(to bottom,
+      #241cab 37%,
+      #5d53f9 82%);
 
-  --background-image-accent-linear-purple: linear-gradient(
-    0deg,
-    #241cab 0%,
-    #5d53f9 100%
-  );
+  --background-image-accent-linear-purple: linear-gradient(0deg,
+      #241cab 0%,
+      #5d53f9 100%);
 
   /* BACKGROUND COLORS */
   --background-color-main: #d9d9d9;

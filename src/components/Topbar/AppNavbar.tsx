@@ -1,11 +1,12 @@
 "use client";
 import { usePathname } from "next/navigation";
-import React from "react";
 import { SidebarTrigger } from "../ui/sidebar";
-import { firstCharUppercase } from "@/utils/firstCharUppercase";
+import { getRoute } from "@/utils/getRouteLabel";
+import { useNavbar } from "@/context/NavbarContext";
+import { useEffect } from "react";
 
 export default function AppNavbar() {
-  const pathname = usePathname();
+  const { title } = useNavbar();
 
   return (
     <header>
@@ -13,7 +14,7 @@ export default function AppNavbar() {
         <div className="flex items-center gap-5">
           <SidebarTrigger />
           <span className="text-[24px] font-medium text-transparent bg-clip-text bg-linear-purple ">
-            {firstCharUppercase(pathname, 1)}
+            {title}
           </span>
         </div>
       </nav>
