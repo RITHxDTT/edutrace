@@ -1,10 +1,16 @@
-'use client'
-import NavbarTitle from '@/components/Topbar/NavbarTitle'
-import React from 'react'
+import NavbarTitle from "@/components/Topbar/NavbarTitle";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Growthyflow - Communication",
+};
+
 
 export default function page() {
-    return <>
-        <NavbarTitle title='Communication Room' override />
-        <div>page</div>
-    </>
+    return (
+        <div>
+            <NavbarTitle title="Communication Room" override />
+            <div>page</div>
+        </div>
+    )
 }

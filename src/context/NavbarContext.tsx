@@ -27,7 +27,6 @@ export function NavbarProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (locked) return;
-    setTitleState(route ?? "Not Found");
   }, [route, locked]);
 
   useEffect(() => {

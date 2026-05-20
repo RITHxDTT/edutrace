@@ -5,9 +5,9 @@ import { useEffect } from "react";
 
 export default function NavbarTitle({ title, override = false }: { title: string; override?: boolean }) {
     const { setTitle } = useNavbar();
-
     useEffect(() => {
         setTitle(title, override);
     }, [title, override]);
+    console.log(title)
     return null;
 }

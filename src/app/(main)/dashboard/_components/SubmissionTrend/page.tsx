@@ -1,11 +1,12 @@
+'use client'
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import UndoOutlinedIcon from '@mui/icons-material/UndoOutlined';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
+import { ClipboardText, ClipboardTick } from 'iconsax-react';
 
 const lineChartsParams = {
   series: [
@@ -44,7 +45,7 @@ const lineChartsParams = {
   height: 400,
 } as const;
 
-export default function LineClick() {
+export default function SubmissionTrendComponent() {
   const [itemData, setItemData] = React.useState<LineItemIdentifier>();
   const [axisData, setAxisData] = React.useState<ChartsAxisData | null>();
 
@@ -81,7 +82,8 @@ export default function LineClick() {
               setAxisData(null);
             }}
           >
-            <UndoOutlinedIcon fontSize="small" />
+            <ClipboardText size={20} color='black'/>
+            {/* <UndoOutlinedIcon fontSize="small" /> */}
           </IconButton>
         </Box>
       </Stack>

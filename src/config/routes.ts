@@ -29,20 +29,21 @@ export const ROUTES: RouteConfig[] = [
                 segments[1] === "communication"
             )
         }
-    },
+    },  
 
-    {
-        path: "/assessment/:id",
-        label: "Assessment",
-        matcher: (pathname) => {
-            const segments = pathname.split("/").filter(Boolean);
+    // I disabled to debug navbar
+    // {   
+    //     path: "/assessment/:id",
+    //     label: "Assessment",
+    //     matcher: (pathname) => {
+    //         const segments = pathname.split("/").filter(Boolean);
 
-            return (
-                segments.length === 2 &&
-                segments[0] === "assessment"
-            );
-        },
-    },
+    //         return (
+    //             segments.length === 2 &&
+    //             segments[0] === "assessment"
+    //         );
+    //     },
+    // },
 
     {
         path: "/assessment/communication/:id",
