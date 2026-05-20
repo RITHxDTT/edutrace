@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Fredoka, Geist } from "next/font/google";
-import '../../../styles/globals.css';
+import '../../styles/globals.css';
 import { cn } from "@/lib/utils";
 import Providers from "@/app/providers";
 

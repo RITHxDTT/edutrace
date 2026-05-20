@@ -1,10 +1,10 @@
-import React from 'react'
-import SignInForm from '@/app/(main)/(auth)/login/_Components/SignInForm'
+import LoginForm from "./_components/SignInForm";
+
 
 export default function page() {
   return (
     <div>
-        <SignInForm />
+        <LoginForm />
       
     </div>
   )
