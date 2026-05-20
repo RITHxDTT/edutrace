@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
+    "@dayflow/plugin-drag": "^1.5.3",
+    "@dayflow/plugin-sidebar": "^1.5.3",
+    "@dayflow/react": "^3.6.3",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
 <<<<<<< HEAD
@@ -41,14 +44,15 @@
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "prism-react-renderer": "^2.4.1",
 =======
     "next-auth": "^4.24.14",
 >>>>>>> 03178b5 (auth 80% and landing page 30%)
+=======
+>>>>>>> d3179ff (feature_calendar: Add calendar feature to project)
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-syntax-highlighter": "^16.1.1",
-    "rehype-highlight": "^7.0.2",
     "shadcn": "^4.7.0",
     "tailwind-merge": "^3.6.0",
 <<<<<<< HEAD
