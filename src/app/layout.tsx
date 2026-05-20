@@ -29,7 +29,7 @@ export default function RootLayout({
                 fredoka.variable,
             )}
         >
-            <body className="min-h-full flex flex-col overflow-hidden">
+            <body className="min-h-full flex flex-col">
                 <HeroUIProvider>
                     <main className="px-5 py-5 flex-1">{children}</main>
                 </HeroUIProvider>

@@ -1,12 +1,12 @@
 "use client";
-import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import {  Table,  TableHeader,  TableBody,  TableColumn,  TableRow,  TableCell} from "@heroui/table";
 import styles from './kpicard.module.css';
+import NavbarTitle from "@/components/Topbar/NavbarTitle";
 
 export default function Page() {
   return (
     <div className="space-y-10">
-      
+      <NavbarTitle title="Dashboard" override />
       {/* Header */}
       <div className="flex justify-between">
         <div>
@@ -90,7 +90,7 @@ export default function Page() {
           </div>
         </div>
 
-        <Table isStriped aria-label="Student progress table"
+        <Table aria-label="Student progress table"
         >
           <TableHeader>
             <TableColumn>Student Name</TableColumn>

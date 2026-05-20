@@ -1,9 +1,23 @@
-import React from 'react'
+"use client";
 
-export default function page() {
+import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
+
+export default function Page() {
   return (
-    <div>
-      <p>Hello World, happy coding</p>
-    </div>
-  )
+    <PrimaryTabs
+      tabs={[
+        {
+          key: "photos",
+          title: "Photos",
+          content: <p>Photos content</p>,
+        },
+        {
+          key: "music",
+          title: "Music",
+          content: <p>Music content</p>,
+        },
+      ]}
+
+    />
+  );
 }
