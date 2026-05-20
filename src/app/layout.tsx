@@ -31,7 +31,7 @@ export default function RootLayout({
         >
             <body className="min-h-full flex flex-col">
                 <HeroUIProvider>
-                    <main className="px-5 py-5 flex-1">{children}</main>
+                    <main className="flex-1">{children}</main>
                 </HeroUIProvider>
             </body>
         </html>
