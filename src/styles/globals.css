@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-
 @custom-variant dark (&:is(.dark *));
 
 @theme {
@@ -18,17 +17,13 @@
   --color-red: #e62020;
 
   /* LINEAR VARIABLE */
-  --background-image-linear-purple: linear-gradient(
-    to bottom,
-    #241cab 37%,
-    #5d53f9 82%
-  );
+  --background-image-linear-purple: linear-gradient(to bottom,
+      #241cab 37%,
+      #5d53f9 82%);
 
-  --background-image-accent-linear-purple: linear-gradient(
-    0deg,
-    #241cab 0%,
-    #5d53f9 100%
-  );
+  --background-image-accent-linear-purple: linear-gradient(0deg,
+      #241cab 0%,
+      #5d53f9 100%);
 
   /* BACKGROUND COLORS */
   --background-color-main: #d9d9d9;
@@ -39,6 +34,8 @@
   --text-color-primary: #3e3e3e;
   --text-color-strong: #3a3a3a;
   --text-color-muted: #b3b4c0;
+  --text-color-green: #53E721;
+  --text-color-disabled: #BABABA;
 }
 
 @theme inline {

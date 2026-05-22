@@ -1,9 +1,7 @@
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import UndoOutlinedIcon from '@mui/icons-material/UndoOutlined';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
 
@@ -12,39 +10,32 @@ const lineChartsParams = {
     {
       id: 'series-1',
       data: [3, 4, 1, 6, 5],
-      label: 'A',
+      label: 'On time',
       area: true,
       stack: 'total',
       highlightScope: {
         highlight: 'item',
       },
+      color: '#8979FF',
     },
     {
       id: 'series-2',
       data: [4, 3, 1, 5, 8],
-      label: 'B',
+      label: 'Late Submission',
       area: true,
       stack: 'total',
       highlightScope: {
         highlight: 'item',
       },
-    },
-    {
-      id: 'series-3',
-      data: [4, 2, 5, 4, 1],
-      label: 'C',
-      area: true,
-      stack: 'total',
-      highlightScope: {
-        highlight: 'item',
-      },
+      color: '#8979FF',
     },
   ],
   xAxis: [{ data: [0, 3, 6, 9, 12], scaleType: 'linear', id: 'axis1' }],
   height: 400,
+
 } as const;
 
-export default function LineClick() {
+export default function SubmissionTrendComponent() {
   const [itemData, setItemData] = React.useState<LineItemIdentifier>();
   const [axisData, setAxisData] = React.useState<ChartsAxisData | null>();
 
@@ -52,7 +43,11 @@ export default function LineClick() {
     <Stack
       direction={{ xs: 'column', md: 'row' }}
       spacing={{ xs: 0, md: 4 }}
-      sx={{ width: '100%' }}
+      sx={{
+        width: 'full',
+        overflow: 'hidden'
+      }}
+
     >
       <Box sx={{ flexGrow: 1 }}>
         <LineChart
@@ -64,7 +59,7 @@ export default function LineClick() {
         />
       </Box>
 
-      <Stack direction="column" sx={{ width: { xs: '100%', md: '40%' } }}>
+      <Stack direction="column" sx={{ width: { xs: '100%', md: '0%' } }}>
         <Box
           sx={{
             display: 'flex',
@@ -72,16 +67,16 @@ export default function LineClick() {
             alignItems: 'center',
           }}
         >
-          <Typography>Click on the chart</Typography>
+
           <IconButton
-            aria-label="reset"
+
             size="small"
             onClick={() => {
               setItemData(undefined);
               setAxisData(null);
             }}
+            aria-label="reset"
           >
-            <UndoOutlinedIcon fontSize="small" />
           </IconButton>
         </Box>
       </Stack>
