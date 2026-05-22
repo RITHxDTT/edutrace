@@ -4,7 +4,7 @@ import CalendarEventComponent from "@/app/(main)/(calendar)/calendar/_components
 export default function page() {
   return (
     <div>
-      <CalendarEventComponent />
+      <CalendarEventComponent/>
     </div>
   )
 }
