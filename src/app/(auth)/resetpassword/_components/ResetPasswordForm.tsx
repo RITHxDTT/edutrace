@@ -4,9 +4,9 @@ import React, { useState, ChangeEvent, FormEvent } from 'react';
 import { Eye } from 'lucide-react';
 import { ResetPasswordData } from '@/types/auth';
 import { useRouter } from 'next/navigation';
-import SubmitButton from '../../_components/SubmitButton';
 import LogoComponent from '../../_components/Logo';
 import LeftSideCover from '../../_components/RightSideComponent';
+import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
 
 export default function ResetPasswordForm() {
   const router = useRouter();
@@ -76,7 +76,7 @@ export default function ResetPasswordForm() {
             </div>
 
             {/* Reusable component btn */}
-            <SubmitButton text="Save Change" />
+            <PrimaryButton className={"w-full"} size={"md"}>Save Change</PrimaryButton>
           </form>
 
           

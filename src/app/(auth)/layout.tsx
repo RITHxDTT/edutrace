@@ -1,17 +1,6 @@
 import type { Metadata } from "next";
-import { Fredoka, Geist } from "next/font/google";
 import '../../styles/globals.css';
-import { cn } from "@/lib/utils";
 import Providers from "@/app/providers";
-
-
-
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
-
-const fredoka = Fredoka({
-  variable: "--font-fredoka-sans",
-  subsets: ["latin"],
-});
 
 
 export const metadata: Metadata = {
@@ -25,19 +14,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={cn("h-full", "antialiased", fredoka.variable, "font-sans", geist.variable)}
-    >
-      <body className="min-h-full flex flex-col">
-      
-          <main>
-            <Providers>
-            {children}
-            </Providers>
-          </main>
-        
-      </body>
-    </html>
+      <div className="flex flex-col flex-1">
+        <main className="flex-1">{children}</main>
+      </div>
   );
 }

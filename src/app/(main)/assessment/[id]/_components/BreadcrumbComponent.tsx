@@ -1,7 +1,8 @@
 'use client'
 
 import { firstCharUppercase } from '@/utils/firstCharUppercase'
-import { Breadcrumbs, BreadcrumbItem, BreadcrumbsProps } from '@heroui/breadcrumbs';
+import { Breadcrumbs, BreadcrumbItem } from '@heroui/breadcrumbs';
+
 import Link from 'next/link';
 
 import { usePathname } from 'next/navigation'
@@ -17,6 +18,7 @@ type BreadcrumbProps = {
 
 export default function Breadcrumb({ props }: BreadcrumbProps) {
     const pathname = usePathname();
+
 
     const breadcrumb: BreadcrumbType[] = pathname.split('/').filter(Boolean).map((crumb, index, array) => ({
         title: firstCharUppercase(crumb, 0),
