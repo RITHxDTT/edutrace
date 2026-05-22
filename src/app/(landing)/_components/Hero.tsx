@@ -1,5 +1,7 @@
 import React from 'react';
 import { ArrowRight, QrCode } from 'lucide-react';
+import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
+import { ArrowRight2 } from 'iconsax-react';
 
 export default function Hero() {
   return (
@@ -8,31 +10,30 @@ export default function Hero() {
       <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 max-w-4xl mx-auto leading-tight">
         <span className="text-[#3B41E3]">Stay on track. Don't miss tasks.</span> Achieve more with confidence.
       </h1>
-      
+
       {/* Subtitle */}
       <p className="text-gray-400 mt-6 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
         Manage your tasks, get timely notifications, and stay connected with your instructors
       </p>
 
       {/* CTA Button */}
-      <button className="mt-8 bg-[#3B41E3] hover:bg-[#2D31FA] text-white font-medium rounded-full px-6 py-3.5 inline-flex items-center gap-2 text-sm shadow-lg shadow-[#3B41E3]/20 transition-all">
+      <PrimaryButton className="mt-8 font-medium text-sm rounded-[25px]" size={"md"} iconPosition='right' icon={ArrowRight2}>
         Get Started
-        <ArrowRight className="w-4 h-4" />
-      </button>
+      </PrimaryButton>
 
       {/* Dual Display Cards */}
       <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch max-w-6xl mx-auto">
-        
+
         {/* Left Interactive Image/QR Card */}
         <div className="relative rounded-3xl overflow-hidden bg-gray-200 h-[400px] shadow-md group">
           {/* Main Background Image - Replace src path */}
-          <img 
-            src="/images/students-group.jpg" 
-            alt="Students and Instructors" 
+          <img
+            src="/images/students-group.jpg"
+            alt="Students and Instructors"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-          
+
           <div className="absolute top-4 left-6 text-left max-w-xs">
             <p className="text-white text-xs font-light leading-snug drop-shadow-sm">
               Easily follow up with instructors and stay connected during tasks while receiving real-time feedback.
@@ -56,9 +57,9 @@ export default function Hero() {
         {/* Right Event Poster Card */}
         <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#0F126C] to-[#252AE5] h-[400px] shadow-md flex items-center justify-center">
           {/* Main Background Image - Replace src path */}
-          <img 
-            src="/images/coding-challenge.jpg" 
-            alt="HRD Coding Challenge" 
+          <img
+            src="/images/coding-challenge.jpg"
+            alt="HRD Coding Challenge"
             className="w-full h-full object-cover mix-blend-overlay opacity-80"
           />
           {/* Floating UI Badges */}

@@ -3,15 +3,15 @@ import { ReactNode } from "react";
 import { tv } from "tailwind-variants";
 
 type TabType = {
-    key: string,
-    title: string,
-    content: ReactNode
+    key: string;
+    title: string;
+    content: ReactNode;
 }
 
 type tabs = {
-    tabs: TabType[]
-    colors?: "primary" | "secondary",
-    variant?: "underlined"
+    tabs: TabType[];
+    colors?: "primary" | "secondary";
+    variant?: "underlined";
 }
 
 const tabVariant = tv({
