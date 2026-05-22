@@ -36,6 +36,12 @@
   --text-color-muted: #b3b4c0;
   --text-color-green: #53E721;
   --text-color-disabled: #BABABA;
+  --text-color-gray: #424654;
+  --text-color-accent-linear-purple: linear-gradient(to bottom,
+      #241cab 37%,
+      #5d53f9 82%);
+  --text-color-darkgreen: #1F9254;
+
 }
 
 @theme inline {

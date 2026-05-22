@@ -97,7 +97,7 @@ export default function Page() {
             {/* ==>> Line Chart */}
             <div className="flex flex-col space-y-6 flex-1 w-full">
               <div className="bg-white text-black rounded-2xl p-5 shadow-sm">
-                <p className="text-[20px] font-semibold mb-4 text-gray-800">Submission Trend</p>
+                <p className="text-2xl font-medium mb-4 text-gray-800">Submission Trend</p>
                 <div className="w-full bg-transparent rounded-xl">
                   <SubmissionTrendComponent />
                 </div>
@@ -105,7 +105,7 @@ export default function Page() {
 
               <div className="bg-white text-black rounded-3xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] max-w-4xl mx-auto w-full border border-gray-100/50">
                 <div className="mb-5">
-                  <h2 className="text-[20px] font-semibold mb-4 text-gray-800 tracking-tight">Student Progress</h2>
+                  <h2 className="text-2xl font-medium mb-4 text-gray-800 tracking-tight">Student Progress</h2>
                 </div>
 
                 <Table
@@ -129,14 +129,13 @@ export default function Page() {
                     </TableColumn>
                   </TableHeader>
                   <TableBody>
-                    {/* Row 1 */}
                     <TableRow className="border-b border-slate-100/60 last:border-0 hover:bg-slate-50/30 transition-colors">
                       <TableCell className="py-4 pl-6">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 text-x">
                           <img
-                            src=""
+                            src="https://i.pinimg.com/736x/39/96/87/3996872dc28a2ffc9b416ebfe4bffa0b.jpg"
                             alt="Yann Vannet"
-                            className="w-10 h-10 rounded-full object-cover border-2 border-sky-400"
+                            className="w-10 h-10 rounded-full object-cover border-2"
                           />
                           <div>
                             <p className="text-slate-700 font-semibold text-sm leading-tight">Yann Vannet</p>
@@ -147,7 +146,7 @@ export default function Page() {
                       <TableCell className="text-slate-700 font-medium text-sm text-center py-4">100%</TableCell>
                       <TableCell className="text-slate-700 font-medium text-sm text-center py-4">2%</TableCell>
                       <TableCell className="text-center py-4">
-                        <span className="bg-[#EBF7EE] text-[#16A34A] px-5 py-1.5 rounded-full text-xs font-bold inline-block min-w-[85px]">
+                        <span className="bg-[#EBF7EE] text-color-darkgreen px-5 py-1.5 rounded-full text-xs font-bold inline-block min-w-[85px]">
                           Good
                         </span>
                       </TableCell>
@@ -158,9 +157,9 @@ export default function Page() {
                       <TableCell className="py-4 pl-6">
                         <div className="flex items-center gap-3">
                           <img
-                            src=""
+                            src="https://i.pinimg.com/736x/39/96/87/3996872dc28a2ffc9b416ebfe4bffa0b.jpg"
                             alt="Uy Chakriya"
-                            className="w-10 h-10 rounded-full object-cover border-2 border-sky-400"
+                            className="w-10 h-10 rounded-full object-cover border-2 "
                           />
                           <div>
                             <p className="text-slate-700 font-semibold text-sm leading-tight">Uy Chakriya</p>
@@ -181,7 +180,7 @@ export default function Page() {
                       <TableCell className="py-4 pl-6">
                         <div className="flex items-center gap-3">
                           <img
-                            src=""
+                            src="https://i.pinimg.com/736x/39/96/87/3996872dc28a2ffc9b416ebfe4bffa0b.jpg"
                             alt="Dara Nikor"
                             className="w-10 h-10 rounded-full object-cover border border-slate-200"
                           />
@@ -208,7 +207,7 @@ export default function Page() {
             <div className="flex flex-col space-y-6 flex-1 w-full">
               <div className="bg-white text-black rounded-3xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] max-w-4xl mx-auto w-full border border-gray-100/50">
                 <div className="mb-5">
-                  <h2 className="text-[20px] font-semibold mb-4 text-gray-800 tracking-tight">Recent Task</h2>
+                  <h2 className="text-2xl font-medium mb-4 text-gray-800 tracking-tight">Recent Task</h2>
                 </div>
 
                 <Table
@@ -263,28 +262,28 @@ export default function Page() {
               <div className="flex flex-col md:flex-row gap-4 w-full">
                 <div className="bg-[#2425aa] rounded-2xl shadow-sm p-5 w-full md:w-3/5 flex flex-col justify-between">
                   <div className="mb-4">
-                    <h2 className="text-xl font-semibold text-white">Current Task</h2>
+                    <h2 className="text-2xl font-medium text-white">Current Task</h2>
                   </div>
 
                   <div className="space-y-3">
                     <button className="w-full flex items-center justify-between bg-white/20 hover:bg-white/30 text-white py-3 px-4 rounded-xl transition-all">
-                      <span className="font-medium text-sm">Spring Boot Homework 003</span>
-                      <div className="w-6 h-6 rounded-full bg-white text-blue-900 flex items-center justify-center font-bold"></div>
+                      <span className="font-medium text-sm text-color-accent-linear-purple">Spring Boot Homework 003</span>
+                      <div className="w-6 h-6 rounded-full bg-white text-indigo-600 flex items-center justify-center font-bold"></div>
                     </button>
-                    <button className="w-full flex items-center justify-between bg-white/20 hover:bg-white/30 text-white py-3 px-4 rounded-xl transition-all">
+                    <button className="w-full flex items-center justify-between  text-white py-3 px-4 rounded-xl transition-all">
                       <span className="font-medium text-sm">Web Homework 002</span>
-                      <div className="w-6 h-6 rounded-full bg-white text-blue-900 flex items-center justify-center font-bold"></div>
+                      <div className="w-6 h-6 rounded-full bg-white text-indigo-600  flex items-center justify-center font-bold"></div>
                     </button>
                   </div>
                 </div>
 
-                <div className="bg-white text-black rounded-2xl shadow-sm p-5 w-full md:w-2/5 flex flex-col justify-between">
-                  <div>
-                    <p className="text-xs font-bold tracking-wider text-gray-400 mb-1">Reminder</p>
+                <div className="flex flex-col justify-between bg-white text-black rounded-2xl shadow-sm p-5 w-full md:w-2/5 ">
+                  <p className="text-2xl font-medium tracking-wider text-color-gray mb-1">Reminder</p>
+                  <div className="flex flex-col gap-2">
                     <h3 className="text-indigo-900 font-bold text-[15px] leading-tight mb-1">
                       Spring Boot Homework 003 Right Now?
                     </h3>
-                    <p className="text-xs text-color-disabled font-medium">
+                    <p className="text-xs text-[#C6C7D0] font-medium">
                       This meeting has <span className="text-indigo-600 font-bold">24</span> students.
                     </p>
                   </div>
@@ -341,7 +340,7 @@ export default function Page() {
             </div>
 
             <div className="bg-white text-black rounded-2xl p-5 shadow-sm">
-              <p className="text-lg font-semibold mb-4 text-gray-800">Show how student change task by task
+              <p className="text-2xl font-medium mb-4 text-gray-800">Show how student change task by task
               </p>
               <div className="w-full">
                 <SubmissionTrendComponent />
@@ -352,7 +351,7 @@ export default function Page() {
               <div className="flex justify-between items-center mb-4">
                 <div>
 
-                  <p className="text-lg font-bold text-gray-800">Weekly vs Required Progress</p>
+                  <p className="text-2xl font-medium text-gray-800">Weekly vs Required Progress</p>
                 </div>
 
                 {/* ====== bar chart====== */}
@@ -383,18 +382,17 @@ export default function Page() {
             </div>
           </div>
 
-          {/* RIGHT SIDEBAR SECTION (3 Columns) */}
           <div className="lg:col-span-3 space-y-6">
 
             <div className="bg-white text-black rounded-2xl p-5 shadow-sm">
-              <p className="text-lg font-semibold mb-4 text-gray-800">Submission Trends</p>
+              <p className="text-2xl font-medium mb-4 text-gray-800">Submission Trends</p>
               <div className="w-full flex justify-center items-center py-2">
                 <PieChartWithCenterLabel />
               </div>
             </div>
 
             <div className="bg-white text-black rounded-2xl p-5 shadow-sm">
-              <p className="text-lg font-semibold mb-4 text-gray-800">Activity Log</p>
+              <p className="text-2xl font-medium mb-4 text-gray-800">Activity Log</p>
               <div className="relative border-l-2 border-gray-100 ml-3 pl-6 space-y-6">
 
                 {activityLogs.map((log: ActivityLogItem) => (
