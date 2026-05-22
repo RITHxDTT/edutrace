@@ -3,34 +3,37 @@
 import { LoginFormData, RegisterFormData } from "@/types/auth";
 import { signIn } from "@/auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { signOut } from "next-auth/react";
+import { registerService } from "@/services/auth.service";
 
 /**
  * LOGIN ACTION
  */
 export async function loginAction(data: LoginFormData) {
     try {
-        await signIn("credentials", {
+        const result = await signIn("credentials", {
             email: data.email,
             password: data.password,
-            redirectTo: "/dashboard"
+            redirect: false
         });
+        return { success: true, error: null };
     } catch (err) {
-        if (isRedirectError(err)) throw err;
-
-        console.error("Login Action Error:", err);
-        return { error: "Invalid email or password" + err };
+        return { success: false, error: "Invalid Credentials." };
     }
 }
 
-// export async function registerAction(data: RegisterFormData) {
-//     try {
-//         await registerService(data);
-//     }
-// }
 /**
- * LOGOUT ACTION
+ * REGISTER ACTION
  */
-export async function logoutAction() {
-    await signOut({ redirectTo: "/" })
+export async function registerAction(
+    data: RegisterFormData
+) {
+    try {
+        const res = await registerService(data)
+        if (res?.error) {
+            return { error: res.error };
+        }
+    } catch (err) {
+        console.log(err)
+        return { error: "Something went wrong" };
+    }
 }

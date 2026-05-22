@@ -1,87 +1,95 @@
 'use client';
 
-import { useState, ChangeEvent, FormEvent } from 'react';
-import { Mail, EyeOff } from 'lucide-react';
-import { LoginFormData } from '../../../../types/auth';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
 import Link from 'next/link';
-import { loginAction } from '@/actions/auth.action';
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod';
 import PrimaryInput from '@/components/Inputs/PrimaryInputField';
-import { Eye, EyeSlash } from 'iconsax-react';
-import { PreviewCard } from '@base-ui/react';
-
+import { Eye, EyeSlash, SmsEdit } from 'iconsax-react';
+import { loginFormSchema } from '@/schemas/LoginFormSchema';
+import { loginAction } from '@/actions/auth.action';
+import { LoginFormData } from '@/types/auth';
+import ServerError from './ServerError';
+import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
-  const router = useRouter();
   const [isVisible, setVisible] = useState(false);
+  const [serverError, setServerError] = useState("");
+  const router = useRouter();
 
-  const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
-    password: '',
-  });
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const data = {
-      email: formData.email,
-      password: formData.password
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: "",
+      password: "",
     }
-    const result = await loginAction(data);
+  })
 
-    console.log(result)
+  const onSubmit = async (data: LoginFormData) => {
+    setServerError("");
+
+    try {
+      const res = await loginAction(data);
+
+      if (res?.success) {
+        router.push("/dashboard");
+        router.refresh();
+        return;
+      }
+
+      if (res?.error) {
+        setServerError(res.error);
+      }
+    } catch (error) {
+      setServerError("An unexpected error occurred. Please try again.");
+      console.error("Client caught error:", error);
+    }
   };
+
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-8" noValidate>
+      {serverError && <ServerError serverError={serverError} />}
       <div className="space-y-1.5">
-        <label className="text-sm font-semibold text-text-color-strong">Email</label>
-        <div className="relative">
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            placeholder="Enter your email here..."
-            className="w-full bg-primary/5 placeholder-text-color-muted/50 text-text-color-strong rounded-xl px-4 py-3.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
-          <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-color-muted" />
-        </div>
+        <PrimaryInput
+          label="Email"
+          placeholder="Enter your email here..."
+          type="email"
+          icon={SmsEdit}
+          iconPosition="right"
+          isInvalid={!!errors.email}
+          errorMessage={errors.email?.message}
+          {...register("email")}
+        />
       </div>
 
 
       <div className="space-y-1.5">
-        <div className="relative">
-          <PrimaryInput
-            label="Password"
-            name="password"
-            placeholder='Password'
-            type={isVisible ? "text" : "password"}
-            icon={isVisible ? Eye : EyeSlash}
-            iconPosition="right"
-            value={formData.password}
-            onChange={handleInputChange}
-          />
-        </div>
+        <PrimaryInput
+          {...register('password')}
+          label="Password"
+          name="password"
+          placeholder='Password'
+          type={isVisible ? "text" : "password"}
+          icon={isVisible ? Eye : EyeSlash}
+          iconPosition="right"
+          onIconClick={() => setVisible(prev => !prev)}
+          isInvalid={!!errors.password}
+          errorMessage={errors.password?.message}
+        />
 
         <div className="text-right pt-1">
-          <Link href={"/forgot-password"} className="hover:cursor-pointer text-xs text-primary font-semibold hover:underline">
+          <Link href={"/forgot-password"} className="hover:cursor-pointer text-xs bg-linear-purple bg-clip-text text-transparent hover:underline">
             Forgot Password?
           </Link>
         </div>
       </div>
-      <PrimaryButton className={"w-full rounded-xl"} size={"md"} type='submit'>Sign In</PrimaryButton>
+      <PrimaryButton className={"w-full rounded-[8px]"} size={"md"} type='submit'>Sign in</PrimaryButton>
     </form>
 
 

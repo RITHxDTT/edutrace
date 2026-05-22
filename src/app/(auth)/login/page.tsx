@@ -21,7 +21,7 @@ export default function page() {
 
           <p className="text-center text-sm text-text-color-strong/80 mt-6">
             Does not have an account?{' '}
-            <Link href={"/register"} className="text-primary hover:cursor-pointer font-semibold underline hover:text-primary/80">
+            <Link href={"/register"} className="bg-linear-purple bg-clip-text text-transparent hover:cursor-pointer underline">
               Sign up
             </Link>
           </p>

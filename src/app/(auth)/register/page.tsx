@@ -19,7 +19,7 @@ export default function page() {
           <SignUpForm />
           <p className="text-center text-sm text-text-color-strong/80 mt-6">
             Already have an account?{' '}
-            <Link href={"/login"} className="text-primary hover:cursor-pointer font-semibold underline hover:text-primary/80">
+            <Link href={"/login"} className="bg-linear-purple bg-clip-text text-transparent hover:cursor-pointer font-semibold underline">
               Sign in
             </Link>
           </p>

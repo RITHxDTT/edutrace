@@ -3,6 +3,8 @@ interface RegisterFormData {
   lastName: string;
   email: string;
   password: string;
+  classroom: string;
+  api: string;
 }
 
 interface LoginFormData {

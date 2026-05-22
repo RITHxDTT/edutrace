@@ -11,6 +11,7 @@ type InputProps = React.ComponentProps<typeof Input> &
         labelPlacement?: "inside" | "outside" | "outside-left" | "outside-top";
         type: string;
         icon?: Icon;
+        onIconClick?: () => void
     }
 
 const inputVariants = tv({
@@ -34,9 +35,9 @@ const inputVariants = tv({
                 label: "font-semibold text-label mb-1 transition-colors duration-150 group-focus-within:text-primary",
                 mainWrapper: "w-full",
                 innerWrapper: "",
-                inputWrapper: 
-                    "bg-input-field rounded-xl px-4 py-0 h-12 transition-all duration-150 focus-within:border-primary/20",
-                input: 
+                inputWrapper:
+                    "bg-input-field border border-transparent data-[focus=true]:border-primary/20 data-[focus=true]:bg-input-field data-[hover=true]:border-primary/20 data-[hover=true]:bg-input-field rounded-[8px] px-[27px] h-[60px] transition-all duration-150",
+                input:
                     "text-sm text-primary placeholder:text-tertiary bg-transparent font-normal h-full",
                 clearButton: "text-zinc-400 hover:text-zinc-600",
                 helperWrapper: "px-1 pt-1.5",
@@ -71,6 +72,7 @@ export default function PrimaryInput({
     inputType = "primary",
     iconPosition = "none",
     icon: IconComponent,
+    onIconClick,
     ...props
 }: InputProps) {
     const slots = inputVariants({ inputType });
@@ -94,20 +96,33 @@ export default function PrimaryInput({
             labelPlacement={labelPlacement ?? "outside-top"}
             type={type}
             endContent={
-                iconPosition === "right" && IconComponent
-                    ? <IconComponent
-                        color={"black"}
-                        size={18}
-                    />
-                    : null
+                iconPosition === "right" && IconComponent ? (
+                    <button
+                        type="button"
+                        onClick={onIconClick}
+                        className="cursor-pointer outline-none"
+                    >
+                        <IconComponent
+                            color={inputType === "secondary" ? "white" : "black"}
+                            size={20}
+                        />
+                    </button>
+                ) : null
             }
+
             startContent={
-                iconPosition === "left" && IconComponent
-                    ? <IconComponent
-                        color={"black"}
-                        size={18}
-                    />
-                    : null
+                iconPosition === "left" && IconComponent ? (
+                    <button
+                        type="button"
+                        onClick={onIconClick}
+                        className="cursor-pointer outline-none"
+                    >
+                        <IconComponent
+                            color={inputType === "secondary" ? "white" : "black"}
+                            size={20}
+                        />
+                    </button>
+                ) : null
             }
             {...props}
         />

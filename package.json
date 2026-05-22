@@ -21,7 +21,7 @@
     "@heroui/table": "^2.2.32",
     "@heroui/tabs": "^2.2.29",
     "@heroui/theme": "^2.4.26",
-    "@hookform/resolvers": "^5.2.2",
+    "@hookform/resolvers": "^5.4.0",
     "@mui/material": "^9.0.1",
     "@mui/x-charts": "^9.2.0",
     "@next/mdx": "^16.2.6",
