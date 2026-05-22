@@ -2,9 +2,9 @@
 
 import React, { useState, useRef, ChangeEvent, KeyboardEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import SubmitButton from '../../_components/SubmitButton';
 import LeftSideCover from '../../_components/RightSideComponent';
 import LogoComponent from '../../_components/Logo';
+import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
 
 export default function VerificationForm() {
   const router = useRouter();
@@ -77,7 +77,7 @@ export default function VerificationForm() {
             </p>
 
             {/* Reusable component btn */}
-            <SubmitButton text="Verify" />
+            <PrimaryButton className={"w-full"} size={"md"}>Verify</PrimaryButton>
           </form>
 
           

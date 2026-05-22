@@ -2,14 +2,14 @@
 
 import { useState, ChangeEvent, FormEvent } from 'react';
 import { User, Mail, EyeOff } from 'lucide-react';
-import { FormData } from '@/types/auth';
 import { useRouter } from 'next/navigation';
 import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
+import { RegisterFormData } from '@/types/auth';
 
 export default function SignUpForm() {
   const router = useRouter();
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
     lastName: '',
     email: '',
