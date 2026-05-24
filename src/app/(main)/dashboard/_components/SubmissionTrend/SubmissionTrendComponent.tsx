@@ -1,9 +1,11 @@
+'use client'
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
+import { ClipboardText, ClipboardTick } from 'iconsax-react';
 
 const lineChartsParams = {
   series: [

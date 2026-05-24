@@ -1,4 +1,4 @@
-"use client";
+
 import {
   Sidebar,
   SidebarContent,
@@ -8,89 +8,32 @@ import {
   SidebarMenuItem,
 } from "../ui/sidebar";
 import Image from "next/image";
-import {
-  Calendar,
-  Element2,
-  LoginCurve,
-  Stickynote,
-  TaskSquare,
-} from "iconsax-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-const menuItems = [
-  {
-    title: "Dashboard",
-    href: "/dashboard",
-    icon: Element2,
-  },
-  {
-    title: "Assessment",
-    href: "/assessment",
-    icon: TaskSquare,
-  },
-  {
-    title: "Calendar",
-    href: "/calendar",
-    icon: Calendar,
-  },
-  {
-    title: "Report",
-    href: "/report",
-    icon: Stickynote,
-  },
-];
+import { SignOut } from "../AutthComponents";
+import SidebarTitle from "./_components/SidebarTitle";
 
 export default function AppSidebar() {
-  const pathname: string = usePathname();
 
   return (
     <Sidebar>
       <SidebarHeader>
         <div className="flex items-baseline items justify-center">
-            <Image
-              width={0}
-              height={0}
-              src={"/images/logo/growthyflow-logo.png"}
-              alt="Growthyflow Logo"
-              className="w-9.5 h-9.5 relative top-0.75 -mr-0.5"
-              unoptimized
-            />
-
-          <p className="text-[26px] font-semibold text-transparent bg-clip-text bg-linear-purple">
-            rowthyFlow
-          </p>
+          <Image
+            width={0}
+            height={0}
+            src={"/images/logo/growthyFlowLogo.png"}
+            alt="Growthyflow Logo"
+            className="w-60 h-9.5 object-contain"
+            unoptimized
+            loading="eager"
+          />
         </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu className="flex flex-col items-center gap-5.25 px-5">
-          {menuItems.map((menuItem, index) => {
-            const isActive = pathname === menuItem.href;
-            const Icon = menuItem.icon;
-
-            return (
-              <SidebarMenuItem key={index} className="w-full">
-                <Link
-                  href={menuItem.href}
-                  className={`flex items-center gap-5 px-4 py-2 text-primary 
-                ${isActive ? " bg-linear-purple rounded-[10px] text-white" : " hover:bg-gray rounded-[10px]"}`}
-                >
-                  <div>
-                    <Icon color={isActive ? "white" : "black"} size={20} />
-                  </div>
-
-                  <span>{menuItem.title}</span>
-                </Link>
-              </SidebarMenuItem>
-            );
-          })}
+          <SidebarTitle />
         </SidebarMenu>
-
         <SidebarFooter className="w-full px-5">
-          <Link href={"/logout"} className="flex items-center px-4 gap-5">
-            <LoginCurve color="#E62020" size={20} />
-            <span className="text-red">Logout</span>
-          </Link>
+          <SignOut />
         </SidebarFooter>
       </SidebarContent>
     </Sidebar>

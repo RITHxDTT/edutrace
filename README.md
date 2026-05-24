@@ -1,8 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Name — UI
+
+> Next.js frontend for [brief description of what the UI does].
+
+## Tech Stack
+
+- **Next.js** 16+ (App Router)
+- **React** 19+
+- **TypeScript**
+- **Tailwind CSS** — styling
+- **Zod** — Input Validation
+- **Zustand** / Redux — state management (if applicable)
+
+## Prerequisites
+
+- [Node.js 21+](https://nodejs.org/)
+- [npm](https://www.npmjs.com/) / [yarn](https://yarnpkg.com/) / [pnpm](https://pnpm.io/)
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/14th-Gen-Basic-Course-Final-Project/HRD-Room-UI.git
+cd HRD-Room-UI
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
+
+### 3. Configure environment variables
+
+Copy the example env file and fill in your values:
+
+```bash
+cp .env.example .env.local
+```
+
+### 4. Run the development server
 
 ```bash
 npm run dev
@@ -10,27 +51,36 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will start at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 5. Verify
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) in your browser. Make sure the Spring Boot API is running for full functionality.
 
-## Learn More
+## Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server with hot reload |
+| `npm run build` | Create optimized production build |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run tests |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Connecting to the API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The UI expects the Spring Boot API to be running at the URL specified in `NEXT_PUBLIC_API_URL`. Make sure to:
 
-## Deploy on Vercel
+1. Start the API server first (see [API README](./API-readme.md))
+2. Ensure CORS is configured on the API to allow `http://localhost:3000`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Production Build
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+npm run start
+```
+
+For deployment, set all environment variables on your hosting platform (Vercel, Docker, etc.) and ensure `NEXT_PUBLIC_API_URL` points to your production API.

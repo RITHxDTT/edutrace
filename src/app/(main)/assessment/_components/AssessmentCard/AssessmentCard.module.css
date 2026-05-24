@@ -1,0 +1,8 @@
+.card {
+  width: 460px;
+  height: 366px;
+  background-color: #fbfbfb;
+  clip-path:path("M40,0H130A20,20 0,0,1 150,20V40A20,20 0,0,0 170,60H440A20,20 0,0,1 460,80V326A40,40 0,0,1 420,366H40A40,40 0,0,1 0,326V40A40,40 0,0,1 40,0Z");
+box-shadow: 0 0 15px rgba(0,0,0,0.08);
+
+}
