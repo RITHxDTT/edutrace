@@ -1,4 +1,4 @@
-interface FormData {
+interface RegisterFormData {
   firstName: string;
   lastName: string;
   email: string;
@@ -18,4 +18,11 @@ interface ResetPasswordData {
   confirmPassword: string;
 }
 
-export type { FormData, LoginFormData, ForgotPasswordData, ResetPasswordData };
+interface AuthUser {
+  accessToken: string,
+  expiresIn: number,
+  refresh_token: string,
+  token_type: string
+}
+
+export type { RegisterFormData, LoginFormData, ForgotPasswordData, ResetPasswordData };

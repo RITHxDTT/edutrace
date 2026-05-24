@@ -2,6 +2,7 @@ import AppSidebar from '@/components/Sidebar/AppSidebar'
 import AppNavbar from '@/components/Topbar/AppNavbar'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { NavbarProvider } from '@/context/NavbarContext'
+import { SessionProvider } from 'next-auth/react'
 import React from 'react'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -19,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </NavbarProvider>
         </SidebarProvider>
-      </div >
+      </div>
     </>
   )
 }
