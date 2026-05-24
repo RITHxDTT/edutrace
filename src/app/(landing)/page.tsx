@@ -1,10 +1,11 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
-import Hero from '@/app/(main)/(landing)/_Components/Hero';
-import Features from '@/app/(main)/(landing)/_Components/Features';
-import HowItWorks from '@/app/(main)/(landing)/_Components/HowItWorks';
-import ModernRoom from '@/app/(main)/(landing)/_Components/ModernRoom';
-import Footer from '@/app/(main)/(landing)/_Components/Footer';
+import Hero from './_components/Hero';
+import Features from './_components/Features';
+import HowItWorks from './_components/HowItWorks';
+import ModernRoom from './_components/ModernRoom';
+import Footer from './_components/Footer';
+
 
 export default function LandingPage() {
   return (
