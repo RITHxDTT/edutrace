@@ -1,5 +1,4 @@
-import React from 'react'
-import SignUpForm from '@/app/(main)/(auth)/register/_Components/SignUpForm'
+import SignUpForm from "./_components/SignUpForm";
 
 export default function page() {
   return (
