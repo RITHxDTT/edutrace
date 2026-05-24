@@ -2,6 +2,9 @@
 import Image from "next/image"
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 38fb47e8c43b3fe32324f3fe739c808240018f30
 export default function LogoComponent (){
     return(
         
@@ -17,6 +20,7 @@ export default function LogoComponent (){
                     </div>
         
     )
+<<<<<<< HEAD
 =======
 export default function LogoComponent() {
   return (
@@ -35,4 +39,6 @@ export default function LogoComponent() {
 
   )
 >>>>>>> 19e13e2 (Authentication: Login done)
+=======
+>>>>>>> 38fb47e8c43b3fe32324f3fe739c808240018f30
 }
