@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../assessment.module.css";
+import styles from "./AssessmentCard.module.css";
 
 type AssessmentCardProps = {
   children?: React.ReactNode;

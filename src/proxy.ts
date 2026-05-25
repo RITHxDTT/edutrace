@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "./auth";
 import { NextAuthRequest } from "next-auth";
 
-export default async function proxy(req : NextAuthRequest) {
+export default async function proxy(req: NextAuthRequest) {
   const session = await auth();
   const { nextUrl } = req;
 
@@ -22,5 +22,5 @@ export default async function proxy(req : NextAuthRequest) {
 }
 
 export const config = {
-  matcher: ["//:path*", "/login", "/register"],
+  matcher: ["/login", "/register"],
 };

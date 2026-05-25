@@ -6,11 +6,10 @@ export default function LogoComponent() {
       <Image
         src="/images/logo/growthyFlowLogo.png"
         alt="GrowthyFlow Logo"
-        width={0}
-        height={0}
+        width={150}
+        height={20}
         priority
-        unoptimized
-        className="w-62.5 h-17.5 object-contain"
+        className="object-contain "
       />
     </div>
   )

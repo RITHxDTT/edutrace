@@ -2,7 +2,6 @@
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
@@ -12,37 +11,46 @@ const lineChartsParams = {
   series: [
     {
       id: 'series-1',
-      data: [3, 4, 1, 6, 5],
-      label: 'A',
+      data: [68, 55, 26, 35, 36, 54, 54],
+      label: 'On time',
       area: true,
       stack: 'total',
       highlightScope: {
         highlight: 'item',
       },
+      color: '#8979FF',
     },
     {
       id: 'series-2',
-      data: [4, 3, 1, 5, 8],
-      label: 'B',
+      data: [64, 26, 26, 32, 35, 18, 98],
+      label: 'Late Submission',
       area: true,
       stack: 'total',
       highlightScope: {
         highlight: 'item',
       },
-    },
-    {
-      id: 'series-3',
-      data: [4, 2, 5, 4, 1],
-      label: 'C',
-      area: true,
-      stack: 'total',
-      highlightScope: {
-        highlight: 'item',
-      },
+      color: '#8979FF',
     },
   ],
-  xAxis: [{ data: [0, 3, 6, 9, 12], scaleType: 'linear', id: 'axis1' }],
-  height: 400,
+
+  xAxis: [
+    {
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      scaleType: 'point',
+      id: 'axis1',
+    },
+  ],
+
+  yAxis: [
+    {
+      min: 0,
+      max: 100,
+      tickNumber: 6,
+    },
+  ],
+  height: 200,
+
+
 } as const;
 
 export default function SubmissionTrendComponent() {
@@ -53,7 +61,11 @@ export default function SubmissionTrendComponent() {
     <Stack
       direction={{ xs: 'column', md: 'row' }}
       spacing={{ xs: 0, md: 4 }}
-      sx={{ width: '100%' }}
+      sx={{
+        width: 'full',
+        overflow: 'hidden'
+      }}
+
     >
       <Box sx={{ flexGrow: 1 }}>
         <LineChart
@@ -65,7 +77,7 @@ export default function SubmissionTrendComponent() {
         />
       </Box>
 
-      <Stack direction="column" sx={{ width: { xs: '100%', md: '40%' } }}>
+      <Stack direction="column" sx={{ width: { xs: '100%', md: '0%' } }}>
         <Box
           sx={{
             display: 'flex',
@@ -73,17 +85,15 @@ export default function SubmissionTrendComponent() {
             alignItems: 'center',
           }}
         >
-          <Typography>Click on the chart</Typography>
+
           <IconButton
-            aria-label="reset"
             size="small"
             onClick={() => {
               setItemData(undefined);
               setAxisData(null);
             }}
+            aria-label="reset"
           >
-            <ClipboardText size={20} color='black'/>
-            {/* <UndoOutlinedIcon fontSize="small" /> */}
           </IconButton>
         </Box>
       </Stack>

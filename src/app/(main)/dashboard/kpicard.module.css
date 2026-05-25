@@ -5,10 +5,10 @@
 	background-color: #ffff;
 	aspect-ratio: 341 / 232;
 }
-.svgAsset {
-  display: block;
-  position: absolute;
-  width: 0;
-  height: 0;
-}
 
+.svgAsset {
+	display: block;
+	position: absolute;
+	width: 0;
+	height: 0;
+}
