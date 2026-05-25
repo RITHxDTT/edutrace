@@ -2,16 +2,14 @@
 
 import { useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
-import { Bell } from "lucide-react";
+import { Bell, MessageSquare, Plus, Upload } from "lucide-react"; // Match fallback icons
 import { useNotificationStore } from "@/components/notifications/useNotificationStore";
 
 export default function NotificationDropdown() {
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
 
   const notifications = useNotificationStore((state) => state.notifications);
-
   const markAllAsRead = useNotificationStore((state) => state.markAllAsRead);
-
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const filteredNotifications = useMemo(() => {
@@ -21,92 +19,116 @@ export default function NotificationDropdown() {
     return notifications;
   }, [activeTab, notifications]);
 
+  // Helper helper function to return dynamic icons or avatars based on notification content
+  const renderNotificationIcon = (n: any) => {
+    if (n.senderAvatar) {
+      return (
+        <img
+          src={n.senderAvatar}
+          alt="Sender"
+          className="w-12 h-12 rounded-full object-cover shrink-0"
+        />
+      );
+    }
+
+    // Dynamic clean background & icons matching the premium image design
+    let bgClass = "bg-green-50 text-green-600";
+    let IconComponent = Bell;
+
+    if (n.title?.toLowerCase().includes("assignment") || n.title?.toLowerCase().includes("publish")) {
+      bgClass = "bg-emerald-50 text-emerald-600";
+      IconComponent = Plus;
+    } else if (n.title?.toLowerCase().includes("feedback") || n.title?.toLowerCase().includes("mention")) {
+      bgClass = "bg-emerald-50 text-emerald-600";
+      IconComponent = MessageSquare;
+    } else if (n.title?.toLowerCase().includes("upload")) {
+      bgClass = "bg-emerald-50 text-emerald-600";
+      IconComponent = Upload;
+    }
+
+    return (
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${bgClass}`}>
+        <IconComponent className="w-5 h-5" />
+      </div>
+    );
+  };
+
   return (
-    <div className="absolute right-[-150px] top-12 w-[520px] rounded-2xl bg-white shadow-2xl border overflow-hidden z-[9999]">
-      {/* HEADER */}
-      <div className="flex items-center justify-between px-4 py-3 border-b bg-white">
-        <h2 className="text-base font-semibold text-gray-800">Notifications</h2>
+    <div className="absolute right-[-150px] top-12 w-[500px] rounded-2xl bg-white shadow-xl border border-gray-100 overflow-hidden z-[9999] font-sans">
+      
+      {/* HEADER SECTION */}
+      <div className="px-6 pt-6 pb-2 bg-white">
+        <h2 className="text-2xl font-bold text-slate-900">All Notifications</h2>
+      </div>
+
+      {/* TABS SECTION */}
+      <div className="flex items-center justify-between px-6 border-b border-gray-100 bg-white">
+        <div className="flex gap-6">
+          <button
+            onClick={() => setActiveTab("all")}
+            className={`pb-3 text-sm font-semibold relative transition-colors ${
+              activeTab === "all" ? "text-slate-900" : "text-gray-400 hover:text-slate-600"
+            }`}
+          >
+            All
+            {activeTab === "all" && (
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-slate-900 rounded-full" />
+            )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab("unread")}
+            className={`pb-3 text-sm font-semibold relative transition-colors ${
+              activeTab === "unread" ? "text-slate-900" : "text-gray-400 hover:text-slate-600"
+            }`}
+          >
+            Unread ({unreadCount})
+            {activeTab === "unread" && (
+              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-slate-900 rounded-full" />
+            )}
+          </button>
+        </div>
 
         <button
           onClick={markAllAsRead}
-          className="text-xs text-blue-600 hover:text-blue-700 font-medium"
+          className="pb-3 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
         >
           Mark all as read
         </button>
       </div>
 
-      {/* TABS */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b bg-gray-50">
-        <button
-          onClick={() => setActiveTab("all")}
-          className={`px-3 py-1 text-sm rounded-full transition ${
-            activeTab === "all"
-              ? "bg-black text-white"
-              : "text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          All
-        </button>
-
-        <button
-          onClick={() => setActiveTab("unread")}
-          className={`px-3 py-1 text-sm rounded-full transition flex items-center gap-2 ${
-            activeTab === "unread"
-              ? "bg-black text-white"
-              : "text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          Unread
-          {unreadCount > 0 && (
-            <span className="text-xs bg-red-500 text-white px-2 py-[2px] rounded-full">
-              {unreadCount}
-            </span>
-          )}
-        </button>
-      </div>
-
-      {/* LIST */}
-      <div className="max-h-[380px] overflow-y-auto">
+      {/* NOTIFICATIONS LIST */}
+      <div className="max-h-[440px] overflow-y-auto">
         {filteredNotifications.length === 0 ? (
-          <div className="p-6 text-center text-sm text-gray-400">
+          <div className="p-10 text-center text-sm text-gray-400">
             No notifications
           </div>
         ) : (
           filteredNotifications.map((n) => (
             <div
               key={n.notificationId}
-              className="flex gap-3 px-4 py-3 hover:bg-gray-50 transition cursor-pointer"
+              className={`flex items-center gap-4 px-6 py-4 border-b border-gray-50/60 transition-colors cursor-pointer ${
+                !n.isRead ? "bg-slate-50/50" : "bg-white hover:bg-slate-50/30"
+              }`}
             >
-              <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  n.isRead
-                    ? "bg-gray-100 text-gray-500"
-                    : "bg-blue-100 text-blue-600"
-                }`}
-              >
-                <Bell className="w-4 h-4" />
+              {/* Left Aspect: Avatar or Round Visual */}
+              {renderNotificationIcon(n)}
+
+              {/* Middle Aspect: Main Content details */}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-semibold text-slate-800 truncate">
+                  {n.title}
+                </h3>
+                <p className="text-xs text-gray-400 mt-1 line-clamp-1">
+                  {n.content}
+                </p>
               </div>
 
-              {/* content */}
-              <div className="flex-1">
-                <div className="flex items-start justify-between">
-                  <h3
-                    className={`text-sm font-medium ${
-                      n.isRead ? "text-gray-700" : "text-black"
-                    }`}
-                  >
-                    {n.title}
-                  </h3>
-
-                
-                  <p className="text-[11px] text-gray-400 mt-1">
-                    {formatDistanceToNow(new Date(n.createdAt), {
-                      addSuffix: false,
-                    })}
-                  </p>
-                </div>
-
-                <p className="text-xs text-gray-500 mt-0.5">{n.content}</p>
+              {/* Right Aspect: Relative Time Stamp */}
+              <div className="text-xs text-gray-400 whitespace-nowrap pl-2 self-start pt-1">
+                {formatDistanceToNow(new Date(n.createdAt), {
+                  addSuffix: true,
+                }).replace("about ", "")}
               </div>
             </div>
           ))

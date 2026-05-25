@@ -6,7 +6,7 @@ import styles from "./AssessmentDetail.module.css";
 
 import Instruction from "../Instruction/Instruction";
 import StudentWork from "../StudentWork/StudentWork";
-import Communication from "../Communication/Communication";
+// import Communication from "../Communication/Communication";
 
 type Tab = "instruction" | "communication" | "studentwork";
 
@@ -73,7 +73,7 @@ export default function AssessmentDetail() {
       {/* Content */}
       <div className={styles.content}>
         {activeTab === "instruction" && <Instruction />}
-        {activeTab === "communication" && <Communication />}
+        {/* {activeTab === "communication" && <Communication />} */}
         {activeTab === "studentwork" && <StudentWork />}
       </div>
     </div>
