@@ -5,7 +5,7 @@ import styles from './kpicard.module.css';
 import SubmissionTrendComponent from "./_components/SubmissionTrend/SubmissionTrendComponent";
 import { BarChart } from '@mui/x-charts/BarChart';
 import PieChartWithCenterLabel from "./_components/PieChartWithCenterLabel/PieChartWithCenterLabelComponent";
-import KpiCardComponent from "../dashboard/_components/KpiCard/KpiCardComponent";
+import KpiCardComponent from "./_components/KpiCard/KpiCardComponent";
 
 export default function Page() {
   const isTeacher = true;
