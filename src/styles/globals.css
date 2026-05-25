@@ -67,6 +67,9 @@
   --background-color-light-gray: #EFEFEF;
   --background-color-bgapp: #F4F7FE;
   --background-color-calendar: #C3E7FF;
+  --background-color-purple: #241cab;
+  --background-color-accent-purple: #5d53f9;
+  --background-color-light-purple: #93aafd;
 
   /* TEXT COLORS */
   --text-color-primary: #000000;
@@ -171,5 +174,5 @@
 }
 
 .bg-main-img {
-  background-image: url('/images/background/background.jpg');
+  background-image: url("/images/background/background.jpg");
 }
