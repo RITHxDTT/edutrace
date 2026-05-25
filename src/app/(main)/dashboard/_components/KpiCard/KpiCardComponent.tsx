@@ -18,7 +18,7 @@ function KpiCardComponent({
     subValue = '',
 }: Task) {
     return (
-        <div className="flex justify-between items-start w-full relative">
+        <div className="flex justify-between items-start w-full relative ">
             <div
                 className={`${styles.inverted} bg-white text-indigo-700 rounded-2xl p-4 md:p-5 flex-1 w-full flex flex-col justify-between`}
             >
