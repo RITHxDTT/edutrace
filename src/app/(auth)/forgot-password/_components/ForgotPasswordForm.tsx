@@ -30,18 +30,7 @@ export default function ForgotPasswordForm() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-bg-white font-sans overflow-hidden">
-
-      {/* left side */}
-      <div className="flex flex-col justify-between w-full lg:w-[45%] p-8 sm:p-12 md:p-16 relative z-10 bg-white">
-        {/* Logo */}
-        <LogoComponent />
-
-        {/* main */}
-        <div className="w-full max-w-md mx-auto my-auto py-8">
-          <h1 className="text-3xl font-bold bg-accent-linear-purple bg-clip-text text-transparent mb-2">Forgot Password</h1>
-          <p className="text-text-color-muted text-sm mb-8">Enter your email to enable setting new password.</p>
-
+ 
           <form onSubmit={handleSubmit} className="space-y-6">
 
             <div className="space-y-1.5">
@@ -62,21 +51,5 @@ export default function ForgotPasswordForm() {
             {/* Reusable component btn */}
             <PrimaryButton className={"w-full rounded-xl"} size={"md"}>Continue</PrimaryButton>
           </form>
-
-
-          <p className="text-center text-sm text-text-color-strong/80 mt-6">
-            Back to{' '}
-            <button type="button" onClick={() => router.push('/login')} className="text-primary hover:cursor-pointer font-semibold underline hover:text-primary/80">
-              Sign in
-            </button>
-          </p>
-        </div>
-
-        <div className="hidden lg:block h-8"></div>
-      </div>
-
-      {/* right side component */}
-      <LeftSideCover />
-    </div>
   );
 }

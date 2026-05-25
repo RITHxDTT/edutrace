@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import '../../styles/globals.css';
-import Providers from "@/app/providers";
-
+import LogoComponent from "./_components/Logo";
+import RightSideCover from "./_components/RightSideComponent";
 
 export const metadata: Metadata = {
   title: "Growthyflow",
@@ -14,8 +14,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-      <div className="flex flex-col flex-1">
-        <main className="flex-1">{children}</main>
-      </div>
+    <div className="relative flex flex-col  flex-1 min-h-screen">
+      <LogoComponent />
+      <main className="flex-1">{children}</main>
+      <RightSideCover />
+    </div>
   );
 }

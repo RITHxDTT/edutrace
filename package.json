@@ -8,6 +8,9 @@
     "start": "next start",
     "lint": "eslint"
   },
+    "overrides": {
+    "@internationalized/date": "3.12.1"
+  },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
     "@dayflow/plugin-drag": "^1.5.3",
@@ -16,7 +19,9 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@heroui/breadcrumbs": "^2.2.25",
+    "@heroui/date-picker": "^2.3.33",
     "@heroui/input": "^2.4.33",
+    "@heroui/select": "^2.4.33",
     "@heroui/system": "^2.4.28",
     "@heroui/table": "^2.2.32",
     "@heroui/tabs": "^2.2.29",
@@ -55,4 +60,5 @@
     "tailwindcss": "^4",
     "typescript": "^5"
   }
+  
 }

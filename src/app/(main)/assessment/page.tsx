@@ -190,5 +190,6 @@ export default function AssessmentPage() {
         ))}
       </div>
     </div>
+    
   );
 }

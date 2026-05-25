@@ -10,7 +10,7 @@ import { Eye, EyeSlash, SmsEdit } from 'iconsax-react';
 import { loginFormSchema } from '@/schemas/LoginFormSchema';
 import { loginAction } from '@/actions/auth.action';
 import { LoginFormData } from '@/types/auth';
-import ServerError from './ServerError';
+import ServerError from '../../_components/ServerError';
 import { useRouter } from 'next/navigation';
 
 export default function LoginForm() {
@@ -89,7 +89,7 @@ export default function LoginForm() {
           </Link>
         </div>
       </div>
-      <PrimaryButton className={"w-full rounded-[8px]"} size={"md"} type='submit'>Sign in</PrimaryButton>
+      <PrimaryButton className={"w-full rounded-[8px]"} size={"md"} type='submit' disabled={isSubmitting}>{isSubmitting ? "Signining In..." : "Sign In"}</PrimaryButton>
     </form>
 
 

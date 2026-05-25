@@ -1,10 +1,13 @@
+import { CalendarDate } from "@internationalized/date";
+
 interface RegisterFormData {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-  classroom: string;
-  api: string;
+  classroomId: string;
+  gender: "MALE" | "FEMALE";
+  birthdate: CalendarDate | null;
 }
 
 interface LoginFormData {
@@ -18,13 +21,6 @@ interface ForgotPasswordData {
 interface ResetPasswordData {
   newPassword: string;
   confirmPassword: string;
-}
-
-interface AuthUser {
-  accessToken: string,
-  expiresIn: number,
-  refresh_token: string,
-  token_type: string
 }
 
 export type { RegisterFormData, LoginFormData, ForgotPasswordData, ResetPasswordData };

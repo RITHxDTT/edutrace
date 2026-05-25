@@ -1,19 +1,36 @@
 "use client"
 
-export default function LeftSideCover() {
+import Image from "next/image"
+
+export default function RightSideCover() {
   return (
-    <div className="hidden lg:flex relative w-[55%] items-center justify-center p-16 bg-white">
+    <div className="absolute right-0 w-1/2 h-screen overflow-hidden">
+      
+      {/* Background */}
+      <div className="relative w-full h-full">
+        <Image
+          src="/images/background/bgAuth.png"
+          alt="Background"
+          fill
+          priority
+          sizes="50vw"
+          className="object-cover"
+        />
 
-      <div
-        className="absolute inset-0 bg-cover bg-right bg-no-repeat "
-        style={{ backgroundImage: "url('/images/background/bgAuth.png')" }}
-      />
+        {/* Overlay Content */}
+        <div className="relative z-10 flex h-full items-center justify-center p-8 xl:p-16">
+          <div className="max-w-md text-white">
+            <h2 className="text-4xl xl:text-7xl font-bold mb-4">
+              GrowthyFlow
+            </h2>
 
-      <div className="relative z-10 text-bg-white max-w-lg text-left ml-24">
-        <h2 className="text-6xl font-bold tracking-tight mb-4 text-white">GrowthyFlow</h2>
-        <p className="text-xl text-white/80 leading-relaxed font-light">
-          A Unified Assignment and <br />Online Collaboration Hub
-        </p>
+            <p className="text-lg xl:text-xl leading-relaxed">
+              A Unified Assignment and
+              <br />
+              Online Collaboration Hub
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

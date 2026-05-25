@@ -1,25 +1,32 @@
 import Link from "next/link";
-import LogoComponent from "../_components/Logo";
-import LeftSideCover from "../_components/RightSideComponent";
 import SignUpForm from "./_components/SignUpForm";
 
-export default function page() {
+export default async function page() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/classrooms`);
+  const classrooms = await res.json();
   return (
-    <div className="flex min-h-screen w-full bg-bg-white font-sans overflow-hidden">
+    <div className="flex flex-1 items-center justify-center">
+      <div className="w-full lg:w-[45%] xl:w-[55%] min-h-screen flex flex-col justify-between p-8 sm:p-12 md:p-16 bg-white">
 
-      {/* left side form */}
-      <div className="flex flex-col justify-between w-full lg:w-[45%] p-8 sm:p-12 md:p-16 relative z-10 bg-white">
-        {/* logo component */}
-        <LogoComponent />
+        <div className="w-full h-full max-w-xl mx-auto flex flex-col justify-center gap-8">
+          <div>
+            <h1 className="text-[40px] font-medium bg-linear-purple bg-clip-text text-transparent mb-2">
+              Create New Account
+            </h1>
 
-        {/* main */}
-        <div className="w-full max-w-md mx-auto my-auto py-8">
-          <h1 className="text-3xl font-bold bg-accent-linear-purple bg-clip-text text-transparent mb-2">Create New Account</h1>
-          <p className="text-text-color-muted text-sm mb-8">Begin your productive learning experience today.</p>
-          <SignUpForm />
+            <p className="text-border-focus mb-8">
+              Begin your productive learning experience today.
+            </p>
+          </div>
+
+          <SignUpForm classrooms={classrooms.payload} />
+
           <p className="text-center text-sm text-text-color-strong/80 mt-6">
-            Already have an account?{' '}
-            <Link href={"/login"} className="bg-linear-purple bg-clip-text text-transparent hover:cursor-pointer font-semibold underline">
+            Already have an account?{" "}
+            <Link
+              href={"/login"}
+              className="bg-linear-purple bg-clip-text text-transparent hover:cursor-pointer underline"
+            >
               Sign in
             </Link>
           </p>
@@ -27,9 +34,6 @@ export default function page() {
 
         <div className="hidden lg:block h-8"></div>
       </div>
-
-      {/* right  component section */}
-      <LeftSideCover />
     </div>
   )
 }

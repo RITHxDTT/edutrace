@@ -25,7 +25,9 @@ export async function loginAction(data: LoginFormData) {
  * REGISTER ACTION
  */
 export async function registerAction(
-    data: RegisterFormData
+    data: Omit<RegisterFormData, "birthdate"> & {
+        birthdate?: string;
+    }
 ) {
     try {
         const res = await registerService(data)

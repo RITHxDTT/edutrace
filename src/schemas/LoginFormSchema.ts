@@ -1,4 +1,3 @@
-import { LoginFormData } from '@/types/auth';
 import z from 'zod'
 
 export const loginFormSchema = z.object({

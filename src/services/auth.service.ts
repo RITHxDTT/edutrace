@@ -1,6 +1,5 @@
-import { registerFormSchema } from "@/schemas/RegisterFormSchema";
 import { RegisterFormData } from "@/types/auth";
-import z from "zod";
+
 
 export const loginService = async (req: Partial<Record<"email" | "password", unknown>>) => {
     const formData = {
@@ -30,7 +29,12 @@ export const loginService = async (req: Partial<Record<"email" | "password", unk
 };
 
 
-export const registerService = async (data: RegisterFormData) => {
+export const registerService = async (data: Omit<RegisterFormData, "birthdate"> & {
+    birthdate?: string;
+}) => {
+
+    console.log(data)
+
     const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`,
         {

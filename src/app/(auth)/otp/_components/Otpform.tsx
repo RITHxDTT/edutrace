@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, ChangeEvent, KeyboardEvent, FormEvent } from 'react';
+import { useState, useRef, ChangeEvent, KeyboardEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import LeftSideCover from '../../_components/RightSideComponent';
 import LogoComponent from '../../_components/Logo';
