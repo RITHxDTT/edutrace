@@ -11,7 +11,7 @@ const lineChartsParams = {
   series: [
     {
       id: 'series-1',
-      data: [3, 4, 1, 6, 5],
+      data: [68, 55, 26, 35, 36, 54, 54],
       label: 'On time',
       area: true,
       stack: 'total',
@@ -22,7 +22,7 @@ const lineChartsParams = {
     },
     {
       id: 'series-2',
-      data: [4, 3, 1, 5, 8],
+      data: [64, 26, 26, 32, 35, 18, 98],
       label: 'Late Submission',
       area: true,
       stack: 'total',
@@ -32,8 +32,24 @@ const lineChartsParams = {
       color: '#8979FF',
     },
   ],
-  xAxis: [{ data: [0, 3, 6, 9, 12], scaleType: 'linear', id: 'axis1' }],
-  height: 400,
+
+  xAxis: [
+    {
+      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      scaleType: 'point',
+      id: 'axis1',
+    },
+  ],
+
+  yAxis: [
+    {
+      min: 0,
+      max: 100,
+      tickNumber: 6,
+    },
+  ],
+  height: 200,
+
 
 } as const;
 
@@ -71,7 +87,6 @@ export default function SubmissionTrendComponent() {
         >
 
           <IconButton
-
             size="small"
             onClick={() => {
               setItemData(undefined);

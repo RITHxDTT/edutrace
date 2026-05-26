@@ -1,8 +1,11 @@
+import { ForgotPasswordFormData, OtpFormData, RegisterFormData } from "@/types/auth";
+
+
 export const loginService = async (req: Partial<Record<"email" | "password", unknown>>) => {
     const formData = {
         email: req?.email,
         password: req?.password
-    }
+    };
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`, {
         method: "POST",
@@ -11,36 +14,136 @@ export const loginService = async (req: Partial<Record<"email" | "password", unk
         },
         body: JSON.stringify(formData),
     });
-    
+
     if (!res.ok) {
-        return null;
+        try {
+            const errorPayload = await res.json();
+            throw new Error(errorPayload?.message || "Authentication failed");
+        } catch (e: any) {
+            throw new Error(e.message || "An unexpected error occurred");
+        }
     }
 
     const user = await res.json();
-
     return user;
-}
+};
 
-export const registerService = async (req: Record<"firstName" | "lastName" | "email" | "password", unknown>) => {
-    const formData = {
-        firstName: req?.firstName,
-        lastName: req?.lastName,
-        email: req?.email,
-        password: req?.password,
+
+export const registerService = async (data: Omit<RegisterFormData, "birthdate"> & {
+    birthdate?: string;
+}) => {
+
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        }
+    );
+
+    if (!res.ok) {
+        const error = await res.json().catch(() => null);
+        throw new Error(
+            error?.message ?? `Registration failed with status ${res.status}`
+        );
     }
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
+    return res.json();
+};
+
+export const verifyOtpService = async (
+    data: OtpFormData,
+    action: "REGISTRATION" | "FORGOT_PASSWORD"
+) => {
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/otp/verify`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                formData,
-                classroom: async() => {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/classrooms`);
-                    const data = await response.json();
-                    return data.payload;
-                }
-            })
+                email: data.email,
+                code: data.code,
+                action,
+            }),
         }
-    })
-}
+    );
+
+    const result = await res.json().catch(() => null);
+
+    if (!res.ok) {
+        throw new Error(result?.message ?? "OTP verification failed");
+    }
+
+    return result;
+};
+
+export const forgotPasswordService = async (email: string) => {
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/password/forgot`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+        }
+    );
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+        throw new Error(data?.message ?? "Failed to send reset request");
+    }
+
+    return data;
+};
+
+export const resetPasswordService = async (data: ForgotPasswordFormData) => {
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/password/reset`,
+        {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        }
+    );
+
+    const result = await res.json().catch(() => null);
+
+    if (!res.ok) {
+        throw new Error(result?.message ?? "Password reset failed");
+    }
+
+    return result;
+};
+
+export const resendOtpCodeService = async (
+    email: string,
+    action: "REGISTRATION"
+) => {
+    const formData = {
+        email,
+        action,
+    };
+
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/otp/resend`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData)
+        });
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok) {
+        throw new Error(
+            data?.message ?? `Resend OTP failed with status ${res.status}`
+        );
+    }
+
+    return data;
+};

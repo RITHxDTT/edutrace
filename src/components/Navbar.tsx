@@ -2,9 +2,11 @@
 import LogoComponent from '@/app/(auth)/_components/Logo';
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { ProfileData } from '@/types/user';
 
 export default function Navbar() {
   const router = useRouter();
+
   return (
     <nav className="w-full bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between ">

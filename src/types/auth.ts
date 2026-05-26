@@ -1,28 +1,30 @@
+import { CalendarDate } from "@internationalized/date";
+
 interface RegisterFormData {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
+  classroomId: string;
+  gender: "MALE" | "FEMALE";
+  birthdate: CalendarDate | null;
 }
 
 interface LoginFormData {
   email: string;
   password: string;
 }
-interface ForgotPasswordData {
+
+interface OtpFormData {
   email: string;
+  code: string;
 }
 
-interface ResetPasswordData {
+interface ForgotPasswordFormData {
+  email: string;
+  code: string;
   newPassword: string;
-  confirmPassword: string;
+  confirmNewPassword: string;
 }
 
-interface AuthUser {
-  accessToken: string,
-  expiresIn: number,
-  refresh_token: string,
-  token_type: string
-}
-
-export type { RegisterFormData, LoginFormData, ForgotPasswordData, ResetPasswordData };
+export type { RegisterFormData, LoginFormData, OtpFormData, ForgotPasswordFormData };

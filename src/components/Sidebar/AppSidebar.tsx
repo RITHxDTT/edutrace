@@ -8,7 +8,7 @@ import {
   SidebarMenuItem,
 } from "../ui/sidebar";
 import Image from "next/image";
-import { SignOut } from "../AutthComponents";
+import { SignOut } from "../AuthComponents";
 import SidebarTitle from "./_components/SidebarTitle";
 
 export default function AppSidebar() {

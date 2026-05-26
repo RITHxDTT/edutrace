@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import '@dayflow/core/dist/styles.components.css';
-@import '@dayflow/core/dist/styles.components.css';
 @import "shadcn/tailwind.css";
 
 @plugin '../lib/hero.ts';
@@ -21,15 +20,7 @@
   --color-accent-light-gray: #D2D2D2;
   --color-input-field: #F2F6FC;
   --background-image-accent-linear-purple: linear-gradient(0deg, #241CAB 0%, #5D53F9 100%);
-  /* ACCENT / SURFACE VARIANTS */
-  --color-accent-gray: #E4E3F1;
-  --color-accent-ice: #F1FDFF;
-  --color-accent-sand: #FFF7E2;
-  --color-accent-lavender: #EDEAFF;
-  --color-accent-purple: #04ACED;
-  --color-accent-light-gray: #D2D2D2;
-  --color-input-field: #F2F6FC;
-  --background-image-accent-linear-purple: linear-gradient(0deg, #241CAB 0%, #5D53F9 100%);
+
   /* SURFACE VARIANTS */
   --color-gray: #e4e3f1;
   --color-ice: #f1fdff;
@@ -40,14 +31,6 @@
   --color-red: #e62020;
   --color-light-lavendar: #EEEFFF;
   --color-menta: #2E25C9;
-  --color-textColor: #3E3E3E;
-  --color-textDisable: #BABABA;
-
-  --color-light-lavendar: #EEEFFF;
-  --color-menta: #2E25C9;
-  --color-textColor: #3E3E3E;
-  --color-textDisable: #BABABA;
-
 
   /* LINEAR VARIABLE */
   --background-image-linear-purple: linear-gradient(to bottom,
@@ -68,6 +51,9 @@
   --background-color-light-gray: #EFEFEF;
   --background-color-bgapp: #F4F7FE;
   --background-color-calendar: #C3E7FF;
+  --background-color-purple: #241cab;
+  --background-color-accent-purple: #5d53f9;
+  --background-color-light-purple: #93aafd;
 
   /* TEXT COLORS */
   --text-color-primary: #000000;
@@ -76,7 +62,8 @@
   --text-color-border-focus: #6B7280;
   --text-color-tertiary: #999DCB;
   --text-color-label: #374151;
-  
+  --text-color-ai: #3E3E3E;
+  --text-color-disabled: #BABABA;
 
 }
 
@@ -164,7 +151,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-primary;
   }
 
   html {
@@ -173,5 +160,12 @@
 }
 
 .bg-main-img {
-  background-image: url('/images/background/background.jpg');
+  background-image: url("/images/background/background.jpg");
+}
+
+.text-linear-main {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-image: var(--background-image-linear-purple);
 }

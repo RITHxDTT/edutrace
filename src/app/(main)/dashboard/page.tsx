@@ -1,15 +1,15 @@
 "use client";
-import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/table";
 import styles from './kpicard.module.css';
 import SubmissionTrendComponent from "./_components/SubmissionTrend/SubmissionTrendComponent";
 import { BarChart } from '@mui/x-charts/BarChart';
 import PieChartWithCenterLabel from "./_components/PieChartWithCenterLabel/PieChartWithCenterLabelComponent";
-import KpiCardComponent from "./_components/KpiCard/KpiCardComponent";
+import KpiCardComponent from "../dashboard/_components/KpiCard/KpiCardComponent";
+import Image from "next/image";
 
 export default function Page() {
-  const isTeacher = true;
-  const isStudent = false;
+  const isTeacher = false;
+  const isStudent = true;
   interface Task {
     title: string;
     value: string | number;
@@ -66,7 +66,7 @@ export default function Page() {
             </div>
           </div>
 
-          {/*KPI Cards */}
+          {/* KPI Cards */}
           <svg
             className={styles.svgAsset}
             xmlns="http://www.w3.org/2000/svg"
@@ -132,10 +132,12 @@ export default function Page() {
                     <TableRow className="border-b border-slate-100/60 last:border-0 hover:bg-slate-50/30 transition-colors">
                       <TableCell className="py-4 pl-6">
                         <div className="flex items-center gap-3 text-x">
-                          <img
-                            src="https://i.pinimg.com/736x/39/96/87/3996872dc28a2ffc9b416ebfe4bffa0b.jpg"
-                            alt="Yann Vannet"
-                            className="w-10 h-10 rounded-full object-cover border-2"
+                          <Image
+                            src="/images/profile/YannVannet.jpg"
+                            alt="Dara Nikor"
+                            width={40}
+                            height={40}
+                            className="size-10 rounded-full object-cover border border-slate-200"
                           />
                           <div>
                             <p className="text-slate-700 font-semibold text-sm leading-tight">Yann Vannet</p>
@@ -156,10 +158,12 @@ export default function Page() {
                     <TableRow className="border-b border-slate-100/60 last:border-0 hover:bg-slate-50/30 transition-colors">
                       <TableCell className="py-4 pl-6">
                         <div className="flex items-center gap-3">
-                          <img
-                            src="https://i.pinimg.com/736x/39/96/87/3996872dc28a2ffc9b416ebfe4bffa0b.jpg"
-                            alt="Uy Chakriya"
-                            className="w-10 h-10 rounded-full object-cover border-2 "
+                          <Image
+                            src="/images/profile/UyChakriya.jpg"
+                            alt="Dara Nikor"
+                            width={40}
+                            height={40}
+                            className="size-10 rounded-full object-cover border border-slate-200"
                           />
                           <div>
                             <p className="text-slate-700 font-semibold text-sm leading-tight">Uy Chakriya</p>
@@ -179,14 +183,16 @@ export default function Page() {
                     <TableRow className="border-b border-slate-100/60 last:border-0 hover:bg-slate-50/30 transition-colors">
                       <TableCell className="py-4 pl-6">
                         <div className="flex items-center gap-3">
-                          <img
-                            src="https://i.pinimg.com/736x/39/96/87/3996872dc28a2ffc9b416ebfe4bffa0b.jpg"
-                            alt="Dara Nikor"
-                            className="w-10 h-10 rounded-full object-cover border border-slate-200"
+                          <Image
+                            src="/images/profile/TryLihai.jpg"
+                            alt="Try Limhai"
+                            width={40}
+                            height={40}
+                            className="size-10 rounded-full object-cover border border-slate-200"
                           />
                           <div>
-                            <p className="text-slate-700 font-semibold text-sm leading-tight">Dara Nikor</p>
-                            <p className="text-slate-400 text-xs mt-0.5">daranikor@gmail.com</p>
+                            <p className="text-slate-700 font-semibold text-sm leading-tight">Try Limhai</p>
+                            <p className="text-slate-400 text-xs mt-0.5">trilimhai@gmail.com</p>
                           </div>
                         </div>
                       </TableCell>
@@ -214,7 +220,7 @@ export default function Page() {
                   isStriped
                   removeWrapper
                   aria-label="Recent tasks table"
-                  className="min-w-full table-fixed" // Added table-fixed for strict column proportion control
+                  className="min-w-full table-fixed"
                 >
                   <TableHeader>
                     <TableColumn className="bg-slate-50/40 text-indigo-600 font-semibold text-sm h-12 pl-4 first:rounded-l-xl">
@@ -376,7 +382,7 @@ export default function Page() {
                     { data: [85, 5, 52], color: '#c7d2fe' },
                     { data: [54, 38, 33], color: '#60a5fa' }
                   ]}
-                  height={260}
+                  height={200}
                 />
               </div>
             </div>
@@ -392,8 +398,8 @@ export default function Page() {
             </div>
 
             <div className="bg-white text-black rounded-2xl p-5 shadow-sm">
-              <p className="text-2xl font-medium mb-4 text-gray-800">Activity Log</p>
-              <div className="relative border-l-2 border-gray-100 ml-3 pl-6 space-y-6">
+              <p className="text-2xl font-medium mb-8 text-gray-800">Activity Log</p>
+              <div className=" flex flex-col md:gap-1 lg:gap-8  relative border-l-2 border-gray-100 ml-3 pl-6">
 
                 {activityLogs.map((log: ActivityLogItem) => (
                   <div key={log.id} className="relative">
