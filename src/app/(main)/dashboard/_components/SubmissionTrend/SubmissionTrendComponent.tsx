@@ -11,7 +11,7 @@ const lineChartsParams = {
   series: [
     {
       id: 'series-1',
-      data: [68, 55, 26, 35, 36, 54, 54],
+      data: [20, 36, 26, 30, 35, 56, 30],
       label: 'On time',
       area: true,
       stack: 'total',
@@ -22,7 +22,7 @@ const lineChartsParams = {
     },
     {
       id: 'series-2',
-      data: [64, 26, 26, 32, 35, 18, 98],
+      data: [64, 26, 26, 32, 35, 18, 60],
       label: 'Late Submission',
       area: true,
       stack: 'total',
@@ -33,13 +33,24 @@ const lineChartsParams = {
     },
   ],
 
+  // For studnet 
   xAxis: [
     {
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      data: ['HW1', 'Prac1', 'HW2', 'Assign1', 'Prac2', 'HW3', 'Assign2'],
       scaleType: 'point',
       id: 'axis1',
     },
   ],
+
+  //   xAxis: [
+  //   {
+  //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  //     scaleType: 'point',
+  //     id: 'axis1',
+  //   },
+  // ],
+
+
 
   yAxis: [
     {
@@ -53,7 +64,11 @@ const lineChartsParams = {
 
 } as const;
 
+// export default function SubmissionTrendComponent({ data }) {
 export default function SubmissionTrendComponent() {
+  // console.log(data.data)
+  // console.log("data in ", data.data[0].onTime);
+
   const [itemData, setItemData] = React.useState<LineItemIdentifier>();
   const [axisData, setAxisData] = React.useState<ChartsAxisData | null>();
 

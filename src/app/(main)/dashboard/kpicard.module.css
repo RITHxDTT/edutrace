@@ -3,7 +3,8 @@
 	width: 295px;
 	height: 190px;
 	background-color: #ffff;
-	aspect-ratio: 341 / 232;
+	/* aspect-ratio: 341 / 232; */
+	aspect-ratio: 59 / 38;
 }
 
 .svgAsset {
