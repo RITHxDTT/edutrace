@@ -1,6 +1,6 @@
 import NavbarTitle from '@/components/Topbar/NavbarTitle';
 export default function NotFound() {
   return <>
-    <div>not found</div>
+    <div>page rk ot see te</div>
   </>
 }
