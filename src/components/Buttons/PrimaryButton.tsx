@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@base-ui/react";
 import { cva, VariantProps } from "class-variance-authority";
-import { LucideIcon } from "lucide-react";
+import { Icon } from "iconsax-react";
 
 const buttonVariants = cva(
   "group/button flex items-center justify-center rounded-[8px] text-white gap-[8px]",
@@ -9,7 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-linear-purple hover:bg-none hover:bg-[#473FCE] hover:cursor-pointer active:bg-none active:bg-[#3F38B7]",
-        disable: "border-2 border-[#5D53F9] text-primary",
+        secondary: "border-2 border text-primary",
       },
       size: {
         xs: "px-[12px] py-[6px]",
@@ -28,7 +28,7 @@ const buttonVariants = cva(
 type PrimaryButtonProps = React.ComponentProps<typeof Button> &
   VariantProps<typeof buttonVariants> & {
     iconPosition?: "right" | "left" | "none";
-    icon?: LucideIcon;
+    icon?: Icon;
   };
 
 function PrimaryButton({
@@ -45,9 +45,15 @@ function PrimaryButton({
       className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     >
-      {iconPosition === "left" && Icon && <Icon color="white" size={20} />}
+      {iconPosition === "left" && Icon && (
+        <Icon color={variant === "secondary" ? "black" : "white"} size={20} />
+      )}
+
       {children}
-      {iconPosition === "right" && Icon && <Icon color="white" size={20} />}
+
+      {iconPosition === "right" && Icon && (
+        <Icon color={variant === "secondary" ? "black" : "white"} size={20} />
+      )}
     </Button>
   );
 }

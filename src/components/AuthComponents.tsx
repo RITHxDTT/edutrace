@@ -1,5 +1,5 @@
 import { signOut } from '@/auth';
-import { LoginCurve } from 'iconsax-react';
+import { LogoutCurve } from 'iconsax-react';
 
 export function SignOut({
     provider, ...props
@@ -13,7 +13,7 @@ export function SignOut({
             }}
         >
             <button type='submit' className="flex items-center px-4 gap-5" {...props}>
-                <LoginCurve color="#E62020" size={20} />
+                <LogoutCurve color="#E62020" size={20} />
                 <span className="text-red">Logout</span>
             </button>
         </form>

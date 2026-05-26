@@ -81,5 +81,6 @@ export default function AssessmentPage() {
         <AssessmentGrid assessments={filtered} />
       </div>
     </div>
+    
   );
 }

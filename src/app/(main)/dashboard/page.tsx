@@ -1,5 +1,4 @@
 "use client";
-import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/table";
 import styles from './kpicard.module.css';
 import SubmissionTrendComponent from "./_components/SubmissionTrend/SubmissionTrendComponent";
@@ -213,7 +212,7 @@ export default function Page() {
             </div>
           </div>
 
-          {/*KPI Cards */}
+          {/* KPI Cards */}
           <svg
             className={styles.svgAsset}
             xmlns="http://www.w3.org/2000/svg"

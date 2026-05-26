@@ -25,9 +25,9 @@ export default function ConnectedSection() {
             <path
               d="M4.521 6.99849L6.17183 8.64932L9.47933 5.34766"
               stroke="#20B1E6"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             />
           </svg>
         </span>

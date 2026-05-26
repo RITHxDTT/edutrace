@@ -1,126 +1,148 @@
 import { tv, VariantProps } from "tailwind-variants";
-import { Input } from '@heroui/input';
+import { Select, SelectItem, SelectSection } from '@heroui/select';
 import { Icon } from "iconsax-react";
 
-type InputProps = React.ComponentProps<typeof Input> &
-    VariantProps<typeof inputVariants> & {
-        inputType?: "primary" | "secondary"
+export type SelectOption = {
+    key: string;
+    label: string;
+}
+
+export type SelectSectionGroup = {
+    title: string;
+    options: SelectOption[];
+}
+
+type SelectProps = React.ComponentProps<typeof Select> &
+    VariantProps<typeof selectVariants> & {
+        selectType?: "primary" | "secondary"
         iconPosition?: "right" | "left" | "none";
         label: string;
         description?: string;
         labelPlacement?: "inside" | "outside" | "outside-left" | "outside-top";
-        type: string;
         icon?: Icon;
-        onIconClick?: () => void
+        onIconClick?: () => void;
+        options?: SelectOption[];
+        sections?: SelectSectionGroup[];
     }
 
-const inputVariants = tv({
+const selectVariants = tv({
     slots: {
         base: "w-full group",
         label: "",
         mainWrapper: "w-full",
         innerWrapper: "",
-        inputWrapper: "",
-        input: "",
+        listboxWrapper: "",
+        listbox: "",
         clearButton: "",
         helperWrapper: "px-1 pt-1",
         description: "",
         errorMessage: "text-xs font-medium",
+        trigger: "",
+        value: "",
+        selectorIcon: "",
+        popoverContent: "",
     },
 
     variants: {
-        inputType: {
+        selectType: {
             primary: {
                 base: "font-sans",
                 label: "font-semibold text-label mb-1 transition-colors duration-150 group-focus-within:text-primary",
                 mainWrapper: "w-full",
                 innerWrapper: "",
-                inputWrapper:
+                trigger:
                     "bg-input-field border border-transparent data-[focus=true]:border-primary/20 data-[focus=true]:bg-input-field data-[hover=true]:border-primary/20 data-[hover=true]:bg-input-field rounded-[8px] px-[27px] h-[60px] transition-all duration-150",
-                input:
+                value:
                     "text-sm text-primary placeholder:text-tertiary bg-transparent font-normal h-full",
                 clearButton: "text-zinc-400 hover:text-zinc-600",
                 helperWrapper: "px-1 pt-1.5",
                 description: "text-[11px] text-zinc-400",
                 errorMessage: "text-[11px] font-medium text-rose-500",
+                selectorIcon: "text-tertiary",
+                popoverContent: "rounded-[8px] bg-input-field",
+                listbox: "p-1",
             },
 
             secondary: {
                 base: "font-sans",
                 label: "",
                 mainWrapper: "",
-                inputWrapper: "",
-                input: "",
+                trigger: "",
+                value: "",
                 clearButton: "",
                 helperWrapper: "",
                 description: "",
                 errorMessage: "",
+                selectorIcon: "",
+                popoverContent: "",
+                listbox: "",
             },
         },
     },
     defaultVariants: {
-        inputType: "primary",
+        selectType: "primary",
     },
 });
 
-export default function PrimaryInput({
+export default function PrimarySelect({
     label,
     description,
     labelPlacement,
-    type,
     className,
-    inputType = "primary",
+    selectType = "primary",
     iconPosition = "none",
     icon: IconComponent,
     onIconClick,
+    options,
+    sections,
     ...props
-}: InputProps) {
-    const slots = inputVariants({ inputType });
+}: SelectProps) {
+    const slots = selectVariants({ selectType });
 
     return (
-        <Input
+        <Select
             label={label}
             classNames={{
                 base: slots.base({ class: className }),
                 label: slots.label(),
                 mainWrapper: slots.mainWrapper(),
                 innerWrapper: slots.innerWrapper(),
-                inputWrapper: slots.inputWrapper(),
-                input: slots.input(),
+                listboxWrapper: slots.listboxWrapper(),
+                listbox: slots.listbox(),
                 clearButton: slots.clearButton(),
                 helperWrapper: slots.helperWrapper(),
                 description: slots.description(),
                 errorMessage: slots.errorMessage(),
+                trigger: slots.trigger(),
+                value: slots.value(),
+                selectorIcon: slots.selectorIcon(),
+                popoverContent: slots.popoverContent(),
             }}
             description={description}
             labelPlacement={labelPlacement ?? "outside-top"}
-            type={type}
             endContent={
                 iconPosition === "right" && IconComponent ? (
                     <button
                         type="button"
                         onClick={onIconClick}
-                        tabIndex={-1}
-                        className="outline-none"
+                        className="cursor-pointer outline-none"
                     >
                         <IconComponent
-                            color={inputType === "secondary" ? "white" : "black"}
+                            color={selectType === "secondary" ? "white" : "black"}
                             size={20}
                         />
                     </button>
                 ) : null
             }
-
             startContent={
                 iconPosition === "left" && IconComponent ? (
                     <button
                         type="button"
                         onClick={onIconClick}
-                        tabIndex={-1}
-                        className="outline-none"
+                        className="cursor-pointer outline-none"
                     >
                         <IconComponent
-                            color={inputType === "secondary" ? "white" : "black"}
+                            color={selectType === "secondary" ? "white" : "black"}
                             size={20}
                         />
                     </button>
@@ -131,4 +153,4 @@ export default function PrimaryInput({
     );
 }
 
-export { PrimaryInput };
+export { PrimarySelect };
