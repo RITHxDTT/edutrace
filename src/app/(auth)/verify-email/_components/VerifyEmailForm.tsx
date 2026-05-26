@@ -146,7 +146,12 @@ export default function VerifyEmailForm() {
                 length={6}
                 value={field.value}
                 onValueChange={field.onChange}
-                classNames={{ segmentWrapper: 'gap-x-2' }}
+                classNames={{
+                  segmentWrapper: "gap-x-4 justify-center",
+                  segment:
+                    "w-14 h-14 text-2xl font-semibold rounded-xl border border-gray-300 bg-white text-center shadow-sm transition-all " +
+                    "focus:border-purple-500 focus:ring-2 focus:ring-purple-200",
+                }}
                 size="lg"
                 errorMessage={errors.code?.message}
                 {...register('code')}
@@ -165,7 +170,7 @@ export default function VerifyEmailForm() {
               type="button"
               disabled={resendStatus === 'loading' || cooldown > 0}
               onClick={handleResend}
-              className="text-primary font-bold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-linear-main font-bold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {resendStatus === 'loading'
                 ? 'Sending...'

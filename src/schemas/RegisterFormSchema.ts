@@ -45,6 +45,13 @@ export const createRegisterFormSchema = (classRoomIds: string[]) => {
                 return birth < today;
             }, {
                 message: "Birthdate must be in the past.",
+            }),
+
+        address: z
+            .string()
+            .min(5, {
+                message: "Address must be at least 5 characters long.",
             })
+            .trim(),
     });
 };
