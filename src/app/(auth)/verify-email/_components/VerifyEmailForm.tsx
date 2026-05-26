@@ -4,51 +4,33 @@ import { useEffect, useState } from 'react';
 import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ForgotPasswordFormData } from '@/types/auth';
+import { verifyEmailFormSchema } from '@/schemas/VerifyEmailFormSchema';
 import { InputOtp } from '@heroui/input-otp';
-import { forgotPasswordAction, resetPasswordAction, verifyEmailAction } from '@/actions/auth.action';
+import { verifyEmailAction } from '@/actions/auth.action';
 import { useRouter } from 'next/navigation';
 import ServerError from '../../_components/ServerError';
 import PrimaryInput from '@/components/Inputs/PrimaryInputField';
-import { SmsEdit, Lock, Eye, EyeSlash } from 'iconsax-react';
-import { forgotPasswordFormSchema } from '@/schemas/ForgotPasswordFormSchema';
+import { SmsEdit } from 'iconsax-react';
+import { resendOtpCodeService } from '@/services/auth.service';
 import { sileo } from 'sileo';
+import { OtpFormData } from '@/types/auth';
 
-const STEP_FIELDS: Record<number, (keyof ForgotPasswordFormData)[]> = {
+const STEP_FIELDS: Record<number, (keyof OtpFormData)[]> = {
   1: ['email'],
   2: ['code'],
-  3: ['newPassword', 'confirmNewPassword'],
 };
 
 type ResendStatus = 'idle' | 'loading' | 'success' | 'error';
 
-export default function ForgotPasswordForm() {
+export default function VerifyEmailForm() {
   const [step, setStep] = useState(1);
   const [serverError, setServerError] = useState('');
   const [resendStatus, setResendStatus] = useState<ResendStatus>('idle');
   const [resendMessage, setResendMessage] = useState('');
-  const [isSendingCode, setIsSendingCode] = useState(false);
-  const [isVisible, setVisible] = useState(false);
   const [cooldown, setCooldown] = useState(0);
 
   const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    trigger,
-    getValues,
-    control,
-    formState: { errors, isSubmitting },
-  } = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(forgotPasswordFormSchema),
-    defaultValues: {
-      email: '',
-      code: '',
-      newPassword: '',
-      confirmNewPassword: '',
-    },
-  });
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -66,88 +48,63 @@ export default function ForgotPasswordForm() {
     return () => clearInterval(timer);
   }, [cooldown]);
 
+
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    getValues,
+    control,
+    formState: { errors, isSubmitting },
+  } = useForm<OtpFormData>({
+    resolver: zodResolver(verifyEmailFormSchema),
+    defaultValues: {
+      email: '',
+      code: '',
+    },
+  });
+
   const handleNext = async () => {
-    // Validate current step fields before proceeding
     const valid = await trigger(STEP_FIELDS[step]);
-    if (!valid) return;
-
-    setServerError('');
-
-    // --- STEP 1: Request OTP Code ---
-    if (step === 1) {
-      const email = getValues('email');
-      setIsSendingCode(true);
-
-      const res = await forgotPasswordAction(email);
-      setIsSendingCode(false);
-
-      if (res?.error) {
-        setServerError(res.error);
-        return;
-      }
-
-      setStep((s) => s + 1);
-      return;
-    }
-
-    if (step === 2) {
-      const payload = getValues();
-      setIsSendingCode(true);
-
-      const res = await verifyEmailAction({
-        email: payload.email,
-        code: payload.code,
-      }, 'FORGOT_PASSWORD');
-
-      setIsSendingCode(false);
-
-      if (res?.error) {
-        setServerError(res.error);
-        return;
-      }
-
-      // If validation succeeds, move forward to Step 3
-      setStep((s) => s + 1);
-      return;
-    }
-
-    setStep((s) => s + 1);
+    if (valid) setStep((s) => s + 1);
   };
 
-  const handleBack = () => {
-    setServerError('');
-    setStep((s) => s - 1);
-  };
+  const handleBack = () => setStep((s) => s - 1);
 
   const handleResend = async () => {
+    if (cooldown > 0) return;
+
     const email = getValues('email');
+
     setResendStatus('loading');
     setResendMessage('');
-    setCooldown(60);
 
     try {
-      const res = await forgotPasswordAction(email);
+      const res = await resendOtpCodeService(email, 'REGISTRATION');
+
       setResendStatus('success');
-      setResendMessage(res?.message ?? 'A new code was sent to your email.');
+      setResendMessage(res.message ?? 'A new code was sent to your email.');
+
+      setCooldown(60);
+
     } catch (error) {
       setResendStatus('error');
+
       setResendMessage(
-        error instanceof Error ? error.message : 'Something went wrong. Please try again.'
+        error instanceof Error
+          ? error.message
+          : 'Something went wrong. Please try again.'
       );
     }
   };
 
-  async function onSubmit(data: ForgotPasswordFormData) {
+  async function onSubmit(data: OtpFormData) {
     try {
-      setServerError('');
-
-      const res = await resetPasswordAction(data);
+      const res = await verifyEmailAction(data, 'REGISTRATION');
 
       if (res?.success) {
-        sileo.success({
-          title: 'Password Reset',
-          description: 'Your password has been reset successfully. Please log in with your new password.'
-        });
+        setServerError('');
+        sileo.success({ title: "Account Verified", description: res.message });
         router.push('/login');
         return;
       }
@@ -165,8 +122,7 @@ export default function ForgotPasswordForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-8">
       {serverError && <ServerError serverError={serverError} />}
 
-      {/* Step 1: Email Input */}
-      <div className={step === 1 ? 'block' : 'hidden'}>
+      {step === 1 && (
         <PrimaryInput
           label="Email"
           placeholder="Enter your email here..."
@@ -178,10 +134,9 @@ export default function ForgotPasswordForm() {
           errorMessage={errors.email?.message}
           {...register('email')}
         />
-      </div>
+      )}
 
-      {/* Step 2: OTP Input */}
-      <div className={step === 2 ? 'block' : 'hidden'}>
+      {step === 2 && (
         <Controller
           name="code"
           control={control}
@@ -193,39 +148,15 @@ export default function ForgotPasswordForm() {
                 onValueChange={field.onChange}
                 classNames={{ segmentWrapper: 'gap-x-2' }}
                 size="lg"
-                isInvalid={!!errors.code}
                 errorMessage={errors.code?.message}
+                {...register('code')}
               />
             </div>
           )}
         />
-      </div>
+      )}
 
-      {/* Step 3: Password Reset Fields */}
-      <div className={step === 3 ? 'flex flex-col gap-8' : 'hidden'}>
-        <PrimaryInput
-          {...register('newPassword')}
-          label="New Password"
-          placeholder='Enter your new password...'
-          type={isVisible ? "text" : "password"}
-          icon={isVisible ? Eye : EyeSlash}
-          iconPosition="right"
-          onIconClick={() => setVisible(prev => !prev)}
-          errorMessage={errors.newPassword?.message}
-        />
-        <PrimaryInput
-          {...register('confirmNewPassword')}
-          label="Confirm Password"
-          placeholder='Confirm new password...'
-          type={isVisible ? "text" : "password"}
-          icon={isVisible ? Eye : EyeSlash}
-          iconPosition="right"
-          onIconClick={() => setVisible(prev => !prev)}
-          errorMessage={errors.confirmNewPassword?.message}
-        />
-      </div>
-
-      {/* Resend Cooldown UI (Step 2 Only) */}
+      {/* Resend code — only relevant on step 2 */}
       {step === 2 && (
         <div className="space-y-1 text-center">
           <p className="text-xs text-muted">
@@ -244,37 +175,37 @@ export default function ForgotPasswordForm() {
             </button>
           </p>
           {resendMessage && (
-            <p className={`text-xs ${resendStatus === 'success' ? 'text-success' : 'text-danger'}`}>
+            <p
+              className={`text-xs ${resendStatus === 'success' ? 'text-success' : 'text-danger'
+                }`}
+            >
               {resendMessage}
             </p>
           )}
         </div>
       )}
 
-      {/* Navigation Controls */}
       <div className="flex gap-3">
-        {step > 1 && (
+        {step === 2 && (
           <PrimaryButton
             type="button"
             className="w-full"
             size="md"
             variant="secondary"
             onClick={handleBack}
-            disabled={isSubmitting || isSendingCode}
           >
             Back
           </PrimaryButton>
         )}
 
-        {step < 3 ? (
+        {step === 1 ? (
           <PrimaryButton
             type="button"
             className="w-full"
             size="md"
-            disabled={isSendingCode}
             onClick={handleNext}
           >
-            {isSendingCode ? 'Verifying...' : 'Next'}
+            Next
           </PrimaryButton>
         ) : (
           <PrimaryButton
@@ -283,7 +214,7 @@ export default function ForgotPasswordForm() {
             size="md"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Resetting...' : 'Reset Password'}
+            {isSubmitting ? 'Verifying...' : 'Verify'}
           </PrimaryButton>
         )}
       </div>

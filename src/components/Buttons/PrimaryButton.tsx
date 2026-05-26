@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@base-ui/react";
 import { cva, VariantProps } from "class-variance-authority";
-import { LucideIcon } from "lucide-react";
+import { Icon } from "iconsax-react";
 
 const buttonVariants = cva(
   "group/button flex items-center justify-center rounded-[8px] text-white gap-[8px]",
@@ -28,7 +28,7 @@ const buttonVariants = cva(
 type PrimaryButtonProps = React.ComponentProps<typeof Button> &
   VariantProps<typeof buttonVariants> & {
     iconPosition?: "right" | "left" | "none";
-    icon?: LucideIcon;
+    icon?: Icon;
   };
 
 function PrimaryButton({

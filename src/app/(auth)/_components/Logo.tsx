@@ -7,9 +7,9 @@ export default function LogoComponent() {
         src="/images/logo/growthyFlowLogo.png"
         alt="GrowthyFlow Logo"
         width={150}
-        height={20}
+        height={50}
         priority
-        className="object-contain "
+        className="object-contain"
       />
     </div>
   )

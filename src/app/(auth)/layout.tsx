@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import '../../styles/globals.css';
 import LogoComponent from "./_components/Logo";
 import RightSideCover from "./_components/RightSideComponent";
+import { Toaster } from 'sileo'
 
 export const metadata: Metadata = {
   title: "Growthyflow",
@@ -15,6 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <div className="relative flex flex-col  flex-1 min-h-screen">
+      <Toaster position="top-center" />
       <LogoComponent />
       <main className="flex-1">{children}</main>
       <RightSideCover />

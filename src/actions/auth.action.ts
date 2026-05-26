@@ -1,16 +1,15 @@
 "use server";
 
-import { LoginFormData, RegisterFormData } from "@/types/auth";
+import { ForgotPasswordFormData, LoginFormData, OtpFormData, RegisterFormData } from "@/types/auth";
 import { signIn } from "@/auth";
-import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { registerService } from "@/services/auth.service";
+import { forgotPasswordService, registerService, resendOtpCodeService, resetPasswordService, verifyOtpService } from "@/services/auth.service";
 
 /**
  * LOGIN ACTION
  */
 export async function loginAction(data: LoginFormData) {
     try {
-        const result = await signIn("credentials", {
+        await signIn("credentials", {
             email: data.email,
             password: data.password,
             redirect: false
@@ -34,8 +33,62 @@ export async function registerAction(
         if (res?.error) {
             return { error: res.error };
         }
+        return { success: true, error: null };
     } catch (err) {
-        console.log(err)
         return { error: "Something went wrong" };
+    }
+}
+
+export async function verifyEmailAction(data: OtpFormData, action: "REGISTRATION" | "FORGOT_PASSWORD") {
+    try {
+        const res = await verifyOtpService(data, action);
+
+        return {
+            success: true,
+            message: res.message,
+            data: res,
+            error: null,
+        };
+    } catch (err) {
+        const message =
+            err instanceof Error ? err.message : 'Something went wrong';
+
+        return { success: false, error: message };
+    }
+}
+
+export async function forgotPasswordAction(email: string) {
+    try {
+        const res = await forgotPasswordService(email);
+        return { success: true, message: res.message, error: null };
+    } catch (err) {
+        return {
+            success: false,
+            error: err instanceof Error ? err.message : "Something went wrong",
+        };
+    }
+}
+
+export async function resetPasswordAction(data: ForgotPasswordFormData) {
+  try {
+    const res = await resetPasswordService(data);
+    return { success: true, message: res.message, error: null };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Something went wrong",
+    };
+  }
+}
+
+export async function resendEmailAction(email: string, action: "REGISTRATION") {
+    try {
+        await resendOtpCodeService(email, action);
+        return { success: true, error: null };
+    } catch (err) {
+        const message =
+            err instanceof Error ? err.message : 'Something went wrong';
+        console.log(err)
+        return { success: false, error: message };
     }
 }

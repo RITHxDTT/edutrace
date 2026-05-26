@@ -14,13 +14,17 @@ interface LoginFormData {
   email: string;
   password: string;
 }
-interface ForgotPasswordData {
+
+interface OtpFormData {
   email: string;
+  code: string;
 }
 
-interface ResetPasswordData {
+interface ForgotPasswordFormData {
+  email: string;
+  code: string;
   newPassword: string;
-  confirmPassword: string;
+  confirmNewPassword: string;
 }
 
-export type { RegisterFormData, LoginFormData, ForgotPasswordData, ResetPasswordData };
+export type { RegisterFormData, LoginFormData, OtpFormData, ForgotPasswordFormData };

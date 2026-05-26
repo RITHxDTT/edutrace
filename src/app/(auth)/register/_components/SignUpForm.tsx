@@ -72,7 +72,7 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
     try {
       const res = await registerAction(payload);
       if (res?.error) { setServerError(res.error); return; }
-      router.push('/login');
+      router.push('/verify-email');
     } catch (error) {
       setServerError('An unexpected error occurred. Please try again.');
       console.error(error);
