@@ -3,7 +3,6 @@ import React from 'react'
 
 export default function CurrentTaskComponent() {
     return (
-
         <div className=''>
             <div className="mb-4">
                 <h2 className="text-2xl font-medium text-white">Current Task</h2>

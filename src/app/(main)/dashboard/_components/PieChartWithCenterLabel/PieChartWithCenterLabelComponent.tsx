@@ -3,19 +3,9 @@ import { PieChart } from '@mui/x-charts/PieChart';
 import { useDrawingArea } from '@mui/x-charts/hooks';
 import { styled } from '@mui/material/styles';
 import { Fullscreen } from 'lucide-react';
+import { data, size } from "../../mockupData";
 
-const data = [
-    { value: 5, label: 'Missed', color: '#8979FF' },
-    { value: 10, label: 'On Time', color: '#962DFF' },
-    { value: 15, label: 'Late', color: '#C6D2FD' },
-];
-
-const size = {
-    width: 200,
-    height: 200,
-};
-
-const StyledText = styled('text')(({ theme }) => ({
+export const StyledText = styled('text')(({ theme }) => ({
     fill: theme.palette.text.primary,
     textAnchor: 'middle',
     dominantBaseline: 'central',

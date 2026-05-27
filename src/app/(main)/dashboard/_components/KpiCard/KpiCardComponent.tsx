@@ -4,14 +4,6 @@ import React from 'react';
 import styles from '../../kpicard.module.css';
 import { ClipboardText } from 'iconsax-react';
 
-interface Task {
-    title: string;
-    value: string | number;
-    subtitle?: string;
-    subValue?: string;
-    allowedRoles?: string[];
-}
-
 function KpiCardComponent({
     title,
     value,
@@ -21,7 +13,7 @@ function KpiCardComponent({
     return (
         <div className="flex justify-between items-start w-full relative">
             <div
-                className={`${styles.inverted}  text-linear-main rounded-2xl p-4 md:p-5 flex-1 w-full flex flex-col justify-between`}
+                className={`${styles.inverted} bg-white  text-linear-main bg rounded-2xl p-4 md:p-5 flex-1 w-full flex flex-col justify-between`}
             >
                 <div>
                     <div>
@@ -29,8 +21,7 @@ function KpiCardComponent({
                             {title}
                         </label>
                     </div>
-
-                    <p className="text-5xl font-medium md:text-5xl font-heading text-linear-purple">
+                    <p className="text-5xl font-medium md:text-5xl font-heading text-linear-main ">
                         {value}
                     </p>
                 </div>

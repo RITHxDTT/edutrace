@@ -6,10 +6,9 @@ export default function WeeklyVsRequiredProgress() {
         <div className=" bg-white text-black rounded-2xl p-5 shadow-sm">
             <div className="flex justify-between items-center mb-4 ">
                 <div>
-                    <p className="text-2xl font-medium text-gray-800">Weekly vs Required Progress</p>
+                    <p className="text-2xl font-medium text-linear-main">Weekly vs Required Progress</p>
                 </div>
 
-                {/* ====== bar chart====== */}
                 <div className="flex items-center gap-8 text-xs font-medium text-gray-600">
                     <div className="flex items-center gap-1.5">
                         <span className="w-3 h-3 rounded-full bg-blue-900 block" /> Logged
@@ -20,8 +19,8 @@ export default function WeeklyVsRequiredProgress() {
                 </div>
             </div>
 
-            <div className="w-[400px] ">
-                <BarChart className="text-xl font-medium "
+            <div className="w-full">
+                <BarChart className="text-medium font-medium "
                     xAxis={[{ data: ['Week 1', 'Week 2', 'Week 3'] }]}
                     yAxis={[
                         {
@@ -33,7 +32,7 @@ export default function WeeklyVsRequiredProgress() {
                         },
                     ]}
                     series={[
-                        { data: [33, 8, 70], color: '#1e1b4b' },
+                        { data: [92, 6, 70], color: '#1e1b4b' },
                         { data: [85, 5, 52], color: '#c7d2fe' },
                     ]}
                     height={200}

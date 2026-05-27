@@ -5,7 +5,7 @@ export default function StudentProgressComponent() {
     return (
         <div className="bg-white text-black rounded-3xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] max-w-4xl mx-auto w-full border border-gray-100/50">
             <div className="mb-5">
-                <h2 className="text-2xl font-medium mb-4 text-gray-800 tracking-tight">Student Progress</h2>
+                <h2 className="text-2xl font-medium mb-4 text-linear-main tracking-tight">Student Progress</h2>
             </div>
 
             <Table

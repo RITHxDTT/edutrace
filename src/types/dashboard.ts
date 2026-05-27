@@ -1,3 +1,12 @@
+
+interface Task {
+    title: string;
+    value: string | number;
+    subtitle?: string;
+    subValue?: string;
+    allowedRoles?: string[];
+}
+
 interface Summery {
     title: string;
     value: string | number;

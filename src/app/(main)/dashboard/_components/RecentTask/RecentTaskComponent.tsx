@@ -1,17 +1,11 @@
 import React from 'react'
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/table";
+import { recentTasks } from "../../mockupData";
 export default function RecentTaskComponent() {
-
-    const recentTasks: RecentTask[] = [
-        { id: "1", name: "Web-Homework-002 (Css Ba...", deadline: "Apr 07, 2026", submission: "60%", status: "Overdue" },
-        { id: "2", name: "Java Mini Project 1", deadline: "Apr 07, 2026", submission: "100%", status: "Finish" },
-        { id: "3", name: "Web-MiniProject001", deadline: "Apr 07, 2026", submission: "60%", status: "Overdue" },
-        { id: "4", name: "Java Mini Project 1", deadline: "Apr 07, 2026", submission: "100%", status: "Finish" },
-    ];
     return (
         <div className="bg-white text-black rounded-3xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] max-w-4xl mx-auto w-full border border-gray-100/50">
             <div className="mb-5">
-                <h2 className="text-2xl font-medium mb-4 text-gray-800 tracking-tight">Recent Task</h2>
+                <h2 className="text-2xl font-medium mb-4 text-linear-main  text-gray-800 tracking-tight">Recent Task</h2>
             </div>
 
             <Table
