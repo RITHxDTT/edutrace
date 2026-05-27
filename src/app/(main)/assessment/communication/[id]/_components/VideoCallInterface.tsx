@@ -4,6 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { Microphone2,
   MicrophoneSlash, } from 'iconsax-react';
 import { Participant } from '../../../../../../types/Participant'; 
+import {participants} from './User.mock'; 
 import { VideoCallInterfaceProps } from '../../../../../../types/VideoCallInterfaceProps';
 
 
@@ -12,7 +13,7 @@ export default function VideoCallInterface({
   isCamOn, 
   isScreenSharing, 
   setIsScreenSharing, 
-  participants 
+  participants  
 }: VideoCallInterfaceProps) {
   
   const videoRef = useRef<HTMLVideoElement | null>(null);
