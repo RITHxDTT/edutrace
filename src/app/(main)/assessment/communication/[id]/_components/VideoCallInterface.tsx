@@ -1,20 +1,21 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import { Microphone2,
-  MicrophoneSlash, } from 'iconsax-react';
-import { Participant } from '../../../../../../types/Participant'; 
+import {
+  Microphone2,
+  MicrophoneSlash,
+} from 'iconsax-react';
+import { Participant } from '../../../../../../types/Participant';
 import { VideoCallInterfaceProps } from '../../../../../../types/VideoCallInterfaceProps';
+import { participants } from './User.mock';
 
 
 
-export default function VideoCallInterface({ 
-  isCamOn, 
-  isScreenSharing, 
-  setIsScreenSharing, 
-  participants 
+export default function VideoCallInterface({
+  isCamOn,
+  isScreenSharing,
+  setIsScreenSharing,
 }: VideoCallInterfaceProps) {
-  
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const screenRef = useRef<HTMLVideoElement | null>(null);
   const camStreamRef = useRef<MediaStream | null>(null);
@@ -68,10 +69,19 @@ export default function VideoCallInterface({
   }, [isScreenSharing, setIsScreenSharing]);
 
   const hasMainFocus = isCamOn || isScreenSharing;
+  const MAX_VISIBLE_PARTICIPANTS = hasMainFocus ? 3 : 8;
+
+  const visibleParticipants = participants.slice(
+    0,
+    MAX_VISIBLE_PARTICIPANTS
+  );
+
+  const remainingParticipants =
+    participants.length - visibleParticipants.length;
 
   return (
     <div className="flex flex-col md:flex-row gap-4 flex-1 min-h-0 items-stretch ">
-      
+
       {/* Main Workspace */}
       {hasMainFocus && (
         <div className="flex-[3] flex flex-col gap-4 ">
@@ -99,17 +109,67 @@ export default function VideoCallInterface({
           </div>
         )}
 
-        {participants.map((user: Participant) => (
-          <div key={user.id} className={`relative flex flex-col items-center justify-center w-[330px] h-[190px] bg-blue border border-blue-100 rounded-2xl p-6 shadow-sm  transition-all ${hasMainFocus ? 'w-full h-[160px] shrink-0' : 'flex-grow basis-[calc(50%-1rem)] md:basis-[calc(33.333%-1rem)] lg:basis-[calc(25%-1rem)]'}`}>
-            <span className="absolute top-4 left-4 text-xs font-medium text-ai">{user.name}</span>
+        {visibleParticipants.map((user: Participant) => (
+          <div
+            key={user.id}
+            className={`relative flex flex-col items-center justify-center bg-blue border border-blue-100 rounded-2xl p-6 shadow-sm transition-all overflow-hidden ${hasMainFocus
+                ? 'w-full h-[160px] shrink-0'
+                : 'flex-grow basis-[calc(50%-1rem)] md:basis-[calc(33.333%-1rem)] lg:basis-[calc(25%-1rem)] h-[190px]'
+              }`}
+          >
+
+            {/* User Name */}
+            <span className="absolute top-4 left-4 text-xs font-medium text-ai z-10">
+              {user.name}
+            </span>
+
+            {/* Avatar */}
             <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-blue-400 bg-blur-100 flex items-center justify-center">
-              <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+              <img
+                src={user.avatar}
+                alt={user.name}
+                className="w-full h-full object-cover"
+              />
             </div>
+
+            {/* Mic Status */}
             <div className="absolute bottom-4 right-4">
-              {user.isMuted ? <MicrophoneSlash size={10} variant="Linear" color="currentColor" className="w-4 h-4 text-ai" /> : <Microphone2 size={10} variant="Linear" color="currentColor" className="w-4 h-4 text-main-linear" />}
+              {user.isMuted ? (
+                <MicrophoneSlash
+                  size={10}
+                  variant="Linear"
+                  color="currentColor"
+                  className="w-4 h-4 text-ai"
+                />
+              ) : (
+                <Microphone2
+                  size={10}
+                  variant="Linear"
+                  color="currentColor"
+                  className="w-4 h-4 text-main-linear"
+                />
+              )}
             </div>
           </div>
         ))}
+
+        {/* Remaining Participants Card */}
+        {/* {remainingParticipants > 0 && (
+          <div
+            className={`relative flex flex-col items-center justify-center bg-slate-100 border border-slate-200 rounded-2xl shadow-sm ${hasMainFocus
+                ? 'w-full h-[160px] shrink-0'
+                : 'flex-grow basis-[calc(50%-1rem)] md:basis-[calc(33.333%-1rem)] lg:basis-[calc(25%-1rem)] h-[190px]'
+              }`}
+          >
+            <div className="text-3xl font-semibold text-slate-700">
+              +{remainingParticipants}
+            </div>
+
+            <span className="mt-2 text-sm text-slate-500">
+              More participants
+            </span>
+          </div>
+        )} */}
       </div>
     </div>
   );
