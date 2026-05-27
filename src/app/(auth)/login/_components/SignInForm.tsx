@@ -36,15 +36,11 @@ export default function LoginForm() {
     try {
       const res = await loginAction(data);
 
-      if (res?.success) {
-        router.push("/dashboard");
-        router.refresh();
-        return;
-      }
-
       if (res?.error) {
         setServerError(res.error);
+        return;
       }
+      router.push("/dashboard");
     } catch (error) {
       setServerError("An unexpected error occurred. Please try again.");
       console.error("Client caught error:", error);

@@ -1,10 +1,9 @@
-import { ForgotPasswordFormData, OtpFormData, RegisterFormData } from "@/types/auth";
-
+import { OtpFormData, RegisterFormData, ResetPasswordFormData } from "@/types/auth";
 
 export const loginService = async (req: Partial<Record<"email" | "password", unknown>>) => {
     const formData = {
         email: req?.email,
-        password: req?.password
+        password: req?.password,
     };
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`, {
@@ -24,52 +23,35 @@ export const loginService = async (req: Partial<Record<"email" | "password", unk
         }
     }
 
-    const user = await res.json();
-    return user;
+    return res.json();
 };
 
-
-export const registerService = async (data: Omit<RegisterFormData, "birthdate"> & {
-    birthdate?: string;
-}) => {
-
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        }
-    );
+export const registerService = async (
+    data: Omit<RegisterFormData, "birthdate"> & { birthdate?: string }
+) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    });
+    const result = await res.json();
 
     if (!res.ok) {
-        const error = await res.json().catch(() => null);
-        throw new Error(
-            error?.message ?? `Registration failed with status ${res.status}`
-        );
+        return { success: false, error: result?.message || "Registration failed", }
     }
 
-    return res.json();
+    return result
 };
 
 export const verifyOtpService = async (
     data: OtpFormData,
     action: "REGISTRATION" | "FORGOT_PASSWORD"
 ) => {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/otp/verify`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                email: data.email,
-                code: data.code,
-                action,
-            }),
-        }
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/otp/verify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: data.email, code: data.code, action }),
+    });
 
     const result = await res.json().catch(() => null);
 
@@ -81,14 +63,11 @@ export const verifyOtpService = async (
 };
 
 export const forgotPasswordService = async (email: string) => {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/password/forgot`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-        }
-    );
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/otp/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+    });
 
     const data = await res.json().catch(() => null);
 
@@ -99,15 +78,12 @@ export const forgotPasswordService = async (email: string) => {
     return data;
 };
 
-export const resetPasswordService = async (data: ForgotPasswordFormData) => {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/password/reset`,
-        {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
-        }
-    );
+export const resetPasswordService = async (data: ResetPasswordFormData) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/password/reset`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+    });
 
     const result = await res.json().catch(() => null);
 
@@ -120,29 +96,18 @@ export const resetPasswordService = async (data: ForgotPasswordFormData) => {
 
 export const resendOtpCodeService = async (
     email: string,
-    action: "REGISTRATION"
+    action: "REGISTRATION" | "FORGOT_PASSWORD"
 ) => {
-    const formData = {
-        email,
-        action,
-    };
-
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/otp/resend`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(formData)
-        });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/otp/resend`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, action }),
+    });
 
     const data = await res.json().catch(() => null);
 
     if (!res.ok) {
-        throw new Error(
-            data?.message ?? `Resend OTP failed with status ${res.status}`
-        );
+        throw new Error(data?.message ?? `Resend OTP failed with status ${res.status}`);
     }
 
     return data;

@@ -6,8 +6,11 @@ export default async function proxy(req: NextAuthRequest) {
   const session = await auth();
   const { nextUrl } = req;
 
-  const isAuthenticated = !!session
-  const isAuthPage = nextUrl.pathname === "/login" || nextUrl.pathname === "/register" || nextUrl.pathname === "/";
+  const isAuthenticated = !!session;
+  const isAuthPage =
+    nextUrl.pathname === "/login" ||
+    nextUrl.pathname === "/register" ||
+    nextUrl.pathname === "/";
 
   if (isAuthenticated && isAuthPage) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
@@ -22,5 +25,13 @@ export default async function proxy(req: NextAuthRequest) {
 }
 
 export const config = {
-  matcher: ["/login", "/register"],
+  matcher: [
+    "//:path*",
+    "/dashboard/:path*",
+    "/assessment/:path*",
+    "/report/:path*",
+  ],
 };
+
+
+ 

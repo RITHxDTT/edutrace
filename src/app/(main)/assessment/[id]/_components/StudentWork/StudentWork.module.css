@@ -1,0 +1,403 @@
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 18px;
+  padding: 0 24px 32px;
+  align-items: start;
+}
+
+/* =========================
+   MAIN PANEL
+========================= */
+
+.mainPanel {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e8eaf2;
+  box-shadow: 0 2px 8px rgba(80, 80, 140, 0.06);
+  width: 100%;
+  
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 14px;
+  border-bottom: 1px solid #f0f1f8;
+}
+
+.panelHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.panelTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.statDivider {
+  width: 1.5px;
+  height: 20px;
+  background: #e0e2ef;
+  flex-shrink: 0;
+}
+
+.statGroup {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statNum {
+  font-weight: 700;
+  color: #111827;
+  font-size: 16px;
+}
+
+.statLabel {
+  font-size: 13px;
+  color: #374151;
+}
+
+.statLabelMuted {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+/* =========================
+   GRID
+========================= */
+
+.folderGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 40px 16px 16px;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.studentCard {
+  background: #ffffff;
+  border: 1px solid #ececf5;
+  border-radius: 18px;
+  padding: 14px;
+  min-width: 0;
+  transition: all 0.2s ease;
+}
+
+.studentCard:hover {
+  transform: translateY(-2px);
+  border-color: #d8d6ff;
+  box-shadow: 0 8px 24px rgba(91, 82, 232, 0.08);
+}
+
+.studentCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.studentCardTopLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.studentName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================
+   STATUS BADGES
+========================= */
+
+.handedIn,
+.pending,
+.late {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.handedIn {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+}
+
+.pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+}
+
+.late {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+/* =========================
+   FILE INFO
+========================= */
+
+.fileName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.5;
+  margin-bottom: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fileMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.fileMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #9ca3af;
+  font-size: 11px;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.panelFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f1f8;
+}
+
+.select {
+  background: #ffffff;
+  border: 1px solid #e0e2ef;
+  border-radius: 10px;
+  color: #374151;
+  font-size: 13px;
+  padding: 8px 34px 8px 12px;
+  appearance: none;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #6b63ef;
+}
+
+/* =========================
+   PAGINATION
+========================= */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+.pageBtn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  border: 1px solid #e0e2ef;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pageBtn:hover {
+  background: #f5f5fc;
+  color: #111827;
+}
+
+.pageNum {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid #e0e2ef;
+  background: #ffffff;
+  color: #6b7280;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pageNumActive {
+  background: #5b52e8 !important;
+  border-color: #5b52e8 !important;
+  color: white !important;
+  font-weight: 700;
+}
+
+/* =========================
+   ACTIVITY PANEL
+========================= */
+
+.activityPanel {
+  width: 380px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e8eaf2;
+  padding: 18px;
+  box-shadow: 0 2px 8px rgba(80, 80, 140, 0.06);
+  position: sticky;
+  top: 20px;
+}
+
+.activityTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 14px;
+}
+
+.activityDivider {
+  height: 1px;
+  background: #f0f1f8;
+  margin-bottom: 16px;
+}
+
+.activityList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.activityItem {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 16px;
+}
+
+.activityIconWrap {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.activityIcon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activityContent {
+  flex: 1;
+}
+
+.activityText {
+  font-size: 12px;
+  color: #111827;
+  line-height: 1.5;
+  margin-bottom: 3px;
+}
+
+.activityText strong {
+  font-weight: 700;
+  color: #111827;
+}
+
+.activityFile {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 3px;
+  word-break: break-all;
+}
+
+.activityTime {
+  font-size: 10px;
+  color: #b0b4c4;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1400px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .activityPanel {
+    width: 100%;
+    position: static;
+  }
+}
+
+@media (max-width: 1200px) {
+  .folderGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .folderGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .panelFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+}

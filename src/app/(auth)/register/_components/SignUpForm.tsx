@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
 import PrimaryInput from '@/components/Inputs/PrimaryInputField';
 import PrimarySelect from '@/components/Selects/PrimarySelect';
-import { Eye, EyeSlash, SmsEdit, UserSquare, ArrowLeft, ArrowRight } from 'iconsax-react';
+import { Eye, EyeSlash, SmsEdit, UserSquare, ArrowLeft, ArrowRight, Home2 } from 'iconsax-react';
 import { registerAction } from '@/actions/auth.action';
 import { createRegisterFormSchema } from '@/schemas/RegisterFormSchema';
 
@@ -25,7 +25,7 @@ const STEPS = [
 ];
 
 const STEP_FIELDS: Record<number, (keyof RegisterFormData)[]> = {
-  1: ['firstName', 'lastName', 'birthdate', 'gender'],
+  1: ['firstName', 'lastName', 'birthdate', 'gender', 'address'],
   2: ['classroomId', 'email', 'password'],
 };
 
@@ -55,6 +55,7 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
       classroomId: '',
       gender: undefined,
       birthdate: undefined,
+      address: '',
     },
     mode: 'onTouched',
   });
@@ -165,6 +166,17 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
                 <SelectItem key="FEMALE">Female</SelectItem>
               </PrimarySelect>
             </div>
+            <PrimaryInput
+              label="Address"
+              placeholder="Enter your address"
+              type="text"
+              icon={Home2}
+              iconPosition="right"
+              className='w-full'
+              isInvalid={!!errors.address}
+              errorMessage={errors.address?.message}
+              {...register('address')}
+            />
           </div>
         )}
 
@@ -215,6 +227,7 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
               { label: 'Last Name', value: values.lastName },
               { label: 'Gender', value: values.gender },
               { label: 'Birthdate', value: values.birthdate?.toString() },
+              { label: 'Address', value: values.address },
               { label: 'Classroom', value: selectedClassroom?.className },
               { label: 'Email', value: values.email },
               { label: 'Password', value: '••••••••' },

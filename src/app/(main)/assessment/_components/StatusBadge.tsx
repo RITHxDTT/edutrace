@@ -1,19 +1,24 @@
-import { Status } from "../types";
+export type AssessmentStatus =
+  | "Not Yet"
+  | "In Progress"
+  | "Closed"
+  | "Archived";
 
-const statusStyles: Record<Status, string> = {
-  "In Progress": "bg-indigo-50 text-indigo-400",
-  Completed: "bg-emerald-50 text-emerald-600",
-  "Not Started": "bg-slate-100 text-slate-500",
+const statusStyles: Record<AssessmentStatus, string> = {
+  "Not Yet": "bg-indigo-50 text-indigo-500",
+  "In Progress": "bg-blue-100 text-blue-600",
+  Closed: "bg-emerald-50 text-emerald-600",
+  Archived: "bg-rose-50 text-rose-500",
 };
 
 interface Props {
-  status: Status;
+  status: AssessmentStatus;
 }
 
 export default function StatusBadge({ status }: Props) {
   return (
     <span
-      className={`text-xs font-semibold px-3 py-1 rounded-lg ${statusStyles[status]}`}
+      className={`inline-flex items-center rounded-lg px-3 py-1 text-xs font-semibold ${statusStyles[status]}`}
     >
       {status}
     </span>

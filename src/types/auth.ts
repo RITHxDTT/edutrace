@@ -8,6 +8,7 @@ interface RegisterFormData {
   classroomId: string;
   gender: "MALE" | "FEMALE";
   birthdate: CalendarDate | null;
+  address: string;
 }
 
 interface LoginFormData {
@@ -27,4 +28,10 @@ interface ForgotPasswordFormData {
   confirmNewPassword: string;
 }
 
-export type { RegisterFormData, LoginFormData, OtpFormData, ForgotPasswordFormData };
+interface ResetPasswordFormData {
+  token: string
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+export type { RegisterFormData, LoginFormData, OtpFormData, ForgotPasswordFormData, ResetPasswordFormData };

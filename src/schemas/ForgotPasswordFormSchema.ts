@@ -12,5 +12,6 @@ export const forgotPasswordFormSchema = z.object({
         .trim(),
     confirmNewPassword: z.string().min(8, "Password must be at least 8 characters."),
 }).refine((data) => data.newPassword === data.confirmNewPassword, {
+    path: ["confirmNewPassword"],
     message: "Passwords do not match.",
 });

@@ -10,7 +10,7 @@ import { forgotPasswordAction, resetPasswordAction, verifyEmailAction } from '@/
 import { useRouter } from 'next/navigation';
 import ServerError from '../../_components/ServerError';
 import PrimaryInput from '@/components/Inputs/PrimaryInputField';
-import { SmsEdit, Lock, Eye, EyeSlash } from 'iconsax-react';
+import { SmsEdit, Eye, EyeSlash } from 'iconsax-react';
 import { forgotPasswordFormSchema } from '@/schemas/ForgotPasswordFormSchema';
 import { sileo } from 'sileo';
 
@@ -24,6 +24,7 @@ type ResendStatus = 'idle' | 'loading' | 'success' | 'error';
 
 export default function ForgotPasswordForm() {
   const [step, setStep] = useState(1);
+  const [verifyToken, setVerifyToken] = useState<string | null>(null);
   const [serverError, setServerError] = useState('');
   const [resendStatus, setResendStatus] = useState<ResendStatus>('idle');
   const [resendMessage, setResendMessage] = useState('');
@@ -67,13 +68,11 @@ export default function ForgotPasswordForm() {
   }, [cooldown]);
 
   const handleNext = async () => {
-    // Validate current step fields before proceeding
     const valid = await trigger(STEP_FIELDS[step]);
     if (!valid) return;
 
     setServerError('');
 
-    // --- STEP 1: Request OTP Code ---
     if (step === 1) {
       const email = getValues('email');
       setIsSendingCode(true);
@@ -94,10 +93,10 @@ export default function ForgotPasswordForm() {
       const payload = getValues();
       setIsSendingCode(true);
 
-      const res = await verifyEmailAction({
-        email: payload.email,
-        code: payload.code,
-      }, 'FORGOT_PASSWORD');
+      const res = await verifyEmailAction(
+        { email: payload.email, code: payload.code },
+        'FORGOT_PASSWORD'
+      );
 
       setIsSendingCode(false);
 
@@ -106,7 +105,7 @@ export default function ForgotPasswordForm() {
         return;
       }
 
-      // If validation succeeds, move forward to Step 3
+      setVerifyToken(res.payload.token);
       setStep((s) => s + 1);
       return;
     }
@@ -138,15 +137,20 @@ export default function ForgotPasswordForm() {
   };
 
   async function onSubmit(data: ForgotPasswordFormData) {
+    if (!verifyToken) {
+      setServerError('Verification token is missing. Please restart the process.');
+      return;
+    }
+
     try {
       setServerError('');
 
-      const res = await resetPasswordAction(data);
+      const res = await resetPasswordAction(data, verifyToken);
 
       if (res?.success) {
         sileo.success({
           title: 'Password Reset',
-          description: 'Your password has been reset successfully. Please log in with your new password.'
+          description: 'Your password has been reset successfully. Please log in with your new password.',
         });
         router.push('/login');
         return;
@@ -191,7 +195,12 @@ export default function ForgotPasswordForm() {
                 length={6}
                 value={field.value}
                 onValueChange={field.onChange}
-                classNames={{ segmentWrapper: 'gap-x-2' }}
+                classNames={{
+                  segmentWrapper: "gap-x-4 justify-center",
+                  segment:
+                    "w-14 h-14 text-2xl font-semibold rounded-xl border border-gray-300 bg-white text-center shadow-sm transition-all " +
+                    "focus:border-purple-500 focus:ring-2 focus:ring-purple-200",
+                }}
                 size="lg"
                 isInvalid={!!errors.code}
                 errorMessage={errors.code?.message}
@@ -206,21 +215,23 @@ export default function ForgotPasswordForm() {
         <PrimaryInput
           {...register('newPassword')}
           label="New Password"
-          placeholder='Enter your new password...'
-          type={isVisible ? "text" : "password"}
+          placeholder="Enter your new password..."
+          type={isVisible ? 'text' : 'password'}
           icon={isVisible ? Eye : EyeSlash}
           iconPosition="right"
-          onIconClick={() => setVisible(prev => !prev)}
+          onIconClick={() => setVisible((prev) => !prev)}
+          isInvalid={!!errors.newPassword}
           errorMessage={errors.newPassword?.message}
         />
         <PrimaryInput
           {...register('confirmNewPassword')}
           label="Confirm Password"
-          placeholder='Confirm new password...'
-          type={isVisible ? "text" : "password"}
+          placeholder="Confirm new password..."
+          type={isVisible ? 'text' : 'password'}
           icon={isVisible ? Eye : EyeSlash}
           iconPosition="right"
-          onIconClick={() => setVisible(prev => !prev)}
+          onIconClick={() => setVisible((prev) => !prev)}
+          isInvalid={!!errors.confirmNewPassword}
           errorMessage={errors.confirmNewPassword?.message}
         />
       </div>
@@ -234,7 +245,7 @@ export default function ForgotPasswordForm() {
               type="button"
               disabled={resendStatus === 'loading' || cooldown > 0}
               onClick={handleResend}
-              className="text-primary font-bold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-linear-main cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {resendStatus === 'loading'
                 ? 'Sending...'

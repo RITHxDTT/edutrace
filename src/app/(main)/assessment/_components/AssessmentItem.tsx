@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { Assessment } from "../types";
 import AssessmentCard from "./AssessmentCard/AssessmentCard";
 import CategoryBadge from "./CategoryBadge";
 import StatusBadge from "./StatusBadge";
+import { ChevronRight } from "lucide-react";
 import DateRow from "./DateRow";
-import { Assessment } from "../types";
 
 interface Props {
   assessment: Assessment;
@@ -15,8 +15,8 @@ interface Props {
 export default function AssessmentItem({ assessment }: Props) {
   return (
     <Link href={`/assessment/${assessment.id}`}>
-      <AssessmentCard className="overflow-hidden flex flex-col hover:shadow-lg transition-all duration-200">
-        <div className="p-5 flex flex-col gap-4 h-full">
+      <AssessmentCard className="">
+        <div className="p-5 flex flex-col gap-4  h-full">
           <CategoryBadge label={assessment.category} />
 
           <div>
@@ -32,7 +32,7 @@ export default function AssessmentItem({ assessment }: Props) {
           <div className="flex items-center justify-between mt-auto">
             <StatusBadge status={assessment.status} />
 
-            <button className="flex items-center gap-1 text-indigo-600 text-sm font-medium">
+            <button className="flex items-center gap-1 text-blue-700 text-sm font-medium">
               View Details
               <ChevronRight size={16} />
             </button>

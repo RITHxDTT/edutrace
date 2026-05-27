@@ -1,6 +1,6 @@
 "use server";
 
-import { ForgotPasswordFormData, LoginFormData, OtpFormData, RegisterFormData } from "@/types/auth";
+import { ForgotPasswordFormData, LoginFormData, OtpFormData, RegisterFormData, ResetPasswordFormData } from "@/types/auth";
 import { signIn } from "@/auth";
 import { forgotPasswordService, registerService, resendOtpCodeService, resetPasswordService, verifyOtpService } from "@/services/auth.service";
 
@@ -45,8 +45,8 @@ export async function verifyEmailAction(data: OtpFormData, action: "REGISTRATION
 
         return {
             success: true,
+            payload: res.payload,
             message: res.message,
-            data: res,
             error: null,
         };
     } catch (err) {
@@ -69,16 +69,20 @@ export async function forgotPasswordAction(email: string) {
     }
 }
 
-export async function resetPasswordAction(data: ForgotPasswordFormData) {
-  try {
-    const res = await resetPasswordService(data);
-    return { success: true, message: res.message, error: null };
-  } catch (err) {
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : "Something went wrong",
-    };
-  }
+export async function resetPasswordAction(data: ForgotPasswordFormData, token: string) {
+    try {
+        const res = await resetPasswordService({
+            token,
+            newPassword: data.newPassword,
+            confirmNewPassword: data.confirmNewPassword,
+        });
+        return { success: true, message: res.message, error: null };
+    } catch (err) {
+        return {
+            success: false,
+            error: err instanceof Error ? err.message : "Something went wrong",
+        };
+    }
 }
 
 export async function resendEmailAction(email: string, action: "REGISTRATION") {

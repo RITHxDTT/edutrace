@@ -1,3 +1,87 @@
+.iconEdit {
+  stroke: #3b82f6; 
+  transition: stroke 0.2s ease;
+}
+
+.iconEdit:hover {
+  stroke: #1e40af;
+}
+
+.iconDelete {
+  stroke: #ef4444;
+  transition: stroke 0.2s ease;
+}
+
+.iconDelete:hover {
+  stroke: #b91c1c; 
+}
+
+.iconLink {
+  stroke: #6b7280; 
+  transition: stroke 0.2s ease;
+}
+
+.iconLink:hover {
+  stroke: #374151;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menuWrapper {
+  position: relative;
+}
+
+.menuButton {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid #ececf3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 180px;
+  background: white;
+  border: 1px solid #ececf3;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 8px;
+  z-index: 100;
+}
+
+.menuItem,
+.menuItemDelete {
+  width: 100%;
+  height: 42px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.menuItem {
+  color: #374151;
+}
+
 .page {
   min-height: 100vh;
   padding-bottom: 3rem;
@@ -35,14 +119,13 @@
   gap: 18px;
 }
 .headerIcon {
-  width: 56px;
-  height: 56px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #5b52e8 0%, #7c74f0 100%);
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
   flex-shrink: 0;
 }
 .title {
@@ -118,6 +201,7 @@
   border-bottom-color: #5b52e8;
   background: none;
 }
+
 /* Grid */
 .grid {
   display: grid;
@@ -152,7 +236,7 @@
 .cardIconWrap {
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -233,12 +317,9 @@
   cursor: pointer;
   transition: box-shadow 0.15s, transform 0.15s;
 }
-
 .attachRow:last-child {
   border-bottom: none;
 }
-
-
 .attachIcon {
   width: 44px;
   height: 44px;
@@ -284,43 +365,46 @@
   background: #f0effd;
 }
 
-/* Grading Rubric */
+/* ─── Grading Rubric ─── */
 .totalPts {
   font-size: 13px;
   color: #6b7280;
   display: flex;
   align-items: center;
   gap: 6px;
+  background: #EEEFFF;
+ 
+  border-radius: 10px;
+  padding: 6px 14px;
 }
 .totalPtsVal {
   font-weight: 700;
   color: #5b52e8;
+  background: #eeedf8;
+  border-radius: 6px;
+  padding: 2px 8px;
 }
 
 .rubricGrid {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 0;
-  margin: 20px 0 0;
-  padding-bottom: 20px;
+  gap: 8px;
+  margin: 0 0 20px;
 }
 .rubricItem {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 20px;
-  border-right: 1.5px solid #e0e2ef;
-  background: none;
-  border-top: none;
-  border-bottom: none;
-  border-left: none;
+  padding: 8px 16px;
+  background: #EEEFFF;
+  border-radius: 10px;
 }
 .rubricItem:first-child {
-  padding-left: 0;
+  padding-left: 16px;
 }
 .rubricItem:last-child {
-  border-right: none;
+  border-right: 1px solid #e0ddf8;
 }
 .rubricLabel {
   font-size: 13.5px;
@@ -331,6 +415,9 @@
   font-size: 13.5px;
   font-weight: 700;
   color: #5b52e8;
+  background: #ecedf9;
+  border-radius: 6px;
+  padding: 2px 8px;
 }
 
 .rubricBar {
@@ -366,15 +453,16 @@
   gap: 14px;
   padding: 14px 16px;
   border-radius: 14px;
-  background: #f5f5fc;
-  border: 1px solid #e8eaf2;
+  background: #ffffff;
+
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
 }
 .timeCardIcon {
   width: 38px;
   height: 38px;
-  border-radius: 10px;
-  background: #eeedf8;
-  border: 1px solid #dddaf5;
+  border-radius: 50%;
+  background: #EEEFFF;
+  
   display: flex;
   align-items: center;
   justify-content: center;

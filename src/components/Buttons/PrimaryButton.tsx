@@ -9,7 +9,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-linear-purple hover:bg-none hover:bg-[#473FCE] hover:cursor-pointer active:bg-none active:bg-[#3F38B7]",
-        secondary: "border-2 border text-primary",
+        secondary: "border-2 border text-primary hover:cursor-pointer",
       },
       size: {
         xs: "px-[12px] py-[6px]",
