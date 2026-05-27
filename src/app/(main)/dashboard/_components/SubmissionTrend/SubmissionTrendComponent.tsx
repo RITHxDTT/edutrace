@@ -6,10 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
 import { ClipboardText, ClipboardTick } from 'iconsax-react';
-<<<<<<< Updated upstream:src/app/(main)/dashboard/_components/SubmissionTrend/page.tsx
-=======
 import { lineChartsParams } from "../../mockupData";
->>>>>>> Stashed changes:src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx
 
 //===>> Line Chart
 
@@ -18,10 +15,6 @@ import { lineChartsParams } from "../../mockupData";
 // console.log("data in ", data.data[0].onTime);
 export default function SubmissionTrendComponent() {
 
-<<<<<<< Updated upstream:src/app/(main)/dashboard/_components/SubmissionTrend/page.tsx
-export default function SubmissionTrendComponent() {
-=======
->>>>>>> Stashed changes:src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx
   const [itemData, setItemData] = React.useState<LineItemIdentifier>();
   const [axisData, setAxisData] = React.useState<ChartsAxisData | null>();
 
@@ -62,11 +55,6 @@ export default function SubmissionTrendComponent() {
             }}
             aria-label="reset"
           >
-<<<<<<< Updated upstream:src/app/(main)/dashboard/_components/SubmissionTrend/page.tsx
-            <ClipboardText size={20} color='black'/>
-            {/* <UndoOutlinedIcon fontSize="small" /> */}
-=======
->>>>>>> Stashed changes:src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx
           </IconButton>
         </Box>
       </Stack>

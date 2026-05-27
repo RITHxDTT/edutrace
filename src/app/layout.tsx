@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 import { HeroUIProvider } from "@heroui/system";
 
 const fredoka = Fredoka({
-    variable: "--font-fredoka-sans",
-    subsets: ["latin"],
+  variable: "--font-fredoka-sans",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -14,9 +14,9 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en" className={cn("h-full", "antialiased", fredoka.variable)}>

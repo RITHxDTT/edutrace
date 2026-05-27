@@ -1,7 +1,3 @@
-<<<<<<< Updated upstream
-"use client";
-import {  Table,  TableHeader,  TableBody,  TableColumn,  TableRow,  TableCell} from "@heroui/table";
-=======
 'use client';
 
 import {
@@ -14,9 +10,7 @@ import {
 } from '@heroui/table';
 import Image from 'next/image';
 
->>>>>>> Stashed changes
 import styles from './kpicard.module.css';
-import NavbarTitle from "@/components/Topbar/NavbarTitle";
 
 import SubmissionTrendComponent from './_components/SubmissionTrend/SubmissionTrendComponent';
 import PieChartWithCenterLabel from './_components/PieChartWithCenterLabel/PieChartWithCenterLabelComponent';
@@ -35,19 +29,7 @@ export default function Page() {
   const isStudent = true;
 
   return (
-<<<<<<< Updated upstream
-    <div className="space-y-10">
-      <NavbarTitle title="Dashboard" override />
-      {/* Header */}
-      <div className="flex justify-between">
-        <div>
-          <p className="text-[24px] font-medium">Dashboard</p>
-          <p>Welcome back, Tan Dara</p>
-        </div>
-      </div>
-=======
     <>
->>>>>>> Stashed changes
 
       <svg
         className={styles.svgAsset}
@@ -173,47 +155,7 @@ export default function Page() {
             </div>
           </div>
         </div>
-<<<<<<< Updated upstream
-
-        <Table aria-label="Student progress table"
-        >
-          <TableHeader>
-            <TableColumn>Student Name</TableColumn>
-            <TableColumn>Completion</TableColumn>
-            <TableColumn>Late</TableColumn>
-             <TableColumn>Status</TableColumn>
-          </TableHeader>
-
-          <TableBody>
-            <TableRow key="1">
-              <TableCell>Yann Vannet</TableCell>
-              <TableCell>100%</TableCell>
-              <TableCell>2%</TableCell>
-                <TableCell>Good</TableCell>
-            </TableRow>
-
-            <TableRow key="2">
-              <TableCell>Uy Chakriya</TableCell>
-              <TableCell>95%</TableCell>
-              <TableCell>5%</TableCell>
-              <TableCell>Good</TableCell>
-            </TableRow>
-
-            <TableRow key="3">
-              <TableCell>Dara Nikorr</TableCell>
-              <TableCell>45%</TableCell>
-              <TableCell>55%</TableCell>
-              <TableCell>At Risk</TableCell>
-            </TableRow>
-
-          </TableBody>
-        </Table>
-        
-      </div> 
-    </div>
-=======
       )}
     </>
->>>>>>> Stashed changes
   );
 }
