@@ -30,6 +30,7 @@ export const config = {
     "/dashboard/:path*",
     "/assessment/:path*",
     "/report/:path*",
+    "/calendar/:path*",
     "/profile/:path*"
   ],
 };
