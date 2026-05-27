@@ -5,19 +5,19 @@ import { useRole } from "../../../hook/useRole";
 import FolderCard from "./Foldercard";
 import styles from "./StudentWork.module.css";
 import {
-  MOCK_STUDENTS,
+  DAILY_REQUIRED,
   MOCK_ACTIVITY_LOG,
   MOCK_SESSION_LOG,
-  DAILY_REQUIRED,
+  MOCK_STUDENTS,
   TIME_SPENT_TODAY,
 } from "./mockupData";
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+//          Constants        ──────────────────
 
 const filterOptions = ["All Classes", "Class A", "Class B", "Class C"];
 const totalPages = 5;
 
-// ── Icons ─────────────────────────────────────────────────────────────────────
+//          Icons        ──────────────────────
 
 function ChevronRightIcon() {
   return (
@@ -116,7 +116,7 @@ function InfoSvg() {
   );
 }
 
-// ── Shared Components ─────────────────────────────────────────────────────────
+//          Shared Components        ──────────
 
 function Card({
   icon,
@@ -254,7 +254,7 @@ function SessionBadge({ status }: { status: string }) {
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+//          Main Component        ─────────────
 
 export default function Studentwork() {
   const { isStudent } = useRole();
@@ -274,7 +274,7 @@ export default function Studentwork() {
   return (
     <div className={styles.layout}>
       {isStudent ? (
-        /* ── STUDENT VIEW ── */
+        /*          STUDENT VIEW          */
         <div
           style={{
             gridColumn: "1 / -1",
@@ -591,7 +591,7 @@ export default function Studentwork() {
         </div>
       ) : (
         <>
-          {/* ── TEACHER / ADMIN VIEW ── */}
+          {/*          TEACHER / ADMIN VIEW          */}
           <div className={styles.mainPanel}>
             <div className={styles.panelHeader}>
               <div className={styles.panelHeaderLeft}>
@@ -752,7 +752,7 @@ export default function Studentwork() {
             </div>
           </div>
 
-          {/* ── ACTIVITY LOG ── */}
+          {/*          ACTIVITY LOG          */}
           <div className={styles.activityPanel}>
             <h2 className={styles.activityTitle}>Activity Log</h2>
             <div className={styles.activityDivider} />

@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import {
-  Pencil,
-  X,
   CalendarDays,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Link2,
-  PlusCircle,
   FileText,
+  Link2,
+  Pencil,
+  PlusCircle,
   Trash2,
+  X,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-import InstructionEditor from "./InstructionEditor";
 import Button from "./Button";
+import InstructionEditor from "./InstructionEditor";
 import Toggle from "./Toggle";
 
 interface CreateTaskModalProps {
@@ -74,7 +74,7 @@ function inRange(day: Date, start: Date | null, end: Date | null) {
   return day > start && day < end;
 }
 
-// ── Inline date-range calendar ──────────────────────────────
+//          Inline date-range calendar
 function DateRangePicker({
   startDate,
   endDate,
@@ -219,7 +219,7 @@ function DateRangePicker({
   );
 }
 
-// ── Main modal ───────────────────────────────────────────────
+//          Main modal
 export default function CreateTaskModal({
   onClose,
   onBack,
@@ -227,12 +227,10 @@ export default function CreateTaskModal({
 }: CreateTaskModalProps) {
   const [step, setStep] = useState(1);
 
-  // Step 1
   const [title, setTitle] = useState("");
   const [acceptLate, setAcceptLate] = useState(true);
   const [instruction, setInstruction] = useState("");
 
-  // Step 2
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -298,13 +296,13 @@ export default function CreateTaskModal({
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // ── Step 1 form submit → advance to step 2
+  //                   form submit → advance to
   const handleStep1Submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStep(2);
   };
 
-  // ── Step 2 form submit → call onCreate
+  //                    form submit → call onCreate
   const handleStep2Submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -329,7 +327,7 @@ export default function CreateTaskModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      {/* ── STEP 1 ── */}
+      {/*                            */}
       {step === 1 && (
         <form
           onSubmit={handleStep1Submit}
@@ -390,7 +388,7 @@ export default function CreateTaskModal({
             <Button type="button" variant="outline" size="md" onClick={onBack}>
               Back
             </Button>
-            {/* type="submit" advances to step 2 via handleStep1Submit */}
+            {/* type="submit" advances to           via handleStep1Submit */}
             <Button type="submit" variant="primary" size="md">
               Next
             </Button>
@@ -398,7 +396,7 @@ export default function CreateTaskModal({
         </form>
       )}
 
-      {/* ── STEP 2 ── */}
+      {/*                             */}
       {step === 2 && (
         <form
           onSubmit={handleStep2Submit}

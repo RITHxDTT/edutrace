@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import {
-  Pencil,
-  X,
   CalendarDays,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Link2,
-  PlusCircle,
   FileText,
+  Link2,
+  Pencil,
+  PlusCircle,
   Trash2,
+  X,
 } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-import InstructionEditor from "./InstructionEditor";
 import Button from "./Button";
+import InstructionEditor from "./InstructionEditor";
 import Toggle from "./Toggle";
 
 interface EditTaskModalProps {
@@ -63,7 +63,7 @@ function inRange(day: Date, start: Date | null, end: Date | null) {
   return day > start && day < end;
 }
 
-// ── Date range picker ─────────────────────────────────────────
+//          Date range picker           ───────────
 function DateRangePicker({
   startDate,
   endDate,
@@ -212,7 +212,7 @@ function DateRangePicker({
   );
 }
 
-// ── Main modal ────────────────────────────────────────────────
+//          Main modal        ─
 export default function EditTaskModal({
   assessment,
   onClose,
@@ -320,13 +320,13 @@ export default function EditTaskModal({
     setNewAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Step 1 submit → advance to step 2
+  //          submit → advance to
   const handleStep1Submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStep(2);
   };
 
-  // Step 2 submit → call onSave
+  //           submit → call onSave
   const handleStep2Submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSave({
@@ -347,7 +347,7 @@ export default function EditTaskModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      {/* ── STEP 1 ── */}
+      {/*                            */}
       {step === 1 && (
         <form
           onSubmit={handleStep1Submit}
@@ -410,7 +410,7 @@ export default function EditTaskModal({
         </form>
       )}
 
-      {/* ── STEP 2 ── */}
+      {/*                             */}
       {step === 2 && (
         <form
           onSubmit={handleStep2Submit}
