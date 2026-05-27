@@ -1,5 +1,6 @@
 import { Button } from '@base-ui/react'
 import { MagicStar } from 'iconsax-react'
+import Image from 'next/image';
 import React from 'react'
 
 interface AiComponentProps {
@@ -15,10 +16,11 @@ function StarComponent({ width, height, color = "black" }: AiComponentProps) {
             className='flex items-center justify-center cursor-default'
         >   
             
-            <MagicStar 
-                size={width} 
-                variant="Bold" 
-                color={color} 
+            <Image
+                src={"/images/ai/Logo.png"}
+                alt="Star"
+                width={width}
+                height={height}
             />
         </Button>
     )

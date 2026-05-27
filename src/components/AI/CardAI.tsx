@@ -3,6 +3,7 @@ import { useState } from 'react';
 import AiComponent from "@/components/AI/_components/AiComponent";
 import StarComponent from "./_components/StarComponent";
 import InputChat from "./_components/InputChat";
+import Image from 'next/image';
 
 type ChatState = 'idle' | 'thinking' | 'answered';
 interface CardAIProps {
@@ -61,13 +62,13 @@ function CardAI({ onClose }: CardAIProps) {
                                         {selectedQuestion}
                                     </div>
                                     <div className="w-8 h-8 rounded-full bg-purple-200 overflow-hidden shrink-0 border border-white">
-                                        <AiComponent width={32} height={32}/>
+                                        <Image src="/images/ai/instructor.jpg" unoptimized width={20} height={20} alt="User" className="w-full h-full object-cover" />
                                     </div>
                                 </div>
 
                                 <div className="flex justify-start items-start gap-2 self-start max-w-[85%] mr-auto text-left">
                                     <div className="w-8 h-8 rounded-full bg-blue-900 flex items-center justify-center text-white shrink-0 text-xs font-bold shadow-md">
-                                        <StarComponent width={20} height={20} color="white" />
+                                        <Image src="/images/ai/white_Logo.png" unoptimized alt="HRD Avatar" width={20} height={20} className="rounded-full" />
                                     </div>
                                     
                                     <div className="bg-white/80 border border-white text-gray-800 px-4 py-2.5 rounded-2xl shadow-sm text-[14px] z-30">
