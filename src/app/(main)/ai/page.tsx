@@ -1,11 +1,9 @@
-import AiComponent from "@/components/AI/_components/AiComponent";
-import CardAI from "@/components/AI/CardAI";
+import AiChatWrapper from "@/components/AI/AiChatWrapper";
 
-export default function page(){
+export default function Page(){
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center gap-4">
-            <CardAI/>
-            <AiComponent width={70} height={70} />
+        <div className="relative w-full h-full bg-slate-50">
+            <AiChatWrapper />
         </div>
-    )
+    );
 }

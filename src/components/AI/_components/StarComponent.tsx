@@ -13,7 +13,8 @@ function StarComponent({ width, height, color = "black" }: AiComponentProps) {
         <Button 
             style={{ width: `${width}px`, height: `${height}px` }}
             className='flex items-center justify-center cursor-default'
-        >
+        >   
+            
             <MagicStar 
                 size={width} 
                 variant="Bold" 

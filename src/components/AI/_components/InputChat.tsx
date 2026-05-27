@@ -25,7 +25,7 @@ export default function InputChat({ onSendMessage, showSuggestions }: InputChatP
   };
 
   return (
-    <div className='w-full flex flex-col p-2 gap-4 text-[14px]'>
+    <div className='w-full flex flex-col p-2 gap-8 text-[14px]'>
         {showSuggestions && (
           <div className='flex flex-col items-start justify-start gap-2'>
               <p className='font-medium text-gray-600'>Suggestions on what to ask Our AI</p>
@@ -56,3 +56,25 @@ export default function InputChat({ onSendMessage, showSuggestions }: InputChatP
     </div>
   )
 }
+
+
+// {/* <div className="relative w-8 h-8">
+//                 <MagicStar
+//                     size={width} 
+//                     variant="Bold" 
+//                     color={color} 
+//                     className="absolute top-2 left-4"
+//                 />
+//                 <MagicStar
+//                     size={height * 0.75}
+//                     variant="Bold"
+//                     color={color}
+//                     className="absolute  bottom-9 right-3"
+//                 />
+//                 <MagicStar
+//                     size={height * 0.875}   
+//                     variant="Bold"
+//                     color={color}
+//                     className="absolute top-0 right-6"
+//                 />
+//             </div> */}

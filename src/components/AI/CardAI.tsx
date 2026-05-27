@@ -5,8 +5,11 @@ import StarComponent from "./_components/StarComponent";
 import InputChat from "./_components/InputChat";
 
 type ChatState = 'idle' | 'thinking' | 'answered';
+interface CardAIProps {
+    onClose?: () => void;
+}
 
-function CardAI(){
+function CardAI({ onClose }: CardAIProps) {
     const [currentState, setCurrentState] = useState<ChatState>('idle');
     const [selectedQuestion, setSelectedQuestion] = useState<string>('');
 
@@ -23,8 +26,10 @@ function CardAI(){
             <div className="relative w-full h-full overflow-hidden rounded-2xl bg-white/60 backdrop-blur-md border border-white/20 shadow-sm flex items-center justify-center">
                 <div className="absolute w-84.25 h-84.5 left-30 bottom-12 rounded-full bg-purple blur-[150px] mix-blend-multiply opacity-60"></div>
                 <div className="absolute w-60 h-60 right-22 bottom-0 rounded-full bg-blue blur-[120px] mix-blend-multiply opacity-60"></div>
-                <div className="absolute top-0 left-0 z-10 flex items-center p-4 gap-5 w-full h-17.5  text-black font-medium border-b border-gray-200">
-                    <AiComponent width={40} height={40}/>
+                <div className="absolute top-0 left-0 z-10 flex items-center p-4 gap-5 w-full h-17.5 text-black font-medium border-b border-gray-200">
+                    <div>
+                        <AiComponent width={40} height={40}/>
+                    </div>
                     <div className="flex items-center justify-between w-full pr-2">
                         <div>
                             <h4>HRD ROOM AI Assistant</h4>
@@ -32,7 +37,9 @@ function CardAI(){
                                 Ask any question about your student or any report
                             </p>
                         </div>
-                        <div className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors">
+                        <div 
+                            onClick={onClose}
+                            className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors">
                             X
                         </div>
                     </div>
@@ -48,9 +55,9 @@ function CardAI(){
                             </div>
                         )}
                         {currentState !== 'idle' && (
-                            <div className="w-full flex flex-col gap-4 justify-end pb-2">
+                            <div className="w-full flex flex-col gap-8 justify-end pb-2">
                                 <div className="flex justify-end items-center gap-2 self-end max-w-[85%] ml-auto">
-                                    <div className="bg-white border border-purple-100 text-gray-800 px-4 py-2.5 rounded-2xl rounded-tr-none shadow-sm text-[14px]">
+                                    <div className="bg-white/80 border border-white text-gray-800 px-4 py-2.5 rounded-2xl shadow-sm text-[14px] z-30">
                                         {selectedQuestion}
                                     </div>
                                     <div className="w-8 h-8 rounded-full bg-purple-200 overflow-hidden shrink-0 border border-white">
@@ -63,7 +70,7 @@ function CardAI(){
                                         <StarComponent width={20} height={20} color="white" />
                                     </div>
                                     
-                                    <div className="bg-white border border-gray-100 text-gray-800 px-4 py-2.5 rounded-2xl shadow-sm text-[14px]">
+                                    <div className="bg-white/80 border border-white text-gray-800 px-4 py-2.5 rounded-2xl shadow-sm text-[14px] z-30">
                                         {currentState === 'thinking' ? (
                                             <div className="flex items-center gap-1.5 py-1 px-2">
                                                 <div className="w-2 h-2 bg-purple-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
