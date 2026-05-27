@@ -13,6 +13,7 @@ import styles from "../[id]/_components/Instruction/Instruction.module.css";
 import { Assessment } from "../types";
 import { STORAGE_KEY, DEFAULT_ASSESSMENTS } from "../mockData";
 import { useRole } from "../hook/useRole";
+import VideoMeeting from "../communication/[id]/_components/VideoMeeting";
 
 type Tab = "instruction" | "communication" | "submitassignment" | "studentwork";
 
@@ -312,7 +313,7 @@ export default function AssessmentDetailPage() {
 
       {activeTab === "communication" && (
         <div style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
-          Communication Room coming soon...
+          <VideoMeeting />
         </div>
       )}
 

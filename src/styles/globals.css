@@ -54,6 +54,7 @@
   --background-color-purple: #241cab;
   --background-color-accent-purple: #5d53f9;
   --background-color-light-purple: #93aafd;
+  --background-color-blue: #E9F6FF;
 
   /* TEXT COLORS */
   --text-color-primary: #000000;
@@ -64,6 +65,8 @@
   --text-color-label: #374151;
   --text-color-ai: #3E3E3E;
   --text-color-disabled: #BABABA;
+  --text-color-border-default: #E5E7EB;
+  --text-color-main-linear: #5d53f9;
 
 }
 
