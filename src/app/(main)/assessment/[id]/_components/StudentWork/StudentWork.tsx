@@ -12,6 +12,11 @@ import {
   TIME_SPENT_TODAY,
 } from "./mockupData";
 
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const filterOptions = ["All Classes", "Class A", "Class B", "Class C"];
+const totalPages = 5;
+
 // ── Icons ─────────────────────────────────────────────────────────────────────
 
 function ChevronRightIcon() {
@@ -249,23 +254,22 @@ function SessionBadge({ status }: { status: string }) {
   );
 }
 
-// ── Derived constants ─────────────────────────────────────────────────────────
-
-const REMAINING = DAILY_REQUIRED - TIME_SPENT_TODAY;
-const TOTAL_TIME_SPENT_MIN = MOCK_SESSION_LOG.reduce(
-  (a, s) => a + s.duration,
-  0,
-);
-const TOTAL_HRS = Math.floor(TOTAL_TIME_SPENT_MIN / 60);
-const TOTAL_MINS = TOTAL_TIME_SPENT_MIN % 60;
-const totalPages = 5;
-
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default function Studentwork() {
   const { isStudent } = useRole();
   const [page, setPage] = useState(1);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterValue, setFilterValue] = useState("All Classes");
   const isSubmitted = false;
+
+  const REMAINING = DAILY_REQUIRED - TIME_SPENT_TODAY;
+  const TOTAL_TIME_SPENT_MIN = MOCK_SESSION_LOG.reduce(
+    (a, s) => a + s.duration,
+    0,
+  );
+  const TOTAL_HRS = Math.floor(TOTAL_TIME_SPENT_MIN / 60);
+  const TOTAL_MINS = TOTAL_TIME_SPENT_MIN % 60;
 
   return (
     <div className={styles.layout}>
@@ -608,6 +612,97 @@ export default function Studentwork() {
                   <span className={styles.statLabelMuted}>Assigned</span>
                 </span>
               </div>
+              <div style={{ position: "relative", display: "inline-block" }}>
+                <button
+                  onClick={() => setFilterOpen(!filterOpen)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 32,
+                    padding: "10px 16px",
+                    background: "#fff",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: 10,
+                    fontSize: 14,
+                    fontWeight: 500,
+                    color: "#374151",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    minWidth: 160,
+                    justifyContent: "space-between",
+                  }}
+                >
+                  {filterValue}
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="#9ca3af"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{
+                      transform: filterOpen ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "transform 0.2s ease",
+                    }}
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+
+                {filterOpen && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "calc(100% + 6px)",
+                      left: 0,
+                      background: "#fff",
+                      border: "1px solid #e5e7eb",
+                      borderRadius: 10,
+                      boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                      zIndex: 50,
+                      minWidth: "100%",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {filterOptions.map((option) => (
+                      <button
+                        key={option}
+                        onClick={() => {
+                          setFilterValue(option);
+                          setFilterOpen(false);
+                        }}
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          padding: "10px 16px",
+                          background:
+                            filterValue === option ? "#f5f4ff" : "transparent",
+                          border: "none",
+                          textAlign: "left",
+                          fontSize: 14,
+                          fontWeight: filterValue === option ? 600 : 400,
+                          color: filterValue === option ? "#5b52e8" : "#374151",
+                          cursor: "pointer",
+                          fontFamily: "inherit",
+                          transition: "background 0.15s",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background =
+                            filterValue === option ? "#f5f4ff" : "#f9fafb")
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background =
+                            filterValue === option ? "#f5f4ff" : "transparent")
+                        }
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className={styles.folderGrid}>
@@ -626,9 +721,9 @@ export default function Studentwork() {
             </div>
 
             <div className={styles.panelFooter}>
-              <select className={styles.select}>
-                <option>All Classes</option>
-              </select>
+              {/* Custom Dropdown */}
+
+              {/* Pagination */}
               <div className={styles.pagination}>
                 <button
                   className={styles.pageBtn}

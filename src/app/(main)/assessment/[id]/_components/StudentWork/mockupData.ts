@@ -39,8 +39,7 @@ export const MOCK_STUDENTS: Student[] = [
   {
     id: 1,
     name: "Chhorn Chamreun",
-    avatar:
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Chhorn&backgroundColor=b6e3f4",
+    avatar: "/images/profile/ReournChormrern.avif",
     file: "16_CHHORN_CHAMREUN_ASSIGNMENT.pdf",
     date: "13 May 2026",
     time: "11:00 PM",
@@ -50,8 +49,7 @@ export const MOCK_STUDENTS: Student[] = [
   {
     id: 2,
     name: "Keo Vuthana",
-    avatar:
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=KeoV&backgroundColor=c0aede",
+    avatar: "/images/profile/KeoVuthtana.jpg",
     file: "09_KEO_VUTHANA_ASSIGNMENT.pdf",
     date: "13 May 2026",
     time: "11:00 PM",
@@ -61,8 +59,7 @@ export const MOCK_STUDENTS: Student[] = [
   {
     id: 3,
     name: "Chea Penghoung",
-    avatar:
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Chea&backgroundColor=d1d4f9",
+    avatar: "/images/profile/Penghurng.avif",
     file: "02_CHEA_PENGHOUNG_ASSIGNMENT.pdf",
     date: "13 May 2026",
     time: "11:00 PM",
@@ -72,8 +69,7 @@ export const MOCK_STUDENTS: Student[] = [
   {
     id: 4,
     name: "Uy Chakriya",
-    avatar:
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=UyCh&backgroundColor=ffd5dc",
+    avatar: "/images/profile/UyChakriya.jpg",
     file: "18_UY_CHAKRIYA_ASSIGNMENT.pdf",
     date: "13 May 2026",
     time: "11:00 PM",
@@ -83,8 +79,7 @@ export const MOCK_STUDENTS: Student[] = [
   {
     id: 5,
     name: "Yann Vanneth",
-    avatar:
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=Yann&backgroundColor=b6e3f4",
+    avatar: "/images/profile/YannVannet.jpg",
     file: "12_YANN_VANNETH_ASSIGNMENT.pdf",
     date: "13 May 2026",
     time: "11:00 PM",
@@ -94,8 +89,7 @@ export const MOCK_STUDENTS: Student[] = [
   {
     id: 6,
     name: "Chhor Vichey",
-    avatar:
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=ChhorV&backgroundColor=c0aede",
+    avatar: "/images/profile/Vichey.avif",
     file: "14_CHHOR_VICHEY_ASSIGNMENT.pdf",
     date: "13 May 2026",
     time: "11:00 PM",
@@ -104,10 +98,9 @@ export const MOCK_STUDENTS: Student[] = [
   },
   {
     id: 7,
-    name: "Try Limhai",
-    avatar:
-      "https://api.dicebear.com/7.x/avataaars/svg?seed=TryL&backgroundColor=d1d4f9",
-    file: "15_TRY_LIMHAI_ASSIGNMENT.pdf",
+    name: "Horn Vanhong",
+    avatar: "/images/profile/Vannhong.jpg",
+    file: "15_HORN_VANHONG_ASSIGNMENT.pdf",
     date: "13 May 2026",
     time: "11:00 PM",
     size: "18 MB",

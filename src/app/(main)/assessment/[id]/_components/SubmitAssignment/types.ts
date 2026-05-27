@@ -6,6 +6,13 @@ export interface Instructor {
   role: string;
 }
 
+export interface EvaluationFile {
+  name: string;
+  size: string;
+  type: string;
+  url?: string;
+}
+
 export interface EvaluationResult {
   score: number;
   total: number;
@@ -13,4 +20,5 @@ export interface EvaluationResult {
   evaluatedAt: string;
   instructor: Instructor;
   feedback: string;
+  files?: EvaluationFile[];
 }

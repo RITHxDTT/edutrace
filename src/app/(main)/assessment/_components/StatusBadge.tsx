@@ -6,8 +6,8 @@ export type AssessmentStatus =
 
 const statusStyles: Record<AssessmentStatus, string> = {
   "Not Yet": "bg-indigo-50 text-indigo-500",
-  "In Progress": "bg-emerald-50 text-emerald-600",
-  Closed: "bg-slate-100 text-slate-600",
+  "In Progress": "bg-blue-100 text-blue-600",
+  Closed: "bg-emerald-50 text-emerald-600",
   Archived: "bg-rose-50 text-rose-500",
 };
 

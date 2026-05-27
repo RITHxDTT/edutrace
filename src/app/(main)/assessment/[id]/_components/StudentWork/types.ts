@@ -1,5 +1,7 @@
 // ── Assessment ────────────────────────────────────────────────────────────────
 
+import { StaticImageData } from "next/image";
+
 export interface Assessment {
   id: number;
   title: string;
@@ -14,7 +16,7 @@ export interface Assessment {
 export interface Student {
   id: number;
   name: string;
-  avatar: string;
+  avatar: string
   file: string;
   date: string;
   time: string;

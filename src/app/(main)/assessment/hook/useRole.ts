@@ -1,7 +1,7 @@
 // hooks/useRole.ts
-export type UserRole = "student" | "teacher" | "admin";
+export type UserRole = "student" | "teacher";
 
-const CURRENT_ROLE: UserRole = "student"; // change here only
+const CURRENT_ROLE: UserRole = "teacher"; // change here only
 
 export function useRole() {
   const role = CURRENT_ROLE;

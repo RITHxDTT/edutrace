@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { TEST_EVALUATION } from "./mockData";
+import { MOCK_SUBMITTED_FILES, TEST_EVALUATION } from "./mockData";
 import type { EvaluationResult } from "./types";
 
 // ── Icons ─────────────────────────────────────────────────────────────────────
@@ -9,8 +9,8 @@ import type { EvaluationResult } from "./types";
 function UploadIcon() {
   return (
     <svg
-      width="36"
-      height="36"
+      width="32"
+      height="32"
       fill="none"
       viewBox="0 0 24 24"
       stroke="#6b5ef8"
@@ -19,17 +19,17 @@ function UploadIcon() {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12V4m0 0l-3 3m3-3l3 3"
+        d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
       />
     </svg>
   );
 }
 
-function FileIcon() {
+function FolderIcon() {
   return (
     <svg
-      width="18"
-      height="18"
+      width="22"
+      height="22"
       fill="none"
       viewBox="0 0 24 24"
       stroke="#f59e0b"
@@ -38,7 +38,7 @@ function FileIcon() {
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
-        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"
       />
     </svg>
   );
@@ -140,7 +140,7 @@ function getExt(name: string): string {
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 interface SubmitAssignmentProps {
-  onSubmit?: (files: File[], note: string) => void;
+  onSubmit?: (files: File[]) => void;
   onUnsubmit?: () => void;
   evaluation?: EvaluationResult | null;
 }
@@ -153,7 +153,6 @@ export default function SubmitAssignment({
   evaluation = TEST_EVALUATION,
 }: SubmitAssignmentProps) {
   const [files, setFiles] = useState<File[]>([]);
-  const [note, setNote] = useState("");
   const [dragging, setDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -176,8 +175,17 @@ export default function SubmitAssignment({
 
   const handleSubmit = () => {
     if (files.length === 0) return;
-    onSubmit?.(files, note);
+    onSubmit?.(files);
   };
+
+  // ── File list source ───────────────────────────────────────────────────────
+  const evaluationFiles = evaluation?.files ?? [];
+  const showEvaluationFiles = isEvaluated && evaluationFiles.length > 0;
+
+  // When not evaluated, show MOCK_SUBMITTED_FILES as already-submitted files
+  const submittedFiles = !isEvaluated ? MOCK_SUBMITTED_FILES : [];
+  const showSubmittedFiles = submittedFiles.length > 0;
+  const showLocalFiles = files.length > 0;
 
   return (
     <div
@@ -189,7 +197,7 @@ export default function SubmitAssignment({
         alignItems: "start",
       }}
     >
-      {/* ── LEFT — Submit form ── */}
+      {/* ── LEFT — Submit form ────────────────────────────────────────────── */}
       <div
         style={{
           background: "#fff",
@@ -197,6 +205,8 @@ export default function SubmitAssignment({
           border: "1px solid #e8eaf2",
           overflow: "hidden",
           boxShadow: "0 2px 8px rgba(80,80,140,0.06)",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         {/* Card header */}
@@ -211,8 +221,8 @@ export default function SubmitAssignment({
         >
           <div
             style={{
-              width: 44,
-              height: 44,
+              width: 48,
+              height: 48,
               borderRadius: 14,
               background: "#eeedf8",
               display: "flex",
@@ -222,8 +232,8 @@ export default function SubmitAssignment({
             }}
           >
             <svg
-              width="22"
-              height="22"
+              width="24"
+              height="24"
               fill="none"
               viewBox="0 0 24 24"
               stroke="#6b5ef8"
@@ -232,12 +242,12 @@ export default function SubmitAssignment({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 12V4m0 0l-3 3m3-3l3 3"
+                d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               />
             </svg>
           </div>
           <div>
-            <h2 style={{ fontSize: 17, fontWeight: 700, color: "#111827" }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: "#111827" }}>
               Submit Assignment
             </h2>
             <p style={{ fontSize: 13, color: "#9ca3af", marginTop: 2 }}>
@@ -246,7 +256,217 @@ export default function SubmitAssignment({
           </div>
         </div>
 
-        <div style={{ padding: "22px 24px" }}>
+        <div style={{ padding: "22px 24px", flex: 1 }}>
+          {/* ── File list (shown above drop zone) ─────────────────────────── */}
+          {(showEvaluationFiles || showSubmittedFiles || showLocalFiles) && (
+            <div style={{ marginBottom: 24 }}>
+              <p
+                style={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                  color: "#374151",
+                  marginBottom: 12,
+                }}
+              >
+                Uploaded Files (
+                {showEvaluationFiles
+                  ? evaluationFiles.length
+                  : showSubmittedFiles
+                    ? submittedFiles.length + files.length
+                    : files.length}
+                )
+              </p>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 10 }}
+              >
+                {/* Evaluated — read-only files */}
+                {showEvaluationFiles &&
+                  evaluationFiles.map((file, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 14,
+                        border: "1px solid #ececf5",
+                        borderRadius: 14,
+                        padding: "14px 18px",
+                        background: "#fff",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 42,
+                          height: 42,
+                          borderRadius: 12,
+                          background: "#fff8ec",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <FolderIcon />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 700,
+                            color: "#111827",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {file.name}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: 12,
+                            color: "#9ca3af",
+                            marginTop: 3,
+                          }}
+                        >
+                          {file.type}&nbsp;&nbsp;{file.size}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+
+                {/* Pending — already submitted files (read-only, no remove) */}
+                {showSubmittedFiles &&
+                  submittedFiles.map((file, i) => (
+                    <div
+                      key={`submitted-${i}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 14,
+                        border: "1px solid #ececf5",
+                        borderRadius: 14,
+                        padding: "14px 18px",
+                        background: "#fff",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 42,
+                          height: 42,
+                          borderRadius: 12,
+                          background: "#fff8ec",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <FolderIcon />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 700,
+                            color: "#111827",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {file.name}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: 12,
+                            color: "#9ca3af",
+                            marginTop: 3,
+                          }}
+                        >
+                          {file.type}&nbsp;&nbsp;{file.size}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+
+                {/* Newly added local files (removable) */}
+                {showLocalFiles &&
+                  files.map((file, i) => (
+                    <div
+                      key={`local-${i}`}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 14,
+                        border: "1px solid #ececf5",
+                        borderRadius: 14,
+                        padding: "14px 18px",
+                        background: "#fff",
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: 42,
+                          height: 42,
+                          borderRadius: 12,
+                          background: "#fff8ec",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <FolderIcon />
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 700,
+                            color: "#111827",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {file.name}
+                        </p>
+                        <p
+                          style={{
+                            fontSize: 12,
+                            color: "#9ca3af",
+                            marginTop: 3,
+                          }}
+                        >
+                          {getExt(file.name)}&nbsp;&nbsp;
+                          {formatBytes(file.size)}
+                        </p>
+                      </div>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeFile(i);
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "#9ca3af",
+                          padding: 6,
+                          borderRadius: 6,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <XIcon />
+                      </button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          )}
+
           {/* Drop zone */}
           <div
             onDragOver={(e) => {
@@ -255,13 +475,13 @@ export default function SubmitAssignment({
             }}
             onDragLeave={() => setDragging(false)}
             onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => !isEvaluated && fileInputRef.current?.click()}
             style={{
-              border: `2px dashed ${dragging ? "#6b5ef8" : "#d1d5f0"}`,
+              border: `1.5px dashed ${dragging ? "#6b5ef8" : "#d1d5f0"}`,
               borderRadius: 16,
-              padding: "36px 24px",
+              padding: "48px 24px",
               textAlign: "center",
-              cursor: "pointer",
+              cursor: isEvaluated ? "default" : "pointer",
               background: dragging ? "rgba(107,94,248,0.04)" : "#fafafe",
               transition: "border-color 0.15s, background 0.15s",
             }}
@@ -277,13 +497,13 @@ export default function SubmitAssignment({
               style={{
                 display: "flex",
                 justifyContent: "center",
-                marginBottom: 14,
+                marginBottom: 16,
               }}
             >
               <div
                 style={{
-                  width: 52,
-                  height: 52,
+                  width: 56,
+                  height: 56,
                   borderRadius: "50%",
                   background: "#eeedf8",
                   display: "flex",
@@ -296,16 +516,14 @@ export default function SubmitAssignment({
             </div>
             <p
               style={{
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: 600,
                 color: "#111827",
                 marginBottom: 6,
               }}
             >
               Drag &amp; drop your file here or{" "}
-              <span style={{ color: "#5b52e8", textDecoration: "underline" }}>
-                browse
-              </span>
+              <span style={{ color: "#5b52e8" }}>browse</span>
             </p>
             <p style={{ fontSize: 13, color: "#9ca3af", marginBottom: 4 }}>
               You can upload multiple files
@@ -314,147 +532,24 @@ export default function SubmitAssignment({
               Accepted formats: PDF, DOCX, ZIP, PNG, JPG, GIF, MP4, Link
             </p>
           </div>
-
-          {/* File list */}
-          {files.length > 0 && (
-            <div style={{ marginTop: 22 }}>
-              <p
-                style={{
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: "#374151",
-                  marginBottom: 10,
-                }}
-              >
-                Uploaded Files ({files.length})
-              </p>
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: 10 }}
-              >
-                {files.map((file, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 14,
-                      border: "1px solid #ececf5",
-                      borderRadius: 14,
-                      padding: "12px 16px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 38,
-                        height: 38,
-                        borderRadius: 10,
-                        background: "#fff8ec",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      <FileIcon />
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <p
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 700,
-                          color: "#111827",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {file.name}
-                      </p>
-                      <p
-                        style={{ fontSize: 12, color: "#9ca3af", marginTop: 2 }}
-                      >
-                        {getExt(file.name)} &nbsp;·&nbsp;{" "}
-                        {formatBytes(file.size)}
-                      </p>
-                    </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        removeFile(i);
-                      }}
-                      style={{
-                        background: "none",
-                        border: "none",
-                        cursor: "pointer",
-                        color: "#9ca3af",
-                        padding: 4,
-                        borderRadius: 6,
-                        display: "flex",
-                      }}
-                    >
-                      <XIcon />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Note textarea */}
-          <div style={{ marginTop: 22 }}>
-            <label
-              style={{
-                fontSize: 13,
-                fontWeight: 700,
-                color: "#374151",
-                display: "block",
-                marginBottom: 8,
-              }}
-            >
-              Note to Instructor{" "}
-              <span style={{ fontWeight: 400, color: "#9ca3af" }}>
-                (Optional)
-              </span>
-            </label>
-            <textarea
-              rows={3}
-              placeholder="Add any comments or notes for your instructor..."
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              style={{
-                width: "100%",
-                border: "1px solid #e0e2ef",
-                borderRadius: 12,
-                padding: "12px 14px",
-                fontSize: 13,
-                color: "#374151",
-                resize: "none",
-                outline: "none",
-                fontFamily: "inherit",
-                lineHeight: 1.6,
-                boxSizing: "border-box",
-              }}
-            />
-          </div>
         </div>
 
-        {/* Submit / Unsubmit button */}
+        {/* ── Submit / Unsubmit button ───────────────────────────────────────── */}
         <div style={{ padding: "0 24px 24px" }}>
           {isEvaluated ? (
             <button
               onClick={onUnsubmit}
               style={{
                 width: "100%",
-                height: 52,
+                height: 54,
                 borderRadius: 14,
                 background: "#4f46e5",
                 color: "#fff",
                 border: "none",
-                fontSize: 15,
+                fontSize: 16,
                 fontWeight: 700,
                 cursor: "pointer",
                 fontFamily: "inherit",
-                transition: "background 0.15s",
               }}
             >
               Unsubmit
@@ -465,19 +560,18 @@ export default function SubmitAssignment({
               disabled={files.length === 0}
               style={{
                 width: "100%",
-                height: 52,
+                height: 54,
                 borderRadius: 14,
                 background: files.length === 0 ? "#c4c2f0" : "#4f46e5",
                 color: "#fff",
                 border: "none",
-                fontSize: 15,
+                fontSize: 16,
                 fontWeight: 700,
                 cursor: files.length === 0 ? "not-allowed" : "pointer",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 8,
-                transition: "background 0.15s",
                 fontFamily: "inherit",
               }}
             >
@@ -501,7 +595,7 @@ export default function SubmitAssignment({
         </div>
       </div>
 
-      {/* ── RIGHT — Evaluation result panel ── */}
+      {/* ── RIGHT — Evaluation result panel ──────────────────────────────────── */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <h2 style={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>
           Evaluation Result
@@ -561,8 +655,6 @@ export default function SubmitAssignment({
               >
                 Instructor Feedback
               </h3>
-
-              {/* Instructor row */}
               <div
                 style={{
                   display: "flex",
@@ -621,8 +713,6 @@ export default function SubmitAssignment({
                   </span>
                 </div>
               </div>
-
-              {/* Feedback box */}
               <div
                 style={{
                   background: "#eeedf8",
@@ -681,10 +771,10 @@ export default function SubmitAssignment({
                 <ClockIcon />
               </div>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: "#92400e" }}>
+                <p style={{ fontSize: 14, fontWeight: 700, color: "#3E3E3E" }}>
                   Pending Review
                 </p>
-                <p style={{ fontSize: 13, color: "#b45309", marginTop: 2 }}>
+                <p style={{ fontSize: 13, color: "#6B7280", marginTop: 2 }}>
                   Not evaluated yet
                 </p>
               </div>
@@ -702,7 +792,7 @@ export default function SubmitAssignment({
                 alignItems: "center",
                 textAlign: "center",
                 gap: 12,
-                minHeight: 200,
+                minHeight: 404,
                 justifyContent: "center",
               }}
             >
@@ -743,12 +833,13 @@ export default function SubmitAssignment({
             {/* Notification notice */}
             <div
               style={{
-                background: "#eeedf8",
-                borderRadius: 14,
+                background: "#EEEFFF",
+                borderRadius: 10,
                 padding: "14px 18px",
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
+                border: "1.5px solid #5B5EDD",
               }}
             >
               <BellIcon />

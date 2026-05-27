@@ -23,26 +23,54 @@ export default function FolderCard({
   fileName = "16_CHHORN_CHAMREUN_ASSIGNMENT.pdf",
   date = "13 May 2026",
   time = "11:00 PM",
-  fileSize = "42.MB",
+  fileSize = "42 MB",
 }: FolderCardProps) {
-  const { bg, color } = statusConfig[status] ?? statusConfig["Handed In"];
+  const { color } = statusConfig[status] ?? statusConfig["Handed In"];
   const truncated =
     fileName.length > 18 ? fileName.slice(0, 18) + "..." : fileName;
 
   return (
-    <div style={{ paddingTop: 22, display: "inline-block" }}>
+    <div style={{ paddingTop: 28, display: "inline-block" }}>
       <div
         style={{
           fontFamily:
             "-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif",
           background: "#fff",
           borderRadius: 18,
-          padding: "28px 16px 14px",
-          width: 314,
+          padding: "36px 20px 16px",
+          width: 370,
           boxShadow: "0 2px 20px rgba(0,0,0,0.10)",
           position: "relative",
         }}
       >
+        {/* Watermark icon */}
+        <div
+          style={{
+            position: "absolute",
+            right: -18,
+            bottom: -10,
+            opacity: 0.045,
+            pointerEvents: "none",
+            userSelect: "none",
+          }}
+        >
+          <svg
+            width="160"
+            height="160"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#000"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="9" y1="13" x2="15" y2="13" />
+            <line x1="9" y1="17" x2="13" y2="17" />
+          </svg>
+        </div>
+
         {/* Avatar — overlaps top edge */}
         <div
           style={{
@@ -78,21 +106,24 @@ export default function FolderCard({
           )}
         </div>
 
-        {/* Badge — top right */}
+        {/* Name + Badge row */}
         <div
           style={{
             display: "flex",
-            justifyContent: "flex-end",
-            marginBottom: 4,
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: 10,
           }}
         >
+          <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a" }}>
+            {studentName}
+          </div>
           <span
             style={{
-              background: bg,
               color,
-              fontSize: 10,
-              fontWeight: 600,
-              padding: "3px 9px",
+              fontSize: 11,
+              fontWeight: 700,
+              padding: "4px 10px",
               borderRadius: 20,
               whiteSpace: "nowrap",
             }}
@@ -101,27 +132,15 @@ export default function FolderCard({
           </span>
         </div>
 
-        {/* Name — below avatar */}
-        <div
-          style={{
-            fontSize: 13,
-            fontWeight: 600,
-            color: "#1a1a1a",
-            marginBottom: 8,
-          }}
-        >
-          {studentName}
-        </div>
-
         {/* File name */}
         <div
           title={fileName}
           style={{
-            fontSize: 16,
-            fontWeight: 700,
+            fontSize: 22,
+            fontWeight: 800,
             color: "#111",
-            letterSpacing: -0.3,
-            margin: "0 0 12px",
+            letterSpacing: -0.5,
+            margin: "10px 0 18px",
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
@@ -136,14 +155,11 @@ export default function FolderCard({
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            borderTop: "1px solid #f0f0f0",
-            paddingTop: 10,
+            paddingTop: 12,
           }}
         >
           <MetaItem icon={<CalendarIcon />} label={date} />
-          <Sep />
           <MetaItem icon={<ClockIcon />} label={time} />
-          <Sep />
           <MetaItem icon={<FileIcon />} label={fileSize} />
         </div>
       </div>
@@ -168,10 +184,6 @@ function MetaItem({ icon, label }: { icon: React.ReactNode; label: string }) {
       </span>
     </div>
   );
-}
-
-function Sep() {
-  return <div style={{ width: 1, height: 30, background: "#f0f0f0" }} />;
 }
 
 function CalendarIcon() {

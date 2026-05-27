@@ -15,7 +15,7 @@ const STATUS_OPTIONS = [
   "All Status",
   "Not Yet",
   "In Progress",
-  "Completed",
+  "Closed",
   "Archived",
 ] as const;
 
@@ -34,7 +34,7 @@ function saveAssessments(assessments: Assessment[]) {
 }
 
 export default function AssessmentPage() {
-  const { isStudent } = useRole(); // ← single import, no local role state
+  const { isStudent } = useRole(); 
 
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [dropdownOpen, setDropdownOpen] = useState(false);
