@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "../styles/globals.css";
 import { cn } from "@/lib/utils";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSidebar from "@/components/Sidebar/AppSidebar";
-import AppNavbar from "@/components/Topbar/AppNavbar";
+import { HeroUIProvider } from "@heroui/system";
 
 const fredoka = Fredoka({
   variable: "--font-fredoka-sans",
@@ -12,8 +10,7 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "Growthyflow - Landing",
-
+  title: "Edutrace - Landing",
 };
 
 export default function RootLayout({
@@ -22,26 +19,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={cn(
-        "h-full",
-        "antialiased",
-        fredoka.variable,
-      )}
-    >
-      <body className="min-h-full flex flex-col overflow-hidden">
-        <div className="absolute inset-0 bg-main-img bg-cover bg-center" />
-        <div className="absolute inset-0 bg-[#F4F7FE]/70" />
-        <div className="relative z-10 flex flex-1">
-          <SidebarProvider>
-            <AppSidebar />
-            <div className="flex flex-col flex-1">
-              <AppNavbar />
-              <main className="px-5 py-5 flex-1">{children}</main>
-            </div>
-          </SidebarProvider>
-        </div>
+    <html lang="en" className={cn("h-full", "antialiased", fredoka.variable)}>
+      <body className="min-h-full flex flex-col">
+        <HeroUIProvider>
+          <main className="flex-1">{children}</main>
+        </HeroUIProvider>
       </body>
     </html>
   );

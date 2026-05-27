@@ -1,0 +1,511 @@
+.iconEdit {
+  stroke: #3b82f6; 
+  transition: stroke 0.2s ease;
+}
+
+.iconEdit:hover {
+  stroke: #1e40af;
+}
+
+.iconDelete {
+  stroke: #ef4444;
+  transition: stroke 0.2s ease;
+}
+
+.iconDelete:hover {
+  stroke: #b91c1c; 
+}
+
+.iconLink {
+  stroke: #6b7280; 
+  transition: stroke 0.2s ease;
+}
+
+.iconLink:hover {
+  stroke: #374151;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menuWrapper {
+  position: relative;
+}
+
+.menuButton {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid #ececf3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 180px;
+  background: white;
+  border: 1px solid #ececf3;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 8px;
+  z-index: 100;
+}
+
+.menuItem,
+.menuItemDelete {
+  width: 100%;
+  height: 42px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.menuItem {
+  color: #374151;
+}
+
+.page {
+  min-height: 100vh;
+  padding-bottom: 3rem;
+}
+
+/* Top Nav */
+.topnav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 32px 0;
+  color: #9ca3af;
+  font-size: 13px;
+}
+.breadcrumbLink {
+  color: #9ca3af;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.breadcrumbLink:hover {
+  color: #374151;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 32px 0;
+  gap: 24px;
+}
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.headerIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.4px;
+  margin-bottom: 6px;
+}
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+.meta strong {
+  color: #374151;
+  font-weight: 600;
+}
+.metaDivider {
+  width: 1px;
+  height: 14px;
+  background: #d1d5db;
+}
+.metaDate {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.pointsBadge {
+  padding: 0;
+  background: none;
+  border: none;
+  color: #5b52e8;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Tabs */
+.tabs {
+  padding: 20px 32px 0;
+  border-bottom: 1.5px solid #dde0ee;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 0;
+}
+.tab {
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: #9ca3af;
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+.tab:hover {
+  color: #374151;
+}
+.tabActive {
+  color: #2E25C9;
+  font-weight: 600;
+  border-bottom-color: #5b52e8;
+  background: none;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding: 0 32px;
+}
+
+/* Card */
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e8eaf2;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(80, 80, 140, 0.06);
+}
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 0;
+}
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+.cardHeaderRow .cardHeader {
+  margin-bottom: 0;
+}
+.cardIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #eeedf8;
+  color: #6b63ef;
+}
+.cardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.divider {
+  height: 1px;
+  background: #f0f1f8;
+  margin: 18px 0;
+}
+
+/* Task Description */
+.taskDesc {
+  font-size: 13.5px;
+  line-height: 1.75;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+.reqLabel {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #374151;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.reqList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.reqItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: #4b5563;
+}
+.reqDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #6b63ef;
+  flex-shrink: 0;
+}
+
+/* Attachments */
+.attachCount {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+.attachList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+.attachRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border-bottom: none;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(80, 80, 140, 0.08);
+  border: 1px solid #f0f1f8;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.attachRow:last-child {
+  border-bottom: none;
+}
+.attachIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.attachInfo {
+  flex: 1;
+  min-width: 0;
+}
+.attachName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+.attachMeta {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+}
+.attachAction {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border: none;
+  background: none;
+  color: #5b52e8;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  border-radius: 8px;
+  transition: background 0.15s;
+}
+.attachAction:hover {
+  background: #f0effd;
+}
+
+/* ─── Grading Rubric ─── */
+.totalPts {
+  font-size: 13px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #EEEFFF;
+ 
+  border-radius: 10px;
+  padding: 6px 14px;
+}
+.totalPtsVal {
+  font-weight: 700;
+  color: #5b52e8;
+  background: #eeedf8;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.rubricGrid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+.rubricItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #EEEFFF;
+  border-radius: 10px;
+}
+.rubricItem:first-child {
+  padding-left: 16px;
+}
+.rubricItem:last-child {
+  border-right: 1px solid #e0ddf8;
+}
+.rubricLabel {
+  font-size: 13.5px;
+  color: #374151;
+  font-weight: 500;
+}
+.rubricPts {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #5b52e8;
+  background: #ecedf9;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.rubricBar {
+  display: none;
+}
+.rubricBarSegment {
+  border-radius: 100px;
+}
+.rubricFooter {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #9ca3af;
+  border-top: 1px solid #eeedf8;
+  padding-top: 14px;
+  margin-top: 4px;
+}
+.rubricFooterRight strong {
+  color: #374151;
+  font-weight: 600;
+}
+
+/* Assessment Time */
+.timeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+.timeCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #ffffff;
+
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+}
+.timeCardIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #EEEFFF;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b63ef;
+  flex-shrink: 0;
+}
+.timeCardLabel {
+  font-size: 11.5px;
+  color: #9ca3af;
+  margin-bottom: 3px;
+}
+.timeCardValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.timeCardUnit {
+  font-size: 14px;
+  font-weight: 400;
+  color: #6b7280;
+  letter-spacing: 0;
+  margin-left: 3px;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    padding: 0 16px;
+  }
+  .header {
+    flex-direction: column;
+    padding: 20px 16px 0;
+  }
+  .tabs {
+    padding: 16px 16px 0;
+    overflow-x: auto;
+  }
+  .topnav {
+    padding: 14px 16px 0;
+  }
+  .timeGrid {
+    grid-template-columns: 1fr;
+  }
+}

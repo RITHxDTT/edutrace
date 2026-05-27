@@ -1,0 +1,406 @@
+.page {
+  min-height: 100vh;
+  background: var(--bg-page);
+  padding-bottom: 3rem;
+}
+
+/* Top Nav */
+.topnav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 32px 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.breadcrumbLink {
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.breadcrumbLink:hover {
+  color: var(--text-primary);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 28px 32px 0;
+  gap: 24px;
+}
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.headerIcon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #6b5ef8 0%, #8b7fff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(107, 94, 248, 0.35);
+}
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+}
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+.meta strong {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+.metaDivider {
+  width: 1px;
+  height: 14px;
+  background: var(--border-strong);
+}
+.metaDate {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.pointsBadge {
+  padding: 10px 22px;
+  border-radius: 10px;
+  background: var(--accent-bg-strong);
+  border: 1.5px solid var(--accent);
+  color: var(--accent-light);
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Tabs */
+.tabs {
+  padding: 24px 32px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+  display: flex;
+  gap: 4px;
+}
+.tab {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1px;
+  font-family: inherit;
+  transition: color 0.15s;
+  border-radius: 8px 8px 0 0;
+}
+.tab:hover {
+  color: var(--text-primary);
+}
+.tabActive {
+  color: var(--accent-light);
+  font-weight: 600;
+  border-bottom-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  padding: 0 32px;
+}
+
+/* Card */
+.card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  padding: 24px;
+  transition: border-color 0.2s;
+}
+.card:hover {
+  border-color: var(--border-strong);
+}
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+.cardHeaderRow .cardHeader {
+  margin-bottom: 0;
+}
+.cardIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.cardTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 18px 0;
+}
+
+/* Task Description */
+.taskDesc {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+.reqLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.reqList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.reqItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+.reqDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Attachments */
+.attachCount {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.attachList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.attachRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  transition: background 0.15s;
+  cursor: pointer;
+}
+.attachRow:hover {
+  background: rgba(255,255,255,0.03);
+}
+.attachIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.attachInfo {
+  flex: 1;
+  min-width: 0;
+}
+.attachName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.attachMeta {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.attachAction {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  background: none;
+  color: var(--accent-light);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s;
+}
+.attachAction:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+}
+
+/* Grading Rubric */
+.totalPts {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.totalPtsVal {
+  font-weight: 700;
+  color: var(--accent-light);
+}
+.rubricGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.rubricItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+}
+.rubricLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.rubricPts {
+  font-size: 13px;
+  font-weight: 700;
+}
+.rubricBar {
+  display: flex;
+  height: 6px;
+  border-radius: 100px;
+  overflow: hidden;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+.rubricBarSegment {
+  border-radius: 100px;
+  transition: flex 0.3s ease;
+}
+.rubricFooter {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+.rubricFooterRight strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Assessment Time */
+.timeGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.timeCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: var(--bg-page);
+  border: 1px solid var(--border);
+}
+.timeCardIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(245,166,35,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--amber);
+  flex-shrink: 0;
+}
+.timeCardLabel {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.timeCardValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.timeCardUnit {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  letter-spacing: 0;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    padding: 0 16px;
+  }
+  .header {
+    flex-direction: column;
+    padding: 20px 16px 0;
+  }
+  .tabs {
+    padding: 16px 16px 0;
+  }
+  .topnav {
+    padding: 14px 16px 0;
+  }
+  .rubricGrid {
+    grid-template-columns: 1fr;
+  }
+}
