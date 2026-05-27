@@ -1,5 +1,6 @@
 import { signOut } from '@/auth';
 import { LogoutCurve } from 'iconsax-react';
+import { redirect } from 'next/navigation';
 
 export function SignOut({
     provider, ...props
@@ -9,7 +10,8 @@ export function SignOut({
         <form
             action={async () => {
                 "use server"
-                await signOut()
+                await signOut();
+                redirect('/logiin')
             }}
         >
             <button type='submit' className="flex items-center px-4 gap-5" {...props}>

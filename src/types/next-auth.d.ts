@@ -11,8 +11,13 @@ declare module "next-auth" {
       role?: string;
       username?: string;
       fullName?: string;
+      gender?: "MALE" | "FEMALE";
+      birthdate: CalendarDate | null;
+      address?: string;
       profileImageUrl?: string;
-      userId?: string
+      userId?: string;
+      address?: string;
+      classroomAbbre?: string;
     } & DefaultSession["user"]
   }
 
@@ -32,12 +37,17 @@ declare module "next-auth/jwt" {
     refresh_token?: string;
     error?: string;
 
-    role?: string,
-    email: string,
-    firstName?: string,
-    lastName?: string,
-    fullName?: string,
+    role?: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    fullName?: string;
+    username?: string;
+    gender: "MALE" | "FEMALE";
+    birthdate: CalendarDate | null;
+    address?: string; a
     profileImageUrl?: string;
-    userId?: string
+    userId?: string;
+    classroomAbbre?: string;
   }
 }

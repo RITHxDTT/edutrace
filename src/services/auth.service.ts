@@ -40,7 +40,7 @@ export const registerService = async (
         return { success: false, error: result?.message || "Registration failed", }
     }
 
-    return result
+    return result;
 };
 
 export const verifyOtpService = async (

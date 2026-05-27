@@ -31,7 +31,7 @@ const inputVariants = tv({
                 base: "font-sans",
                 label: "font-semibold text-label mb-1 transition-colors duration-150 group-focus-within:text-primary",
                 inputWrapper:
-                    "bg-input-field border border-transparent data-[focus=true]:border-primary/20 data-[focus=true]:bg-input-field data-[hover=true]:border-primary/20 data-[hover=true]:bg-input-field rounded-[8px] px-[27px] h-[60px] transition-all duration-150",
+                    "bg-input-field border border-transparent data-[focus=true]:border-primary/20 data-[focus=true]:bg-input-field data-[hover=true]:border-primary/20 data-[hover=true]:bg-input-field rounded-[8px] px-[18px] h-[50px] transition-all duration-150",
                 segment:
                     "text-sm text-primary placeholder:text-tertiary font-normal",
                 helperWrapper: "px-1 pt-1.5",

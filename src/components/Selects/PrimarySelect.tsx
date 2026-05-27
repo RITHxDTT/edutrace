@@ -51,7 +51,7 @@ const selectVariants = tv({
                 mainWrapper: "w-full",
                 innerWrapper: "",
                 trigger:
-                    "bg-input-field border border-transparent data-[focus=true]:border-primary/20 data-[focus=true]:bg-input-field data-[hover=true]:border-primary/20 data-[hover=true]:bg-input-field rounded-[8px] px-[27px] h-[60px] transition-all duration-150",
+                    "bg-input-field border border-transparent data-[focus=true]:border-primary/20 data-[focus=true]:bg-input-field data-[hover=true]:border-primary/20 data-[hover=true]:bg-input-field rounded-[8px] px-[18px] h-[50px] transition-all duration-150",
                 value:
                     "text-sm text-primary placeholder:text-tertiary bg-transparent font-normal h-full",
                 clearButton: "text-zinc-400 hover:text-zinc-600",

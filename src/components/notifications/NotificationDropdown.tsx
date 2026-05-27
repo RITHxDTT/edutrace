@@ -98,7 +98,7 @@ export default function NotificationDropdown() {
     <div className="absolute right-[-150px] top-12 w-[500px] rounded-2xl bg-white shadow-xl border border-gray-100 overflow-hidden z-[9999] font-sans">
       {/* HEADER */}
       <div className="px-6 pt-6 pb-2 bg-white">
-        <h2 className="text-2xl font-bold text-slate-900">
+        <h2 className="text-2xl font-semibold text-primary">
           All Notifications
         </h2>
       </div>
@@ -139,7 +139,7 @@ export default function NotificationDropdown() {
 
         <button
           onClick={markAllAsRead}
-          className="pb-3 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+          className="pb-3 text-sm font-semibold text-linear-main cursor-pointer hover:underline transition-colors"
         >
           Mark all as read
         </button>

@@ -5,20 +5,15 @@ import { useNavbar } from "@/context/NavbarContext";
 import { ProfileData } from "@/types/user";
 import { Session } from "next-auth";
 import NotificationBell from "../notifications/NotificationBell";
-import ProfileFormClient from "@/app/(main)/profile/_Components/ProfileFormClient";
-import UserProfile from "@/app/(main)/profile/_Components/UserProfile";
+import ProfileFormClient from "@/app/(main)/profile/_components/ProfileFormClient";
+import UserProfile from "@/app/(main)/profile/_components/UserProfile";
 
-export default function AppNavbar({ payload }: { payload: Session | null }) {
+export default function AppNavbar() {
   const { title } = useNavbar();
-  const fullName = payload?.user?.name;
-  const email = payload?.user?.email;
-  const ImageUrl = payload?.user?.profileImageUrl
-    ? payload.user.profileImageUrl
-    : "";
 
   return (
     <header>
-      <nav className="py-5 px-5 ">
+      <nav className="py-5 px-5">
         <div className="flex justify-between items-center ">
           <div className="flex items-center gap-5">
             <SidebarTrigger />
@@ -29,7 +24,7 @@ export default function AppNavbar({ payload }: { payload: Session | null }) {
           {/* Profile Info */}
           <div className="flex items-center gap-5 justify-end" >
             <NotificationBell />
-            {/* user profile  */}
+            {/* user profile  */} 
             <UserProfile />
           </div>
 

@@ -8,6 +8,5 @@ export default function NavbarTitle({ title, override = false }: { title: string
     useEffect(() => {
         setTitle(title, override);
     }, [title, override]);
-    console.log(title)
     return null;
 }
