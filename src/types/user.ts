@@ -9,3 +9,5 @@ interface ProfileData {
         profileImageUrl: string
     }
 }
+
+export type { ProfileData }

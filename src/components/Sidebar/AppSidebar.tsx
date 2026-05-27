@@ -8,7 +8,7 @@ import {
   SidebarMenuItem,
 } from "../ui/sidebar";
 import Image from "next/image";
-import { SignOut } from "../AutthComponents";
+import { SignOut } from "../AuthComponents";
 import SidebarTitle from "./_components/SidebarTitle";
 
 export default function AppSidebar() {
@@ -20,9 +20,9 @@ export default function AppSidebar() {
           <Image
             width={0}
             height={0}
-            src={"/images/logo/growthyFlowLogo.png"}
+            src={"/images/logo/edutraceLogo.png"}
             alt="Growthyflow Logo"
-            className="w-60 h-9.5 object-contain"
+            className="w-60 h-20 object-contain"
             unoptimized
             loading="eager"
           />

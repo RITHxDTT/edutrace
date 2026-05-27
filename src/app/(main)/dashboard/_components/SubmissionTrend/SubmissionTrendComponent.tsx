@@ -2,50 +2,26 @@
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
 import { ClipboardText, ClipboardTick } from 'iconsax-react';
+<<<<<<< Updated upstream:src/app/(main)/dashboard/_components/SubmissionTrend/page.tsx
+=======
+import { lineChartsParams } from "../../mockupData";
+>>>>>>> Stashed changes:src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx
 
-const lineChartsParams = {
-  series: [
-    {
-      id: 'series-1',
-      data: [3, 4, 1, 6, 5],
-      label: 'A',
-      area: true,
-      stack: 'total',
-      highlightScope: {
-        highlight: 'item',
-      },
-    },
-    {
-      id: 'series-2',
-      data: [4, 3, 1, 5, 8],
-      label: 'B',
-      area: true,
-      stack: 'total',
-      highlightScope: {
-        highlight: 'item',
-      },
-    },
-    {
-      id: 'series-3',
-      data: [4, 2, 5, 4, 1],
-      label: 'C',
-      area: true,
-      stack: 'total',
-      highlightScope: {
-        highlight: 'item',
-      },
-    },
-  ],
-  xAxis: [{ data: [0, 3, 6, 9, 12], scaleType: 'linear', id: 'axis1' }],
-  height: 400,
-} as const;
+//===>> Line Chart
 
+// export default function SubmissionTrendComponent({ data }) { 
+// // console.log(data.data)
+// console.log("data in ", data.data[0].onTime);
 export default function SubmissionTrendComponent() {
+
+<<<<<<< Updated upstream:src/app/(main)/dashboard/_components/SubmissionTrend/page.tsx
+export default function SubmissionTrendComponent() {
+=======
+>>>>>>> Stashed changes:src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx
   const [itemData, setItemData] = React.useState<LineItemIdentifier>();
   const [axisData, setAxisData] = React.useState<ChartsAxisData | null>();
 
@@ -53,7 +29,11 @@ export default function SubmissionTrendComponent() {
     <Stack
       direction={{ xs: 'column', md: 'row' }}
       spacing={{ xs: 0, md: 4 }}
-      sx={{ width: '100%' }}
+      sx={{
+        width: 'full',
+        overflow: 'hidden'
+      }}
+
     >
       <Box sx={{ flexGrow: 1 }}>
         <LineChart
@@ -65,7 +45,7 @@ export default function SubmissionTrendComponent() {
         />
       </Box>
 
-      <Stack direction="column" sx={{ width: { xs: '100%', md: '40%' } }}>
+      <Stack direction="column" sx={{ width: { xs: '100%', md: '0%' } }}>
         <Box
           sx={{
             display: 'flex',
@@ -73,17 +53,20 @@ export default function SubmissionTrendComponent() {
             alignItems: 'center',
           }}
         >
-          <Typography>Click on the chart</Typography>
+
           <IconButton
-            aria-label="reset"
             size="small"
             onClick={() => {
               setItemData(undefined);
               setAxisData(null);
             }}
+            aria-label="reset"
           >
+<<<<<<< Updated upstream:src/app/(main)/dashboard/_components/SubmissionTrend/page.tsx
             <ClipboardText size={20} color='black'/>
             {/* <UndoOutlinedIcon fontSize="small" /> */}
+=======
+>>>>>>> Stashed changes:src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx
           </IconButton>
         </Box>
       </Stack>
