@@ -6,7 +6,6 @@ import { NavbarProvider } from '@/context/NavbarContext'
 import { SessionProvider } from 'next-auth/react'
 import React from 'react'
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
 

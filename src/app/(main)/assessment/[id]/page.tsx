@@ -14,6 +14,7 @@ import { Assessment } from "../types";
 import { STORAGE_KEY, DEFAULT_ASSESSMENTS } from "../mockData";
 import { useRole } from "../hook/useRole";
 import VideoMeeting from "../communication/[id]/_components/VideoMeeting";
+import { participants } from "../communication/[id]/_components/User.mock";
 
 type Tab = "instruction" | "communication" | "submitassignment" | "studentwork";
 
