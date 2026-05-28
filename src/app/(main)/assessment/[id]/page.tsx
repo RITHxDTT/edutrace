@@ -314,7 +314,7 @@ export default function AssessmentDetailPage() {
 
       {activeTab === "communication" && (
         <div style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
-          <VideoMeeting />
+          <VideoMeeting initialParticipants={participants} />
         </div>
       )}
 

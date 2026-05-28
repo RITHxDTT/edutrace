@@ -1,14 +1,21 @@
 import { CalendarDate } from "@internationalized/date";
 
-interface RegisterFormData {
+// interface RegisterFormData {
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   password: string;
+//   classroomId: string;
+//   gender: "MALE" | "FEMALE";
+//   birthdate: CalendarDate | null;
+//   address: string;
+// }
+export interface RegisterFormData {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
-  classroomId: string;
-  gender: "MALE" | "FEMALE";
-  birthdate: CalendarDate | null;
-  address: string;
+  // gender: string
 }
 
 interface LoginFormData {

@@ -41,19 +41,22 @@ function PrimaryButton({
   children,
   ...props
 }: PrimaryButtonProps) {
+  // Scale icon size down if the button is extra small
+  const iconSize = size === "xs" ? 14 : 16;
+
   return (
     <Button
       className={cn(buttonVariants({ variant, size }), className)}
-      {...props}
+     { ...props}
     >
       {iconPosition === "left" && Icon && (
-        <Icon color={variant === "secondary" ? "black" : "white"} size={20} />
+        <Icon color={variant === "secondary" ? "black" : "white"} size={iconSize} />
       )}
 
       {children}
 
       {iconPosition === "right" && Icon && (
-        <Icon color={variant === "secondary" ? "black" : "white"} size={20} />
+        <Icon color={variant === "secondary" ? "black" : "white"} size={iconSize} />
       )}
     </Button>
   );

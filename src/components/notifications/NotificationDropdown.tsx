@@ -1,152 +1,143 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 import { Bell, MessageSquare, Plus, Upload } from "lucide-react";
-
 import { useNotificationStore } from "@/components/notifications/useNotificationStore";
+
+interface NotificationItem {
+  notificationId: string | number;
+  title: string;
+  content: string;
+  createdAt: string;
+  isRead: boolean;
+  senderAvatar?: string;
+}
+
+
+let cachedNow = Date.now();
+
+const timeStore = {
+  subscribe(cb: () => void) {
+    const interval = setInterval(() => {
+      cachedNow = Date.now(); 
+      cb();
+    }, 60000); 
+    return () => clearInterval(interval);
+  },
+  getSnapshot() {
+    return cachedNow; 
+  },
+  getServerSnapshot() {
+    return null;
+  }
+};
+
+function RelativeTime({ createdAt }: { createdAt: string }) {
+  const now = useSyncExternalStore(timeStore.subscribe, timeStore.getSnapshot, timeStore.getServerSnapshot);
+
+  if (!now) return <span className="text-[13px] font-medium text-gray-400">...</span>;
+
+  const created = parseAbsoluteToLocal(createdAt).toDate().getTime();
+  const diffInSeconds = Math.floor((created - now) / 1000);
+  const absSeconds = Math.abs(diffInSeconds);
+  const rtf = new Intl.RelativeTimeFormat("en", { style: "short", numeric: "always" });
+
+  let timeText = "";
+  if (absSeconds < 60) {
+    timeText = rtf.format(diffInSeconds, "second");
+  } else {
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const absMinutes = Math.abs(diffInMinutes);
+    if (absMinutes < 60) {
+      timeText = rtf.format(diffInMinutes, "minute");
+    } else {
+      const diffInHours = Math.floor(diffInMinutes / 60);
+      const absHours = Math.abs(diffInHours);
+      if (absHours < 24) {
+        timeText = rtf.format(diffInHours, "hour");
+      } else {
+        const diffInDays = Math.floor(diffInHours / 24);
+        timeText = rtf.format(diffInDays, "day");
+      }
+    }
+  }
+
+  return <div className="text-[13px] font-medium text-disabled whitespace-nowrap pl-2 pt-1 self-start">{timeText}</div>;
+}
 
 export default function NotificationDropdown() {
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
 
-  const notifications = useNotificationStore((state) => state.notifications);
+  const notifications = useNotificationStore((state) => state.notifications) as NotificationItem[];
   const markAllAsRead = useNotificationStore((state) => state.markAllAsRead);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const filteredNotifications = useMemo(() => {
-    if (activeTab === "unread") {
-      return notifications.filter((n) => !n.isRead);
-    }
-
+    if (activeTab === "unread") return notifications.filter((n) => !n.isRead);
     return notifications;
   }, [activeTab, notifications]);
 
-  
-  const getRelativeTime = (dateString: string) => {
-    const created = parseAbsoluteToLocal(dateString)
-      .toDate()
-      .getTime();
-
-    const now = Date.now();
-
-    const diffInSeconds = Math.floor((now - created) / 1000);
-
-    if (diffInSeconds < 60) {
-      return `${diffInSeconds}s ago`;
-    }
-
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-
-    if (diffInMinutes < 60) {
-      return `${diffInMinutes}m ago`;
-    }
-
-    const diffInHours = Math.floor(diffInMinutes / 60);
-
-    if (diffInHours < 24) {
-      return `${diffInHours}h ago`;
-    }
-
-    const diffInDays = Math.floor(diffInHours / 24);
-
-    return `${diffInDays}d ago`;
-  };
-
-  
-  const renderNotificationIcon = (n: any) => {
-    if (n.senderAvatar) {
-      return (
-        <img
-          src={n.senderAvatar}
-          alt="Sender"
-          className="w-12 h-12 rounded-full object-cover shrink-0"
-        />
-      );
-    }
-
-    let bgClass = "bg-green-50 text-green-600";
+  const renderNotificationIcon = (n: NotificationItem) => {
+    const bgClass = "bg-[#E8F8F4] text-[#10B981]";
     let IconComponent = Bell;
 
-    if (
-      n.title?.toLowerCase().includes("assignment") ||
-      n.title?.toLowerCase().includes("publish")
-    ) {
-      bgClass = "bg-emerald-50 text-emerald-600";
-      IconComponent = Plus;
-    } else if (
-      n.title?.toLowerCase().includes("feedback") ||
-      n.title?.toLowerCase().includes("mention")
-    ) {
-      bgClass = "bg-emerald-50 text-emerald-600";
-      IconComponent = MessageSquare;
-    } else if (n.title?.toLowerCase().includes("upload")) {
-      bgClass = "bg-emerald-50 text-emerald-600";
-      IconComponent = Upload;
-    }
+    if (n.title?.toLowerCase().includes("assignment")) IconComponent = Plus;
+    else if (n.title?.toLowerCase().includes("feedback")) IconComponent = MessageSquare;
+    else if (n.title?.toLowerCase().includes("upload")) IconComponent = Upload;
 
     return (
-      <div
-        className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${bgClass}`}
-      >
-        <IconComponent className="w-5 h-5" />
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${bgClass}`}>
+        <IconComponent className="w-5 h-5" strokeWidth={2.5} />
       </div>
     );
   };
 
   return (
-    <div className="absolute right-[-150px] top-12 w-[500px] rounded-2xl bg-white shadow-xl border border-gray-100 overflow-hidden z-[9999] font-sans">
-      {/* HEADER */}
-      <div className="px-6 pt-6 pb-2 bg-white">
-        <h2 className="text-2xl font-semibold text-primary">
+    <div className="font-sans pb-4 bg-white ">
+      <div className="p-6 pb-2">
+        <h2 className="text-[26px] font-bold text-gray-950 tracking-tight mb-4">
           All Notifications
         </h2>
-      </div>
 
-      {/* TABS */}
-      <div className="flex items-center justify-between px-6 border-b border-gray-100 bg-white">
-        <div className="flex gap-6">
+        <div className="flex items-center justify-between border-b border-gray-100/80">
+          <div className="flex gap-4">
+            <button
+              onClick={() => setActiveTab("all")}
+              className={`pb-3 text-base font-bold relative transition-colors cursor-pointer ${
+                activeTab === "all" ? "text-gray-950" : "text-gray-400"
+              }`}
+            >
+              All
+              {activeTab === "all" && (
+                <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-950 rounded-full" />
+              )}
+            </button>
+
+            <button
+              onClick={() => setActiveTab("unread")}
+              className={`pb-3 text-base font-bold relative transition-colors cursor-pointer ${
+                activeTab === "unread" ? "text-gray-950" : "text-gray-400"
+              }`}
+            >
+              Unread ({unreadCount})
+              {activeTab === "unread" && (
+                <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-gray-950 rounded-full" />
+              )}
+            </button>
+          </div>
+
           <button
-            onClick={() => setActiveTab("all")}
-            className={`pb-3 text-sm font-semibold relative transition-colors ${
-              activeTab === "all"
-                ? "text-slate-900"
-                : "text-gray-400 hover:text-slate-600"
-            }`}
+            onClick={markAllAsRead}
+            className="pb-3 text-sm font-bold text-main-linear cursor-pointer hover:underline transition-colors"
           >
-            All
-
-            {activeTab === "all" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-slate-900 rounded-full" />
-            )}
-          </button>
-
-          <button
-            onClick={() => setActiveTab("unread")}
-            className={`pb-3 text-sm font-semibold relative transition-colors ${
-              activeTab === "unread"
-                ? "text-slate-900"
-                : "text-gray-400 hover:text-slate-600"
-            }`}
-          >
-            Unread ({unreadCount})
-
-            {activeTab === "unread" && (
-              <span className="absolute bottom-0 left-0 right-0 h-[3px] bg-slate-900 rounded-full" />
-            )}
+            Mark all as read
           </button>
         </div>
-
-        <button
-          onClick={markAllAsRead}
-          className="pb-3 text-sm font-semibold text-linear-main cursor-pointer hover:underline transition-colors"
-        >
-          Mark all as read
-        </button>
       </div>
 
-      
-      <div className="max-h-[440px] overflow-y-auto">
+      <div className="max-h-[440px] overflow-y-auto pr-1">
         {filteredNotifications.length === 0 ? (
           <div className="p-10 text-center text-sm text-gray-400">
             No notifications
@@ -155,30 +146,18 @@ export default function NotificationDropdown() {
           filteredNotifications.map((n) => (
             <div
               key={n.notificationId}
-              className={`flex items-center gap-4 px-6 py-4 border-b border-gray-50/60 transition-colors cursor-pointer ${
-                !n.isRead
-                  ? "bg-slate-50/50"
-                  : "bg-white hover:bg-slate-50/30"
-              }`}
+              className="flex items-start gap-4 px-6 py-[14px] hover:bg-slate-50/50 transition-colors cursor-pointer"
             >
-              
               {renderNotificationIcon(n)}
-
-              {/* Content */}
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-semibold text-slate-800 truncate">
+              <div className="flex-1 min-w-0 pt-0.5">
+                <h3 className="text-[15px] font-bold text-gray-900 leading-snug">
                   {n.title}
                 </h3>
-
-                <p className="text-xs text-gray-400 mt-1 line-clamp-1">
+                <p className="text-[13px] font-medium text-gray-400 mt-0.5 line-clamp-1">
                   {n.content}
                 </p>
               </div>
-
-              {/* Time */}
-              <div className="text-xs text-gray-400 whitespace-nowrap pl-2 self-start pt-1">
-                {getRelativeTime(n.createdAt)}
-              </div>
+              <RelativeTime createdAt={n.createdAt} />
             </div>
           ))
         )}
