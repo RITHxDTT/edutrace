@@ -22,14 +22,14 @@ function loadAssessments(): Assessment[] {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved) as Assessment[];
-  } catch {}
+  } catch { }
   return DEFAULT_ASSESSMENTS;
 }
 
 function saveAssessments(assessments: Assessment[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(assessments));
-  } catch {}
+  } catch { }
 }
 
 interface AssessmentPageProps {
@@ -50,7 +50,7 @@ export default function AssessmentPage({ isStudent }: AssessmentPageProps) {
     if (assessments !== null) saveAssessments(assessments);
   }, [assessments]);
 
-  const handleCreate = (data: {
+  const   handleCreate = (data: {
     title: string;
     acceptLate: boolean;
     instruction: string;
@@ -126,7 +126,7 @@ export default function AssessmentPage({ isStudent }: AssessmentPageProps) {
         <CreateTaskModal
           onClose={() => setIsModalOpen(false)}
           onBack={() => setIsModalOpen(false)}
-          onCreate={handleCreate}
+          // onCreate={handleCreate}
         />
       )}
     </>

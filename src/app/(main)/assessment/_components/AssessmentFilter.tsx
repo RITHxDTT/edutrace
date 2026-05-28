@@ -8,6 +8,8 @@ interface Props {
   statusFilter: string;
   setStatusFilter: (value: string) => void;
   options: readonly string[];
+  dropdownOpen?: boolean;
+  setDropdownOpen?: (open: boolean) => void;
 }
 
 export default function AssessmentFilter({

@@ -229,7 +229,7 @@ export default function AssessmentDetailPage({
 
       {activeTab === "submitassignment" && <SubmitAssignment />}
 
-      {activeTab === "studentwork" && <Studentwork isStudent={isStudent} />}
+      {activeTab === "studentwork" && <Studentwork />}
 
       {/* EDIT MODAL — teacher/admin only */}
       {!isStudent && editOpen && assessment && (

@@ -11,7 +11,7 @@ function AssessmentCard({
 }: AssessmentCardProps) {
   return (
     <div
-      className={`relative w-fit min-w-[300px] ${className}`}
+      className={`relative w-fit min-w-[300px] min-h-[328px] ${className}`}
     >
       {/* Background SVG */}
       <svg
@@ -84,7 +84,7 @@ function AssessmentCard({
       </svg>
 
       {/* Content */}
-      <div className="relative z-10 p-6 flex flex-col">
+      <div className="relative z-10 p-6 flex flex-col h-[328px]">
         {children}
       </div>
     </div>

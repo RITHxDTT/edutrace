@@ -1,5 +1,6 @@
 "use client";
 
+import NavbarTitle from "@/components/Topbar/NavbarTitle";
 import { DEFAULT_ASSESSMENTS } from "../../../mockData";
 import { Assessment } from "../../../types";
 import styles from "./Instruction.module.css";
@@ -185,6 +186,7 @@ export default function Instruction({ assessment }: Props) {
 
   return (
     <div className={styles.grid}>
+      <NavbarTitle title="Assessment" override/>
       {/* ── Task Description ── */}
       <div className={styles.card}>
         <div className={styles.cardHeader}>

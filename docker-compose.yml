@@ -1,0 +1,14 @@
+services:
+  hrd-room-ui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: hrd-room-ui:latest
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+    command: ["npm", "start"]
+    restart: unless-stopped

@@ -13,16 +13,17 @@ import styles from "../[id]/_components/Instruction/Instruction.module.css";
 import { Assessment } from "../types";
 import { STORAGE_KEY, DEFAULT_ASSESSMENTS } from "../mockData";
 import { useRole } from "../hook/useRole";
-import VideoMeeting from "../communication/[id]/_components/VideoMeeting";
-import { participants } from "../communication/[id]/_components/User.mock";
-import { BookOpen } from "lucide-react";
+import RoomPage from "../communication/[id]/page";
 import { Calendar, User } from "iconsax-react";
+import { BookOpen, MoreVertical } from "lucide-react";
+import NavbarTitle from "@/components/Topbar/NavbarTitle";
+import Breadcrumb from "./_components/BreadcrumbComponent";
 
 type Tab = "instruction" | "communication" | "submitassignment" | "studentwork";
 
 export default function AssessmentDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { isStudent } = useRole(); 
+  const { isStudent } = useRole();
 
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,6 +113,13 @@ export default function AssessmentDetailPage() {
 
   return (
     <div className={styles.page}>
+      <NavbarTitle title="Assessment" override />
+      <Breadcrumb
+        props={{
+          title: assessment.title,
+          href: id
+        }}
+      />
       {/* HEADER */}
       <div className={styles.header}>
         <div className={styles.headerLeft}>
@@ -202,20 +210,7 @@ export default function AssessmentDetailPage() {
                 className={styles.menuButton}
                 onClick={() => setMenuOpen(!menuOpen)}
               >
-                <svg
-                  width="24"
-                  height="24"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 6h.01M12 12h.01M12 18h.01"
-                  />
-                </svg>
+                <MoreVertical size={20} color="black" />
               </button>
               {menuOpen && (
                 <div className={styles.dropdownMenu}>
@@ -264,7 +259,7 @@ export default function AssessmentDetailPage() {
 
       {activeTab === "communication" && (
         <div style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
-          <VideoMeeting initialParticipants={participants} />
+          <RoomPage />
         </div>
       )}
 

@@ -27,6 +27,8 @@
     "@heroui/system": "^2.4.28",
     "@heroui/table": "^2.2.32",
     "@heroui/tabs": "^2.2.29",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "@heroui/theme": "^2.4.26",
     "@hookform/resolvers": "^5.4.0",
     "@mui/material": "^9.0.1",

@@ -15,8 +15,8 @@ interface Props {
 export default function AssessmentItem({ assessment }: Props) {
   return (
     <Link href={`/assessment/${assessment.id}`}>
-      <AssessmentCard className="">
-        <div className="p-5 flex flex-col gap-4 h-full">
+      <AssessmentCard className="min-w-[500px] min-h-[328px]">
+        <div className="p-5 flex flex-col gap-4 h-full justify-between">
           <CategoryBadge label={assessment.category} />
 
           <div className="w-full">
