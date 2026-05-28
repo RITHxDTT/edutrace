@@ -34,8 +34,7 @@ function saveAssessments(assessments: Assessment[]) {
 }
 
 export default function AssessmentPage() {
-  const { isStudent } = useRole(); 
-
+  const { isStudent } = useRole();
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);

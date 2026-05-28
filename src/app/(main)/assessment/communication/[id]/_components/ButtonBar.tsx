@@ -13,13 +13,15 @@ import {
 } from "iconsax-react";
 import { useRouter } from "next/navigation";
 import { RaiseHand } from "./RaiseHandSvg";
-import {PrimaryButton} from "@/components/Buttons/PrimaryButton";
+import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 
 interface ButtonBarProps {
   isCamOn: boolean;
   setIsCamOn: React.Dispatch<React.SetStateAction<boolean>>;
   isScreenSharing: boolean;
   setIsScreenSharing: React.Dispatch<React.SetStateAction<boolean>>;
+  isChatOpen: boolean; 
+  setIsChatOpen: React.Dispatch<React.SetStateAction<boolean>>; // Added missing prop
 }
 
 export default function ButtonBar({
@@ -27,6 +29,8 @@ export default function ButtonBar({
   setIsCamOn,
   isScreenSharing,
   setIsScreenSharing,
+  isChatOpen,
+  setIsChatOpen,
 }: ButtonBarProps) {
   const router = useRouter();
   const [isMicOn, setIsMicOn] = useState(false);
@@ -118,13 +122,21 @@ export default function ButtonBar({
           />
         </button>
 
-        <button className="relative transition hover:text-main-linear">
+        {/* Integrated Chat Button Toggle */}
+        <button 
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className={`relative transition p-2 rounded-full ${
+            isChatOpen ? 'text-accent-linear-purple bg-purple-50' : 'hover:text-main-linear'
+          }`}
+        >
           <Messages2
             size={24}
             variant="Linear"
             color="currentColor"
           />
-          <span className="absolute right-0 top-0 h-2 w-2 rounded-full bg-blue-500"></span>
+          {!isChatOpen && (
+            <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-blue-500"></span>
+          )}
         </button>
       </div>
     </div>

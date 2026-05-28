@@ -10,7 +10,7 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "Growthyflow - Landing",
+  title: "Edutrace - Landing",
 };
 
 export default function RootLayout({

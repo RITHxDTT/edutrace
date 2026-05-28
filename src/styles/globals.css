@@ -55,6 +55,9 @@
   --background-color-accent-purple: #5d53f9;
   --background-color-light-purple: #93aafd;
   --background-color-blue: #E9F6FF;
+  --background-color-strong-blue: #89BCFF;
+  --background-color-strong-purple: #FF86E1;
+
   --background-color-dark-blue: #241CAB;
   /* TEXT COLORS */
   --text-color-primary: #000000;
@@ -148,9 +151,13 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: gray transparent;
   }
 
   body {
@@ -171,4 +178,51 @@
   background-clip: text;
   color: transparent;
   background-image: var(--background-image-linear-purple);
+}
+
+.df-calendar-container {
+  height: 100vh !important;
+}
+
+.df-month-day-cell-content {
+  overflow-y: scroll !important;
+}
+
+.df-shrink-0 {
+  height: 22.5px !important;
+  min-height: 20px !important;
+}
+
+.df-content-slot {
+  align-content: center !important;
+  min-height: 20px !important;
+  width: inherit !important;
+}
+
+.df-month-segment-event {
+  display: flex !important;
+  align-items: center !important;
+  min-height: 20px !important;
+}
+
+.df-event-month-title {
+  font-size: 12px !important;
+  font-weight: 550 !important;
+  letter-spacing: 0.6px !important;
+}
+
+.df-month-segment-event-time {
+  font-size: 12px !important;
+}
+
+.df-month-segment-event-tail-time {
+  font-size: 12px !important;
+}
+
+.df-event-title {
+  font-size: 12px !important;
+}
+
+.df-event-time {
+  font-size: 12px !important;
 }

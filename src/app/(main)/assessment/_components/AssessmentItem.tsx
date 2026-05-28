@@ -15,11 +15,11 @@ interface Props {
 export default function AssessmentItem({ assessment }: Props) {
   return (
     <Link href={`/assessment/${assessment.id}`}>
-      <AssessmentCard className="">
-        <div className="p-5 flex flex-col gap-4  h-full">
+      <AssessmentCard>
+        <div className="p-5 flex flex-col gap-4 h-full">
           <CategoryBadge label={assessment.category} />
 
-          <div>
+          <div className="w-full">
             <h3 className="text-xl font-bold text-indigo-700">
               {assessment.title}
             </h3>
