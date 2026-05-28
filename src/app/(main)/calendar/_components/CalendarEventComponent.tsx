@@ -1,41 +1,186 @@
-"use client"
-import {
-  DayFlowCalendar,
-  useCalendarApp,
-  createWeekView,
-  createDayView,
-  createMonthView, createEventsPlugin, createYearView,
-} from '@dayflow/react';
-import {CalendarSidebarRenderProps, createSidebarPlugin} from '@dayflow/plugin-sidebar';
-import {createDragPlugin} from "@dayflow/plugin-drag";
-import {useEffect, useRef,useMemo} from 'react';
+"use client";
 
-export function getWebsiteCalendars() {
-    return [
-        { id: "team", name: "Team" },
-        { id: "personal", name: "Personal" },
-        { id: "learning", name: "Learning" },
-        { id: "travel", name: "Travel" },
-        { id: "wellness", name: "Wellness" },
-        { id: "marketing", name: "Marketing" },
-        { id: "support", name: "Support" },
-    ];
+import {
+    CalendarColors,
+    CalendarType,
+    createDayView,
+    createEvent,
+    createEventsPlugin,
+    createMonthView,
+    createWeekView,
+    DayFlowCalendar,
+    useCalendarApp,
+    ViewType,
+} from "@dayflow/react";
+import { createDragPlugin } from "@dayflow/plugin-drag";
+import { createSidebarPlugin } from "@dayflow/plugin-sidebar";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+type CalendarHandle = ReturnType<typeof useCalendarApp>;
+interface PaletteCalendar extends Pick<CalendarType, "id" | "name" | "icon"> {
+    color: string;
+    colors: CalendarColors;
+    darkColors: CalendarColors;
 }
 
-export default function CalendarEventComponent() {
-    const calendarTypes = getWebsiteCalendars()
+const CALENDAR_SIDE_PANEL: PaletteCalendar[] = [
+    {
+        id: "team",
+        name: "Product Team",
+        color: "#2563eb",
+        colors: {
+            eventColor: "rgba(37, 99, 235, 0.12)",
+            eventSelectedColor: "#2563eb",
+            lineColor: "#2563eb",
+            textColor: "#1d4ed8",
+        },
+        darkColors: {
+            eventColor: "rgba(59, 130, 246, 0.25)",
+            eventSelectedColor: "#3b82f6",
+            lineColor: "#60a5fa",
+            textColor: "#dbeafe",
+        },
+    },
+    {
+        id: "personal",
+        name: "Personal",
+        color: "#0ea5e9",
+        colors: {
+            eventColor: "rgba(14, 165, 233, 0.12)",
+            eventSelectedColor: "#0ea5e9",
+            lineColor: "#0ea5e9",
+            textColor: "#0369a1",
+        },
+        darkColors: {
+            eventColor: "rgba(14, 165, 233, 0.24)",
+            eventSelectedColor: "#38bdf8",
+            lineColor: "#7dd3fc",
+            textColor: "#e0f2fe",
+        },
+    },
+    {
+        id: "learning",
+        name: "Learning",
+        color: "#8b5cf6",
+        colors: {
+            eventColor: "rgba(139, 92, 246, 0.15)",
+            eventSelectedColor: "#8b5cf6",
+            lineColor: "#8b5cf6",
+            textColor: "#5b21b6",
+        },
+        darkColors: {
+            eventColor: "rgba(167, 139, 250, 0.28)",
+            eventSelectedColor: "#a855f7",
+            lineColor: "#c084fc",
+            textColor: "#ede9fe",
+        },
+    },
+    {
+        id: "travel",
+        name: "Travel",
+        color: "#f97316",
+        colors: {
+            eventColor: "rgba(249, 115, 22, 0.15)",
+            eventSelectedColor: "#f97316",
+            lineColor: "#f97316",
+            textColor: "#7c2d12",
+        },
+        darkColors: {
+            eventColor: "rgba(251, 146, 60, 0.3)",
+            eventSelectedColor: "#fb923c",
+            lineColor: "#fdba74",
+            textColor: "#ffedd5",
+        },
+    },
+    {
+        id: "wellness",
+        name: "Wellness",
+        color: "#10b981",
+        colors: {
+            eventColor: "rgba(16, 185, 129, 0.15)",
+            eventSelectedColor: "#10b981",
+            lineColor: "#10b981",
+            textColor: "#065f46",
+        },
+        darkColors: {
+            eventColor: "rgba(52, 211, 153, 0.25)",
+            eventSelectedColor: "#34d399",
+            lineColor: "#6ee7b7",
+            textColor: "#ecfdf5",
+        },
+    },
+    {
+        id: "marketing",
+        name: "Marketing",
+        color: "#ec4899",
+        colors: {
+            eventColor: "rgba(236, 72, 153, 0.15)",
+            eventSelectedColor: "#ec4899",
+            lineColor: "#ec4899",
+            textColor: "#831843",
+        },
+        darkColors: {
+            eventColor: "rgba(244, 114, 182, 0.28)",
+            eventSelectedColor: "#f472b6",
+            lineColor: "#f9a8d4",
+            textColor: "#fce7f3",
+        },
+    },
+    {
+        id: "support",
+        name: "Support",
+        color: "#14b8a6",
+        colors: {
+            eventColor: "rgba(20, 184, 166, 0.15)",
+            eventSelectedColor: "#14b8a6",
+            lineColor: "#14b8a6",
+            textColor: "#115e59",
+        },
+        darkColors: {
+            eventColor: "rgba(45, 212, 191, 0.25)",
+            eventSelectedColor: "#5eead4",
+            lineColor: "#99f6e4",
+            textColor: "#ccfbf1",
+        },
+    },
+];
+
+const getWebsiteCalendars = (): CalendarType[] =>
+    CALENDAR_SIDE_PANEL.map((item) => ({
+        id: item.id,
+        name: item.name,
+        icon: item.icon,
+        colors: {
+            eventColor: `${item.color}30`,
+            eventSelectedColor: `${item.color}`,
+            lineColor: item.color,
+            textColor: item.color,
+        },
+        isVisible: true,
+    }));
+
+export default function Home() {
+    const [customCalendars, setCustomCalendars] = useState<CalendarType[]>([]);
+
+    const baseCalendars = getWebsiteCalendars();
+
     const calendarsWithGroups = useMemo(() => {
         const googleIds = new Set(["team", "personal", "learning", "travel"]);
         const icloudIds = new Set(["wellness", "marketing", "support"]);
-        return calendarTypes.map((cal) => ({
-            ...cal,
-            source: googleIds.has(cal.id)
-                ? "Google"
-                : icloudIds.has(cal.id)
-                    ? "iCloud"
-                    : undefined,
-        }));
-    }, []);
+
+        return [...baseCalendars, ...customCalendars].map((cal) => {
+            if (cal.source) return cal;
+
+            return {
+                ...cal,
+                source: googleIds.has(cal.id)
+                    ? "Google"
+                    : icloudIds.has(cal.id)
+                        ? "iCloud"
+                        : undefined,
+            };
+        });
+    }, [customCalendars]);
 
     useEffect(() => {
         const addPlusButtons = () => {
@@ -54,7 +199,6 @@ export default function CalendarEventComponent() {
 
                 plusBtn.textContent = "+";
                 plusBtn.className = "group-plus-btn";
-                plusBtn.style.backgroundColor = "green";
                 plusBtn.setAttribute("role", "button");
                 plusBtn.setAttribute("tabindex", "0");
 
@@ -90,7 +234,6 @@ export default function CalendarEventComponent() {
 
                     if (!sourceToggle) return;
 
-                    // Open DayFlow context menu off-screen
                     sourceToggle.dispatchEvent(
                         new MouseEvent("contextmenu", {
                             bubbles: true,
@@ -114,7 +257,66 @@ export default function CalendarEventComponent() {
 
                         newCalendarItem.click();
 
-                        // Hide/remove the intermediate context menu
+                        setTimeout(() => {
+                            const input = document.getElementById(
+                                "blossom-calendar-name",
+                            ) as HTMLInputElement | null;
+
+                            if (!input) return;
+
+                            const groupName = labelEl.textContent?.replace("+", "").trim() ?? "";
+
+                            if (groupName) {
+                                input.placeholder = `e.g. ${groupName}/event`;
+                            }
+
+                            const interceptSubmit = () => {
+                                const rawName = input.value.trim();
+                                const parts = rawName.split("/").map((v) => v.trim()).filter(Boolean);
+
+                                let source: string;
+                                let calendarName: string;
+
+                                if (parts.length >= 2) {
+                                    source = parts[0];
+                                    calendarName = parts.slice(1).join("/");
+                                } else {
+                                    source = groupName;
+                                    calendarName = rawName;
+                                }
+
+                                const nativeSet = Object.getOwnPropertyDescriptor(
+                                    window.HTMLInputElement.prototype, "value"
+                                )?.set;
+
+                                if (nativeSet) {
+                                    nativeSet.call(input, calendarName);
+                                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                                }
+
+                                (window as any).__pendingCalendarSource = source;
+
+                                cleanup();
+                            };
+
+                            const handleKeydown = (e: KeyboardEvent) => {
+                                if (e.key === "Enter") interceptSubmit();
+                            };
+
+                            const submitBtn = input
+                                .closest("form, .df-create-calendar-dialog, [role='dialog']")
+                                ?.querySelector("button[type='submit'], button:not([type='button'])") as
+                                | HTMLElement | undefined;
+
+                            const cleanup = () => {
+                                input.removeEventListener("keydown", handleKeydown);
+                                submitBtn?.removeEventListener("click", interceptSubmit, { capture: true });
+                            };
+
+                            input.addEventListener("keydown", handleKeydown);
+                            submitBtn?.addEventListener("click", interceptSubmit, { capture: true });
+                        }, 50);
                         requestAnimationFrame(() => {
                             document
                                 .querySelectorAll(
@@ -124,15 +326,12 @@ export default function CalendarEventComponent() {
                         });
                     }, 50);
                 };
-
                 labelEl.appendChild(plusBtn);
             });
         };
-
         addPlusButtons();
 
         const observer = new MutationObserver(addPlusButtons);
-
         observer.observe(document.body, {
             childList: true,
             subtree: true,
@@ -154,12 +353,52 @@ export default function CalendarEventComponent() {
             }),
         ],
         calendars: calendarsWithGroups,
+        events: [
+            createEvent({ id: "ev-1", title: "Company All-Hands", start: new Date(2026, 3, 22, 10, 0), end: new Date(2026, 3, 22, 11, 30), calendarId: "team" }),
+            createEvent({ id: "ev-2", title: "Sprint planning", start: new Date(2026, 3, 28, 9, 0), end: new Date(2026, 3, 28, 10, 30), calendarId: "team" }),
+            createEvent({ id: "ev-3", title: "Design review", start: new Date(2026, 4, 5, 14, 0), end: new Date(2026, 4, 5, 15, 0), calendarId: "team" }),
+            createEvent({ id: "ev-4", title: "Retrospective", start: new Date(2026, 4, 12, 16, 0), end: new Date(2026, 4, 12, 17, 0), calendarId: "team" }),
+
+            createEvent({ id: "ev-5", title: "Dentist appointment", start: new Date(2026, 3, 24, 9, 0), end: new Date(2026, 3, 24, 10, 0), calendarId: "personal" }),
+            createEvent({ id: "ev-6", title: "Lunch with Alex", start: new Date(2026, 4, 2, 12, 30), end: new Date(2026, 4, 2, 13, 30), calendarId: "personal" }),
+            createEvent({ id: "ev-7", title: "Movie night", start: new Date(2026, 4, 9, 19, 0), end: new Date(2026, 4, 9, 21, 30), calendarId: "personal" }),
+
+            createEvent({ id: "ev-8", title: "React advanced course", start: new Date(2026, 3, 25, 18, 0), end: new Date(2026, 3, 25, 20, 0), calendarId: "learning" }),
+            createEvent({ id: "ev-9", title: "TypeScript workshop", start: new Date(2026, 4, 7, 9, 0), end: new Date(2026, 4, 7, 12, 0), calendarId: "learning" }),
+            createEvent({ id: "ev-10", title: "System design study", start: new Date(2026, 4, 14, 20, 0), end: new Date(2026, 4, 14, 22, 0), calendarId: "learning" }),
+
+            createEvent({ id: "ev-11", title: "Flight to Phnom Penh", start: new Date(2026, 4, 3, 6, 0), end: new Date(2026, 4, 3, 14, 0), calendarId: "travel" }),
+            createEvent({ id: "ev-12", title: "Hotel check-in", start: new Date(2026, 4, 3, 15, 0), end: new Date(2026, 4, 3, 16, 0), calendarId: "travel" }),
+
+            createEvent({ id: "ev-13", title: "Morning run", start: new Date(2026, 3, 23, 6, 30), end: new Date(2026, 3, 23, 7, 15), calendarId: "wellness" }),
+            createEvent({ id: "ev-14", title: "Yoga class", start: new Date(2026, 3, 26, 8, 0), end: new Date(2026, 3, 26, 9, 0), calendarId: "wellness" }),
+            createEvent({ id: "ev-15", title: "Annual checkup", start: new Date(2026, 4, 6, 11, 0), end: new Date(2026, 4, 6, 12, 0), calendarId: "wellness" }),
+
+            createEvent({ id: "ev-16", title: "Q2 campaign kickoff", start: new Date(2026, 3, 27, 10, 0), end: new Date(2026, 3, 27, 11, 30), calendarId: "marketing" }),
+            createEvent({ id: "ev-17", title: "Brand photoshoot", start: new Date(2026, 4, 8, 13, 0), end: new Date(2026, 4, 8, 17, 0), calendarId: "marketing" }),
+
+            createEvent({ id: "ev-18", title: "Customer onboarding", start: new Date(2026, 3, 29, 14, 0), end: new Date(2026, 3, 29, 15, 0), calendarId: "support" }),
+            createEvent({ id: "ev-19", title: "Ticket triage", start: new Date(2026, 4, 4, 9, 0), end: new Date(2026, 4, 4, 9, 30), calendarId: "support" }),
+            createEvent({ id: "ev-20", title: "SLA review", start: new Date(2026, 4, 13, 15, 0), end: new Date(2026, 4, 13, 16, 0), calendarId: "support" }),
+        ],
         initialDate: new Date(),
         callbacks: {
             onMoreEventsClick: (date: Date) => {
                 calendarRef.current?.selectDate(date);
                 calendarRef.current?.setCurrentDate(date);
                 calendarRef.current?.changeView(ViewType.DAY);
+            },
+            onCalendarCreate: (newCalendar) => {
+                const source = (window as any).__pendingCalendarSource ?? newCalendar.source;
+                delete (window as any).__pendingCalendarSource;
+
+                const processedCalendar: CalendarType = {
+                    ...newCalendar,
+                    name: newCalendar.name,
+                    source,
+                };
+
+                setCustomCalendars((prev) => [...prev, processedCalendar]);
             },
             onEventCreate: (event) => {
                 console.log("[calendar] onEventCreate", event);

@@ -13,8 +13,6 @@ export default async function Layout({ children }: { children: React.ReactNode }
     <>
       <div className="fixed inset-0 bg-main-img bg-cover bg-center" />
       <div className="fixed inset-0 bg-[#F4F7FE]/70" />
-      <div className="fixed inset-0 bg-main-img bg-cover bg-center" />
-      <div className="fixed inset-0 bg-[#F4F7FE]/70" />
       <div className="relative z-10 flex flex-1">
         <SessionProvider>
           <SidebarProvider>
