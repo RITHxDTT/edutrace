@@ -53,10 +53,6 @@ export const recentTasks: RecentTask[] = [
     { id: "4", name: "Java Mini Project 1", deadline: "Apr 07, 2026", submission: "100%", status: "Finish" },
 ];
 
-export const StudentProgress: [] = [
-
-]
-
 export const activityLogs: ActivityLogItem[] = [
     { id: 1, message: 'You have joined Web Development room', timestamp: '11th May 2026, 2:00 PM', type: 'join' },
     { id: 2, message: 'You have left Web Development room', timestamp: '11th May 2026, 5:00 PM', type: 'leave' },

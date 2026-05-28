@@ -24,6 +24,8 @@ import PieChartWithCenterLabel from './_components/PieChartWithCenterLabel/PieCh
 
 export default async function Page() {
   const session = await auth();
+  // const role = session?.user?.role;
+  // const role = session?.user?.role as 'teacher' | 'student' | undefined;
   const role = session?.user?.role;
 
   return (
@@ -38,7 +40,7 @@ export default async function Page() {
             </h1>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
+          {/* <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
             {summery.slice(0, 5).map((item, index) => (
               <KpiCardComponent
                 key={index}
@@ -48,6 +50,20 @@ export default async function Page() {
                 subValue={item.subValue}
               />
             ))}
+          </div> */}
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-5">
+            {summery
+              .filter((item) => item.role.includes('teacher'))
+              .map((item, index) => (
+                <KpiCardComponent
+                  key={index}
+                  title={item.title}
+                  value={item.value}
+                  subtitle={item.subtitle}
+                  subValue={item.subValue}
+                />
+              ))}
           </div>
 
           <div className="flex flex-col w-full gap-6 lg:flex-row">
@@ -91,7 +107,7 @@ export default async function Page() {
             </h1>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          {/* <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
             {summery.slice(0, 4).map((item, index) => (
               <KpiCardComponent
                 key={index}
@@ -101,6 +117,19 @@ export default async function Page() {
                 subValue={item.subValue}
               />
             ))}
+          </div> */}
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+            {summery
+              .filter((item) => item.role.includes('student'))
+              .map((item, index) => (
+                <KpiCardComponent
+                  key={index}
+                  title={item.title}
+                  value={item.value}
+                  subtitle={item.subtitle}
+                  subValue={item.subValue}
+                />
+              ))}
           </div>
 
           <div className="flex flex-col w-full gap-5 xl:flex-row">

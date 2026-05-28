@@ -27,7 +27,7 @@ export default function SubmissionTrendComponent() {
         highlightScope: {
           highlight: 'item',
         },
-        color: '#8979FF',
+        color: '#E9B8FF',
       },
       {
         id: 'series-2',
@@ -38,7 +38,7 @@ export default function SubmissionTrendComponent() {
         highlightScope: {
           highlight: 'item',
         },
-        color: '#8979FF',
+        color: '#8F7CFF',
       },
     ],
 
