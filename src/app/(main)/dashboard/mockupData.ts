@@ -36,9 +36,9 @@ export const studentProgress = [
 ];
 
 export const submissionTrend = [
-    { value: 5, label: 'Missed', color: '#8979FF' },
-    { value: 10, label: 'On Time', color: '#962DFF' },
-    { value: 15, label: 'Late', color: '#C6D2FD' },
+    { value: 5, label: 'Missed', color: '#8979FF', role: ['teacher'] },
+    { value: 10, label: 'On Time', color: '#962DFF', role: ['teacher'] },
+    { value: 15, label: 'Late', color: '#C6D2FD', role: ['teacher'] },
 ];
 
 export const size = {

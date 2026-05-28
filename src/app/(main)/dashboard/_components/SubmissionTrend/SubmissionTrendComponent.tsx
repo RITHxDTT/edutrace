@@ -5,16 +5,14 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
-import { ClipboardText, ClipboardTick } from 'iconsax-react';
+export default function SubmissionTrendComponent(
+  { role }: { role: 'student' | 'teacher' }
+) {
 
-// export default function SubmissionTrendComponent({ data }) { 
-// // console.log(data.data)
-// console.log("data in ", data.data[0].onTime);
-
-// - Score Trend over Tasks: for student 
-// - Score Trend over Tasks: for teacher
-export default function SubmissionTrendComponent() {
-
+  const xAxisData = {
+    teacher: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    student: ['HW1', 'Prac1', 'HW2', 'Assign1', 'Prac2', 'HW3', 'Assign2'],
+  };
 
   const lineChartsParams = {
     series: [
@@ -42,27 +40,13 @@ export default function SubmissionTrendComponent() {
       },
     ],
 
-    // For studnet 
     xAxis: [
       {
-        data: ['HW1', 'Prac1', 'HW2', 'Assign1', 'Prac2', 'HW3', 'Assign2'],
+        data: xAxisData[role] || [],
         scaleType: 'point',
         id: 'axis1',
       },
-
-
     ],
-    // for instructor
-
-    //   xAxis: [
-    //   {
-    //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    //     scaleType: 'point',
-    //     id: 'axis1',
-    //   },
-    // ],
-
-
 
     yAxis: [
       {
@@ -71,9 +55,9 @@ export default function SubmissionTrendComponent() {
         tickNumber: 6,
       },
     ],
+
     height: 200,
   } as const;
-
 
   const [itemData, setItemData] = React.useState<LineItemIdentifier>();
   const [axisData, setAxisData] = React.useState<ChartsAxisData | null>();
@@ -86,7 +70,6 @@ export default function SubmissionTrendComponent() {
         width: 'full',
         overflow: 'hidden'
       }}
-
     >
       <Box sx={{ flexGrow: 1 }}>
         <LineChart
@@ -106,7 +89,6 @@ export default function SubmissionTrendComponent() {
             alignItems: 'center',
           }}
         >
-
           <IconButton
             size="small"
             onClick={() => {

@@ -25,8 +25,7 @@ import PieChartWithCenterLabel from './_components/PieChartWithCenterLabel/PieCh
 export default async function Page() {
   const session = await auth();
   // const role = session?.user?.role;
-  // const role = session?.user?.role as 'teacher' | 'student' | undefined;
-  const role = session?.user?.role;
+  const role = session?.user?.role as 'teacher' | 'student';
 
   return (
     <>
@@ -74,7 +73,7 @@ export default async function Page() {
                 </p>
 
                 <div className="w-full rounded-xl">
-                  <SubmissionTrendComponent />
+                  <SubmissionTrendComponent role={role as 'teacher'} />
                 </div>
               </div>
 
@@ -141,7 +140,7 @@ export default async function Page() {
                   </p>
 
                   <div className="w-full h-full">
-                    <SubmissionTrendComponent />
+                    <SubmissionTrendComponent role={role as 'student'} />
                   </div>
                 </div>
 
