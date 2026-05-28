@@ -1,12 +1,18 @@
-import "@/app/(main)/report/styleReport.css";
-import Image from "next/image";
+"use client";
+
+import { ClipboardList } from "lucide-react";
 
 interface KpiCardProps {
   title: string;
   value?: number | string;
+  subtitle?: string;
 }
 
-export default function KpiCard({ title, value = 0 }: KpiCardProps) {
+export default function KpiCard({
+  title,
+  value = 0,
+  subtitle = "from all reports",
+}: KpiCardProps) {
   const numValue =
     typeof value === "number" ? String(value).padStart(2, "0") : value;
 
@@ -19,27 +25,38 @@ export default function KpiCard({ title, value = 0 }: KpiCardProps) {
         height="0"
       >
         <defs>
-          <clipPath id="clip" clipPathUnits="objectBoundingBox">
-            <path d="M0.0581,0H0.6802A0.0291,0.0474,0,0,1,0.7093,0.0474V0.2844A0.0291,0.0474,0,0,0,0.7384,0.3318H0.9709A0.0291,0.0474,0,0,1,1,0.3791V0.9052A0.0581,0.0948,0,0,1,0.9419,1H0.0581A0.0581,0.0948,0,0,1,0,0.9052V0.0948A0.0581,0.0948,0,0,1,0.0581,0Z" />
+          <clipPath id="clipPath" clipPathUnits="objectBoundingBox">
+            <path d="M0.075,0H0.775A0.075,0.15,0,0,1,0.85,0.15V0.15A0.075,0.15,0,0,0,0.925,0.3H0.925A0.075,0.15,0,0,1,1,0.45V0.85A0.075,0.15,0,0,1,0.925,1H0.075A0.075,0.15,0,0,1,0,0.85V0.15A0.075,0.15,0,0,1,0.075,0Z" />
           </clipPath>
         </defs>
       </svg>
-      <div className="inverted p-5 rounded-2xl">
-        <div className="flex flex-col justify-between h-full">
-          <div className=" ">
-            <h2 className="text-lg ">{title}</h2>
-            {/* <div className="">
-              <Image
-                src="/icons/clipboard-tick.svg"
-                alt=" "
-                width={30}
-                height={30}
-                className="h-10 w-10 ml-24"
-              />
-            </div> */}
+
+      <div className="relative w-full">
+        <div
+          className="w-full shadow-sm"
+          style={{
+            aspectRatio: "7 / 4",
+            clipPath: "url('#clipPath')",
+            backgroundColor: "white",
+          }}
+        >
+          <div className="flex h-full w-full flex-col justify-between p-5">
+            <div>
+              <p className="text-sm leading-5 text-[#8A8A8A]">{title}</p>
+              <h2 className="mt-10 text-4xl font-semibold leading-none text-black">
+                {numValue}
+              </h2>
+            </div>
+
+            <p className="text-sm font-medium text-indigo-500">{subtitle}</p>
           </div>
-          <h2 className="text-4xl font-semibold">{numValue}</h2>
-          <p className="text-sm text-indigo-500">from all reports</p>
+        </div>
+
+        <div
+          className="absolute right-0 top-0 flex h-10 w-10 items-center justify-center rounded-xl shadow-sm"
+          style={{ backgroundColor: "white" }}
+        >
+          <ClipboardList className="h-5 w-5 text-black" />
         </div>
       </div>
     </section>

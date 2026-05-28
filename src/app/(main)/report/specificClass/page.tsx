@@ -1,21 +1,22 @@
 import dynamic from "next/dynamic";
-import KpiCardTaskBased from "./_components/KpiCardTaskBased";
+import KpiCardTaskBased from "../taskbased/_components/KpiCardTaskBased";
 import KpiCardComponent from "../_components/KpiCardComponent";
-import TopPerformersCard from "./_components/TopPerformersCard";
-import AtRiskStudentsCard from "./_components/AtRiskStudentsCard";
-import TaskBasedActions from "./_components/TaskBasedAction";
+import TaskBasedActions from "../taskbased/_components/TaskBasedAction";
+import TableStudent from "./_components/tableStudent";
 import AiChatWrapper from "../../ai/_components/AI/AiChatWrapper";
 
-const TickPlacementBars = dynamic(() => import("./_components/BarChart"));
+const TickPlacementBars = dynamic(
+  () => import("../taskbased/_components/BarChart"),
+);
 const SubmissionDonutChart = dynamic(() =>
-  import("./_components/SubmissionDonutChart").then(
+  import("../taskbased/_components/SubmissionDonutChart").then(
     (m) => m.SubmissionDonutChart,
   ),
 );
 
 const mockReport = {
   reportName: "REST API Design Sprint - PP Class",
-  viewingLabel: "Assessment Performance",
+  viewingLabel: "Specific Class Performance",
   period: { month: "May", year: 2026 },
   submissionDatas: {
     totalStudents: 55,
@@ -45,17 +46,24 @@ const mockReport = {
   ],
 };
 
-export default function page() {
+export default async function page({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    reportName?: string;
+    period?: string;
+    reportId?: string;
+  }>;
+}) {
+  const { reportName = mockReport.reportName, period } = await searchParams;
   const {
-    reportName,
     viewingLabel,
-    period,
+    period: mockPeriod,
     submissionDatas: summary,
     classroom,
     scoreDistribution,
-    topPerformers,
-    atRiskStudents,
   } = mockReport;
+  const displayPeriod = period ?? `${mockPeriod.month} ${mockPeriod.year}`;
 
   const kpiCards = [
     { title: "Total Submitted", value: summary.totalSubmitted },
@@ -72,7 +80,7 @@ export default function page() {
         <div>
           <p className="text-[24px] font-medium">{reportName}</p>
           <p>
-            {period.month} {period.year} - Viewing:{" "}
+            {displayPeriod} - Viewing:{" "}
             <span className="text-blue-600">{viewingLabel}</span>
           </p>
         </div>
@@ -112,9 +120,13 @@ export default function page() {
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        <TopPerformersCard data={topPerformers} />
-        <AtRiskStudentsCard data={atRiskStudents} />
+      <div className="mt-6">
+        <div className="mb-3">
+          <h3 className="text-2xl font-semibold">List All Students</h3>
+        </div>
+        <div>
+          <TableStudent />
+        </div>
       </div>
       <div className="fixed bottom-0 right-0 pointer-events-none z-50">
         <AiChatWrapper />
