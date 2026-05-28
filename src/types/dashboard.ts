@@ -4,7 +4,7 @@ interface Task {
     value: string | number;
     subtitle?: string;
     subValue?: string;
-    allowedRoles?: string[];
+    role?: string[];
 }
 
 interface Summery {
@@ -12,7 +12,7 @@ interface Summery {
     value: string | number;
     subtitle?: string;
     subValue?: string;
-    allowedRoles: ('student' | 'instructor')[];
+    role: ('student' | 'teacher')[];
 }
 interface RecentTask {
     id: string;

@@ -1,3 +1,4 @@
+'use client';
 import { TickIcon } from '@/app/(landing)/_components/Tick';
 import { Message, TickCircle, TickSquare } from 'iconsax-react';
 import React from 'react'
@@ -13,7 +14,7 @@ export default function ActivityLogComponent() {
                     {activityLogs.map((log: ActivityLogItem) => (
                         <div key={log.id} className="relative">
                             <span
-                                className={`absolute -left-[35px] top-1 rounded-full w-6 h-6 flex items-center justify-center ring-4 ring-white
+                                className={`absolute -left-[35px] top-1 rounded-full  w-6 h-6 flex items-center justify-center ring-4 ring-white
                                         ${log.type === 'join' ? 'bg-green-500' : 'bg-[#002045]'}
                                         `}
                             >
@@ -24,10 +25,10 @@ export default function ActivityLogComponent() {
                                 )}
                             </span>
                             <div >
-                                <p className={`text-medium text-gray-800 ${log.type === 'join' ? 'font-semibold' : 'font-medium'}`}>
+                                <p className={`text-medium text-ai ${log.type === 'join' ? 'font-semibold' : 'font-medium'}`}>
                                     {log.message}
                                 </p>
-                                <p className="text-xs text-gray-400 mt-0.5">{log.timestamp}</p>
+                                <p className="text-disabled">{log.timestamp}</p>
                             </div>
                         </div>
                     ))}

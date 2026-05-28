@@ -1,5 +1,3 @@
-'use client';
-
 import {
   Table,
   TableHeader,
@@ -8,12 +6,10 @@ import {
   TableRow,
   TableCell,
 } from '@heroui/table';
+
 import Image from 'next/image';
-
 import styles from './kpicard.module.css';
-
 import SubmissionTrendComponent from './_components/SubmissionTrend/SubmissionTrendComponent';
-import PieChartWithCenterLabel from './_components/PieChartWithCenterLabel/PieChartWithCenterLabelComponent';
 import KpiCardComponent from '../dashboard/_components/KpiCard/KpiCardComponent';
 import StudentProgressComponent from './_components/StudentProgress/StudentProgressComponent';
 import RecentTaskComponent from './_components/RecentTask/RecentTaskComponent';
@@ -21,32 +17,21 @@ import CurrentTaskComponent from './_components/CurrentTask/CurrentTaskComponent
 import ReminderComponent from './_components/Reminder/ReminderComponent';
 import WeeklyVsRequiredProgress from './_components/WeeklyVsRequiredProgress/WeeklyVsRequiredProgress';
 import ActivityLogComponent from './_components/ActivityLog/ActivityLogComponent';
-
 import { summery } from './mockupData';
+import NavbarTitle from '@/components/Topbar/NavbarTitle';
+import { auth } from '@/auth';
+import PieChartWithCenterLabel from './_components/PieChartWithCenterLabel/PieChartWithCenterLabelComponent';
 
-export default function Page() {
-  const isTeacher = false;
-  const isStudent = true;
+export default async function Page() {
+  const session = await auth();
+  const role = session?.user?.role;
 
   return (
     <>
-
-      <svg
-        className={styles.svgAsset}
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-        style={{ position: 'absolute', width: 0, height: 0 }}
-      >
-        <defs>
-          <clipPath id="clip" clipPathUnits="objectBoundingBox">
-            <path d="M0.0587,0H0.8534A0.0293,0.0431,0,0,1,0.8827,0.0431V0.1293A0.0293,0.0431,0,0,0,0.912,0.1724H0.9707A0.0293,0.0431,0,0,1,1,0.2155V0.9138A0.0587,0.0862,0,0,1,0.9413,1H0.0587A0.0587,0.0862,0,0,1,0,0.9138V0.0862A0.0587,0.0862,0,0,1,0.0587,0Z" />
-          </clipPath>
-        </defs>
-      </svg>
-
+      <NavbarTitle title="Dashboard" override />
       {/* ========================= TEACHER ========================= */}
-      {isTeacher && (
-        <div className="flex flex-col flex-1 w-full h-screen p-6 overflow-y-auto space-y-5 text-white">
+      {role === 'teacher' && (
+        <div className="flex flex-col flex-1 w-full h-screen space-y-5 text-white">
           <div className="flex items-center justify-between">
             <h1 className="text-[28px] font-semibold text-indigo-700">
               Welcome back, Tan Dara
@@ -67,7 +52,6 @@ export default function Page() {
 
           <div className="flex flex-col w-full gap-6 lg:flex-row">
             <div className="flex flex-col flex-1 space-y-6">
-
               <div className="p-5 bg-white shadow-sm rounded-2xl">
                 <p className="mb-4 text-2xl font-medium text-linear-main">
                   Submission Trend
@@ -81,11 +65,11 @@ export default function Page() {
               <StudentProgressComponent />
             </div>
 
-
             <div className="flex flex-col flex-1 space-y-6">
               <RecentTaskComponent />
+
               <div className="flex flex-col w-full gap-4 md:flex-row">
-                <div className="flex flex-col justify-between w-full h-full p-5 shadow-sm bg-[#2425aa] rounded-2xl md:w-3/5">
+                <div className="flex flex-col justify-between w-full h-full p-5 shadow-sm bg-linear-purple rounded-2xl md:w-3/5">
                   <CurrentTaskComponent />
                 </div>
 
@@ -99,15 +83,13 @@ export default function Page() {
       )}
 
       {/* ========================= STUDENT ========================= */}
-      {isStudent && (
-        <div className="flex flex-col flex-1 w-full h-screen p-6 overflow-y-auto space-y-5 text-white">
-
+      {role === 'student' && (
+        <div className="flex flex-col flex-1 w-full h-screen space-y-5 text-white">
           <div className="flex items-center justify-between">
             <h1 className="text-[28px] font-semibold text-indigo-700">
               Welcome back, Uy Chakriya
             </h1>
           </div>
-
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
             {summery.slice(0, 4).map((item, index) => (
@@ -122,12 +104,9 @@ export default function Page() {
           </div>
 
           <div className="flex flex-col w-full gap-5 xl:flex-row">
-
             <div className="w-full space-y-5">
-
               <div className="flex flex-col w-full gap-6 lg:flex-row">
-
-                <div className="w-full h-[297px] overflow-hidden bg-white rounded-2xl p-6 shadow-sm">
+                <div className="w-full h-[297px] overflow-hidden bg-white rounded-2xl shadow-sm p-6">
                   <p className="mb-6 text-2xl font-medium text-linear-main">
                     Show how student change task by task
                   </p>
@@ -136,6 +115,7 @@ export default function Page() {
                     <SubmissionTrendComponent />
                   </div>
                 </div>
+
                 <div className="flex flex-col items-center justify-center bg-white rounded-2xl p-6 shadow-sm h-[297px] lg:w-[400px]">
                   <p className="mb-4 text-2xl font-medium text-center text-linear-main">
                     Submission Trends
@@ -146,9 +126,9 @@ export default function Page() {
                   </div>
                 </div>
               </div>
+
               <WeeklyVsRequiredProgress />
             </div>
-
 
             <div className="w-full xl:w-[420px]">
               <ActivityLogComponent />

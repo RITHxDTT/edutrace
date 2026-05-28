@@ -261,7 +261,7 @@ export default function Studentwork() {
   const [page, setPage] = useState(1);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterValue, setFilterValue] = useState("All Classes");
-  const isSubmitted = false;
+  const isSubmitted = true;
 
   const REMAINING = DAILY_REQUIRED - TIME_SPENT_TODAY;
   const TOTAL_TIME_SPENT_MIN = MOCK_SESSION_LOG.reduce(
@@ -689,12 +689,12 @@ export default function Studentwork() {
                           transition: "background 0.15s",
                         }}
                         onMouseEnter={(e) =>
-                          (e.currentTarget.style.background =
-                            filterValue === option ? "#f5f4ff" : "#f9fafb")
+                        (e.currentTarget.style.background =
+                          filterValue === option ? "#f5f4ff" : "#f9fafb")
                         }
                         onMouseLeave={(e) =>
-                          (e.currentTarget.style.background =
-                            filterValue === option ? "#f5f4ff" : "transparent")
+                        (e.currentTarget.style.background =
+                          filterValue === option ? "#f5f4ff" : "transparent")
                         }
                       >
                         {option}

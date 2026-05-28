@@ -37,4 +37,4 @@ export const MOCK_EVALUATION: EvaluationResult = {
 
 // ── Not yet evaluated mockup ──────────────────────────────────────────────────
 export const MOCK_PENDING: EvaluationResult | null = null;
-export const TEST_EVALUATION: EvaluationResult | null = MOCK_PENDING;
+export const TEST_EVALUATION: EvaluationResult | null = MOCK_EVALUATION;

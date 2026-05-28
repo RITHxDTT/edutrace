@@ -1,6 +1,41 @@
 // const submissionTrend = res.payload.submissionTrend;
 
-export const data = [
+export const studentProgress = [
+    {
+        id: 1,
+        name: 'Yann Vannet',
+        email: 'yannvannet@gmail.com',
+        image: '/images/profile/YannVannet.jpg',
+        completion: '100%',
+        late: '2%',
+        status: 'Good',
+        statusColor: 'bg-[#EBF9F1] text-[#1F9254] font-medium',
+    },
+
+    {
+        id: 2,
+        name: 'Uy Chakriya',
+        email: 'uychakriya@gmail.com',
+        image: '/images/profile/UyChakriya.jpg',
+        completion: '95%',
+        late: '5%',
+        status: 'Good',
+        statusColor: 'bg-[#EBF9F1] text-[#1F9254] font-medium',
+    },
+
+    {
+        id: 3,
+        name: 'Try Limhai',
+        email: 'trilimhai@gmail.com',
+        image: '/images/profile/TryLihai.jpg',
+        completion: '45%',
+        late: '55%',
+        status: 'At Risk',
+        statusColor: 'bg-[#FBE7E8] text-[#B91C1C] font-medium',
+    },
+];
+
+export const submissionTrend = [
     { value: 5, label: 'Missed', color: '#8979FF' },
     { value: 10, label: 'On Time', color: '#962DFF' },
     { value: 15, label: 'Late', color: '#C6D2FD' },
@@ -11,64 +46,6 @@ export const size = {
     height: 200,
 };
 
-export const lineChartsParams = {
-    series: [
-        {
-            id: 'series-1',
-            data: [20, 36, 26, 30, 35, 56, 30],
-            label: 'On time',
-            area: true,
-            stack: 'total',
-            highlightScope: {
-                highlight: 'item',
-            },
-            color: '#8979FF',
-        },
-        {
-            id: 'series-2',
-            data: [64, 26, 26, 32, 35, 18, 60],
-            label: 'Late Submission',
-            area: true,
-            stack: 'total',
-            highlightScope: {
-                highlight: 'item',
-            },
-            color: '#8979FF',
-        },
-    ],
-
-    // For studnet 
-    xAxis: [
-        {
-            data: ['HW1', 'Prac1', 'HW2', 'Assign1', 'Prac2', 'HW3', 'Assign2'],
-            scaleType: 'point',
-            id: 'axis1',
-        },
-    ],
-
-    //   xAxis: [
-    //   {
-    //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    //     scaleType: 'point',
-    //     id: 'axis1',
-    //   },
-    // ],
-
-
-
-    yAxis: [
-        {
-            min: 0,
-            max: 100,
-            tickNumber: 6,
-        },
-    ],
-    height: 200,
-
-
-} as const;
-
-
 export const recentTasks: RecentTask[] = [
     { id: "1", name: "Web-Homework-002 (Css Ba...", deadline: "Apr 07, 2026", submission: "60%", status: "Overdue" },
     { id: "2", name: "Java Mini Project 1", deadline: "Apr 07, 2026", submission: "100%", status: "Finish" },
@@ -76,12 +53,30 @@ export const recentTasks: RecentTask[] = [
     { id: "4", name: "Java Mini Project 1", deadline: "Apr 07, 2026", submission: "100%", status: "Finish" },
 ];
 
+export const StudentProgress: [] = [
+
+]
+
 export const activityLogs: ActivityLogItem[] = [
     { id: 1, message: 'You have joined Web Development room', timestamp: '11th May 2026, 2:00 PM', type: 'join' },
     { id: 2, message: 'You have left Web Development room', timestamp: '11th May 2026, 5:00 PM', type: 'leave' },
     { id: 3, message: 'You have joined Java Mini-Project 002', timestamp: '11th May 2026, 2:00 PM', type: 'join' },
     { id: 4, message: 'You have left Java Mini-Project 002', timestamp: '11th May 2026, 5:00 PM', type: 'leave' },
     { id: 5, message: 'You have left Web Development room', timestamp: '11th May 2026, 5:00 PM', type: 'leave' },
+];
+
+export const summery: Summery[] = [
+    { title: "Total tasks", value: "56", subtitle: "Classes", subValue: "3", role: ['teacher'] },
+    { title: "Ative Tasks", value: "20", subtitle: "Increase from last task.", subValue: "1", role: ['teacher'] },
+    { title: "At-risk students", value: "5", subtitle: "need attention", subValue: "1", role: ['teacher'] },
+    { title: "Total Submission", value: "78%", subtitle: "this week", subValue: "4%", role: ['teacher'] },
+    { title: "Late Submission rate", value: "56%", subtitle: "vs last week", subValue: "3%", role: ['teacher'] },
+
+
+    { title: "Task Assigned", value: "8", subtitle: "Active now", subValue: "3", role: ['student'] },
+    { title: "Task Completed", value: "5", subtitle: "Completion.", subValue: "63%", role: ['student'] },
+    { title: "Total Hours Logged ", value: "14.5", subtitle: "This month", subValue: "3hrs", role: ['student'] },
+    { title: "On-Time Rate", value: "14%", subtitle: "Submitted", subValue: "4/5", role: ['student'] }
 ];
 
 export const student = {
@@ -417,16 +412,3 @@ export const teacher = {
     "path": "/api/v1/dashboard",
     "timestamp": "2026-05-27T02:30:17.811538609Z"
 }
-
-export const summery: Summery[] = [
-    { title: "Total tasks", value: "56", subtitle: "Classes", subValue: "3", allowedRoles: ['instructor'] },
-    { title: "Total Submission", value: "78%", subtitle: "this week", subValue: "4%", allowedRoles: ['instructor'] },
-    { title: "Ative Tasks", value: "20", subtitle: "Increase from last task.", subValue: "1", allowedRoles: ['instructor'] },
-    { title: "Late Submission rate", value: "56%", subtitle: "vs last week", subValue: "3%", allowedRoles: ['instructor'] },
-    { title: "At-risk students", value: "5", subtitle: "need attention", subValue: "1", allowedRoles: ['instructor'] },
-
-    { title: "Task Assigned", value: "8", subtitle: "Active now", subValue: "3", allowedRoles: ['student'] },
-    { title: "Task Completed", value: "5", subtitle: "Completion.", subValue: "63%", allowedRoles: ['student'] },
-    { title: "Total Hours Logged ", value: "14.5", subtitle: "This month", subValue: "3hrs", allowedRoles: ['student'] },
-    { title: "On-Time Rate", value: "14%", subtitle: "Submitted", subValue: "4/5", allowedRoles: ['student'] }
-];

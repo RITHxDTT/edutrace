@@ -1,3 +1,4 @@
+'use client';
 import React from 'react'
 import { Table, TableHeader, TableBody, TableColumn, TableRow, TableCell } from "@heroui/table";
 import { recentTasks } from "../../mockupData";
@@ -15,23 +16,23 @@ export default function RecentTaskComponent() {
                 className="min-w-full table-fixed"
             >
                 <TableHeader>
-                    <TableColumn className="bg-slate-50/40 text-indigo-600 font-semibold text-sm h-12 pl-4 first:rounded-l-xl">
+                    <TableColumn className="bg-slate-50/40 text-linear-main font-medium text-sm h-12 pl-4 first:rounded-l-xl">
                         Task Name
                     </TableColumn>
-                    <TableColumn className="bg-slate-50/40 text-indigo-600 font-semibold text-sm h-12 ">
+                    <TableColumn className="bg-slate-50/40  text-linear-main font-medium text-sm h-12 ">
                         Deadline
                     </TableColumn>
-                    <TableColumn className="bg-slate-50/40 text-indigo-600 font-semibold text-sm h-12">
+                    <TableColumn className="bg-slate-50/40  text-linear-main font-medium text-sm h-12">
                         Submission
                     </TableColumn>
-                    <TableColumn className="bg-slate-50/40 text-indigo-600 font-semibold text-sm h-12 text-center w-[20%] last:rounded-r-xl">
+                    <TableColumn className="bg-slate-50/40  text-linear-main font-medium text-sm h-12 text-center w-[20%] last:rounded-r-xl">
                         Status
                     </TableColumn>
                 </TableHeader>
                 <TableBody>
                     {recentTasks.map((task) => (
                         <TableRow key={task.id} className="border-b border-slate-100/60 last:border-0 hover:bg-slate-50/30 transition-colors">
-                            <TableCell className="text-slate-700 font-medium py-3.5 pl-4 text-sm truncate">
+                            <TableCell className="text-slate-700 py-3.5 pl-4 text-sm truncate">
                                 {task.name}
                             </TableCell>
                             <TableCell className="text-slate-500 py-3.5 text-sm">
@@ -42,11 +43,11 @@ export default function RecentTaskComponent() {
                             </TableCell>
                             <TableCell className="py-3.5 text-center">
                                 {task.status === "Overdue" ? (
-                                    <span className="bg-[#FFF4E5] text-[#D97706] px-4 py-1.5 rounded-full text-xs font-semibold inline-block min-w-[76px]">
+                                    <span className="bg-[#FFF4E5] text-[#D97706] px-4 py-1.5 rounded-full text-xs font-medium inline-block min-w-[76px]">
                                         Overdue
                                     </span>
                                 ) : (
-                                    <span className="bg-[#EBF7EE] text-[#16A34A] px-4 py-1.5 rounded-full text-xs font-semibold inline-block min-w-[76px]">
+                                    <span className="bg-[#EBF7EE] text-[#16A34A] px-4 py-1.5 rounded-full text-xs font-medium  min-w-[76px]">
                                         Finish
                                     </span>
                                 )}

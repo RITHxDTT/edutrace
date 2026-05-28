@@ -6,14 +6,74 @@ import IconButton from '@mui/material/IconButton';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
 import { ClipboardText, ClipboardTick } from 'iconsax-react';
-import { lineChartsParams } from "../../mockupData";
-
-//===>> Line Chart
 
 // export default function SubmissionTrendComponent({ data }) { 
 // // console.log(data.data)
 // console.log("data in ", data.data[0].onTime);
+
+// - Score Trend over Tasks: for student 
+// - Score Trend over Tasks: for teacher
 export default function SubmissionTrendComponent() {
+
+
+  const lineChartsParams = {
+    series: [
+      {
+        id: 'series-1',
+        data: [20, 36, 26, 30, 35, 56, 30],
+        label: 'On time',
+        area: true,
+        stack: 'total',
+        highlightScope: {
+          highlight: 'item',
+        },
+        color: '#8979FF',
+      },
+      {
+        id: 'series-2',
+        data: [64, 26, 26, 32, 35, 18, 60],
+        label: 'Late Submission',
+        area: true,
+        stack: 'total',
+        highlightScope: {
+          highlight: 'item',
+        },
+        color: '#8979FF',
+      },
+    ],
+
+    // For studnet 
+    xAxis: [
+      {
+        data: ['HW1', 'Prac1', 'HW2', 'Assign1', 'Prac2', 'HW3', 'Assign2'],
+        scaleType: 'point',
+        id: 'axis1',
+      },
+
+
+    ],
+    // for instructor
+
+    //   xAxis: [
+    //   {
+    //     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    //     scaleType: 'point',
+    //     id: 'axis1',
+    //   },
+    // ],
+
+
+
+    yAxis: [
+      {
+        min: 0,
+        max: 100,
+        tickNumber: 6,
+      },
+    ],
+    height: 200,
+  } as const;
+
 
   const [itemData, setItemData] = React.useState<LineItemIdentifier>();
   const [axisData, setAxisData] = React.useState<ChartsAxisData | null>();
