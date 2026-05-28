@@ -15,6 +15,8 @@ import { STORAGE_KEY, DEFAULT_ASSESSMENTS } from "../mockData";
 import { useRole } from "../hook/useRole";
 import VideoMeeting from "../communication/[id]/_components/VideoMeeting";
 import { participants } from "../communication/[id]/_components/User.mock";
+import { BookOpen } from "lucide-react";
+import { Calendar, User } from "iconsax-react";
 
 type Tab = "instruction" | "communication" | "submitassignment" | "studentwork";
 
@@ -162,80 +164,28 @@ export default function AssessmentDetailPage() {
             <h1 className={styles.title}>{assessment.title}</h1>
             <div className={styles.meta}>
               <span className={styles.metaDate}>
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-                  <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-                </svg>
+                <BookOpen size={20} color="#6B7280" />
                 Subject:<strong> {assessment.category}</strong>
               </span>
 
               <div className={styles.metaDivider} />
 
               <span className={styles.metaDate}>
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
+                <User size={20} color="#6B7280" />
                 Assigned By:<strong> {assessment.assignedBy}</strong>
               </span>
 
               <div className={styles.metaDivider} />
 
               <span className={styles.metaDate}>
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
+                <Calendar size={20} color="#6B7280" />
                 Start:<strong> {assessment.startDate}</strong>
               </span>
 
               <div className={styles.metaDivider} />
 
               <span className={styles.metaDate}>
-                <svg
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
+                <Calendar size={20} color="#6B7280" />
                 Due:<strong> {assessment.endDate}</strong>
               </span>
             </div>

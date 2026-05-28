@@ -15,7 +15,7 @@ interface Props {
 export default function AssessmentItem({ assessment }: Props) {
   return (
     <Link href={`/assessment/${assessment.id}`}>
-      <AssessmentCard>
+      <AssessmentCard className="">
         <div className="p-5 flex flex-col gap-4 h-full">
           <CategoryBadge label={assessment.category} />
 
@@ -24,9 +24,10 @@ export default function AssessmentItem({ assessment }: Props) {
               {assessment.title}
             </h3>
 
-            <p className="text-sm text-slate-500 mt-2 line-clamp-3">
-              {assessment.description}
-            </p>
+            <div
+              className="text-sm text-slate-500 mt-2 line-clamp-3 prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: assessment.description }}
+            />
           </div>
 
           <div className="flex items-center justify-between mt-auto">

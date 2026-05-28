@@ -48,33 +48,27 @@ export default function AssessmentPage() {
     if (assessments !== null) saveAssessments(assessments);
   }, [assessments]);
 
-  const handleCreate = (data: {
-    title: string;
-    acceptLate: boolean;
-    instruction: string;
-    assessmentDate: string;
-    dailyRequired: string;
-    point: string;
-    topic: string;
-    classes: string[];
-    gradingRubric: string;
-    attachments: File[];
-  }) => {
-    const parts = data.assessmentDate.split("-").map((s) => s.trim());
-    const startDate = parts[0] || "-";
-    const endDate = parts[1] || "-";
-
+  // ── handleCreate receives already-processed data from CreateTaskModal ─────
+  // No re-mapping needed — field names already match the Assessment interface
+  const handleCreate: NonNullable<
+    React.ComponentProps<typeof CreateTaskModal>["onCreate"]
+  > = (data) => {
     const newAssessment: Assessment = {
       id: Date.now(),
-      category: data.topic || "General",
-      title: data.title || "Untitled",
-      description: data.instruction || "No description provided.",
-      status: "In Progress",
-      startDate,
-      endDate,
+      title: data.title,
+      description: data.description,
+      category: data.category,
+      status: data.status,
+      startDate: data.startDate,
+      endDate: data.endDate,
       assignedBy: "Tan Dara",
-      points: Number(data.point) || 100,
-      requiredDailyMinutes: Number(data.dailyRequired) || 60,
+      points: data.points,
+      attachments: data.attachments,
+      gradingRubric: data.gradingRubric,
+      passingScore: data.passingScore,
+      requiredDailyMinutes: data.requiredDailyMinutes,
+      daysUntilDeadline: data.daysUntilDeadline,
+      requirements: [],
     };
 
     setAssessments((prev) => [newAssessment, ...(prev ?? [])]);
