@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import KpiCard from "./_components/KpiCardComponent";
-import TapComponents from "./_components/TapComponent";
 import GenerateReportModalComponent from "./_components/GenerateModalComponent";
 import TableDataComponent, { Report } from "./_components/TableDataReport";
+import { PaginationBasic } from "./_components/pagination";
+import AiChatWrapper from "../ai/_components/AI/AiChatWrapper";
+import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
 const INITIAL_REPORTS: Report[] = [
   {
     reportId: "91000000-0000-4000-8000-000000001602",
@@ -14,6 +17,16 @@ const INITIAL_REPORTS: Report[] = [
     displayType: "Class Based",
     period: "May 13, 2026 - May 27, 2026",
     generatedAt: "2026-05-20T03:45:00Z",
+    classScope: "ALL",
+  },
+  {
+    reportId: "91000000-0000-4000-8000-000000001603",
+    reportName: "OOP Fundamentals - PP Class",
+    reportType: "CLASS",
+    displayType: "Class Based",
+    period: "May 1, 2026 - May 15, 2026",
+    generatedAt: "2026-05-15T08:00:00Z",
+    classScope: "PP",
   },
   {
     reportId: "91000000-0000-4000-8000-000000001601",
@@ -25,10 +38,14 @@ const INITIAL_REPORTS: Report[] = [
   },
 ];
 
+const REPORTS_PER_PAGE = 5;
+
 export default function ReportPage() {
+  const router = useRouter();
   const [reports, setReports] = useState<Report[]>(INITIAL_REPORTS);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("All Reports");
+  const [page, setPage] = useState(1);
 
   const latestReport = reports.reduce<Report | null>(
     (latest, r) =>
@@ -59,18 +76,39 @@ export default function ReportPage() {
     return true;
   });
 
+  const totalPages = Math.ceil(filteredReports.length / REPORTS_PER_PAGE);
+  const currentPage = Math.min(page, totalPages || 1);
+  const pageStartIndex = (currentPage - 1) * REPORTS_PER_PAGE;
+  const paginatedReports = useMemo(() => {
+    return filteredReports.slice(
+      pageStartIndex,
+      pageStartIndex + REPORTS_PER_PAGE,
+    );
+  }, [filteredReports, pageStartIndex]);
+
   function handleDelete(reportId: string) {
     setReports((prev) => prev.filter((r) => r.reportId !== reportId));
   }
 
   function handleView(report: Report) {
-    const reportDetails = `
-      Report Name: ${report.reportName}
-      Report Type: ${report.displayType}
-      Period: ${report.period}
-      Generated At: ${new Date(report.generatedAt).toLocaleString()}
-    `;
-    alert(reportDetails);
+    const params = new URLSearchParams({
+      reportId: report.reportId,
+      reportName: report.reportName,
+      period: report.period,
+    });
+    let route: string;
+    if (report.reportType === "ASSESSMENT") {
+      route = "taskbased";
+    } else if (report.classScope && report.classScope !== "ALL") {
+      route = "specificClass";
+    } else {
+      route = "allclasses";
+    }
+    router.push(`/report/${route}?${params.toString()}`);
+  }
+
+  function handleGenerate(report: Report) {
+    setReports((prev) => [report, ...prev]);
   }
 
   const kpiCards = [
@@ -101,23 +139,45 @@ export default function ReportPage() {
           <KpiCard key={card.title} title={card.title} value={card.value} />
         ))}
       </div>
-
       <div className="mt-6 flex items-center justify-between">
         <p className="text-lg font-semibold">Your reports</p>
-        <TapComponents activeTab={activeTab} onTabChange={setActiveTab} />
+        <PrimaryTabs
+          tabs={[
+            { key: "All Reports", title: "All Reports" },
+            { key: "Class Based", title: "Class Based" },
+            { key: "Task Based", title: "Task Based" },
+          ]}
+          selectedKey={activeTab}
+          onSelectionChange={(tab) => {
+            setActiveTab(tab);
+            setPage(1);
+          }}
+        />
       </div>
 
       <div className="mt-4">
         <TableDataComponent
-          reports={filteredReports}
+          reports={paginatedReports}
           onDelete={handleDelete}
           onView={handleView}
+          startIndex={pageStartIndex}
         />
       </div>
+      <div>
+        <PaginationBasic
+          page={currentPage}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
+
+      {/* <WithDescription/> */}
+      <AiChatWrapper />
 
       <GenerateReportModalComponent
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        onGenerate={handleGenerate}
       />
     </div>
   );

@@ -9,8 +9,8 @@ export default function TopPerformersCard({ data }: Props) {
     <div className="bg-white rounded-2xl shadow p-5">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Award size={20} className="text-yellow-500" />
-          <h3 className="text-lg font-semibold">Top Performers</h3>
+          <Award size={26} className="text-yellow-500" />
+          <h3 className="text-2xl font-semibold">Top Performers</h3>
         </div>
         <span className="text-xs text-gray-400 uppercase tracking-wide font-medium">
           High Achievement

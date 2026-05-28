@@ -1,33 +1,37 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { ForgotPasswordFormData } from '@/types/auth';
-import { InputOtp } from '@heroui/input-otp';
-import { forgotPasswordAction, resetPasswordAction, verifyEmailAction } from '@/actions/auth.action';
-import { useRouter } from 'next/navigation';
-import ServerError from '../../_components/ServerError';
-import PrimaryInput from '@/components/Inputs/PrimaryInputField';
-import { SmsEdit, Eye, EyeSlash } from 'iconsax-react';
-import { forgotPasswordFormSchema } from '@/schemas/ForgotPasswordFormSchema';
-import { sileo } from 'sileo';
+import {
+  forgotPasswordAction,
+  resetPasswordAction,
+  verifyEmailAction,
+} from "@/actions/auth.action";
+import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
+import PrimaryInput from "@/components/Inputs/PrimaryInputField";
+import { forgotPasswordFormSchema } from "@/schemas/ForgotPasswordFormSchema";
+import { ForgotPasswordFormData } from "@/types/auth";
+import { InputOtp } from "@heroui/input-otp";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeSlash, SmsEdit } from "iconsax-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { sileo } from "sileo";
+import ServerError from "../../_components/ServerError";
 
 const STEP_FIELDS: Record<number, (keyof ForgotPasswordFormData)[]> = {
-  1: ['email'],
-  2: ['code'],
-  3: ['newPassword', 'confirmNewPassword'],
+  1: ["email"],
+  2: ["code"],
+  3: ["newPassword", "confirmNewPassword"],
 };
 
-type ResendStatus = 'idle' | 'loading' | 'success' | 'error';
+type ResendStatus = "idle" | "loading" | "success" | "error";
 
 export default function ForgotPasswordForm() {
   const [step, setStep] = useState(1);
   const [verifyToken, setVerifyToken] = useState<string | null>(null);
-  const [serverError, setServerError] = useState('');
-  const [resendStatus, setResendStatus] = useState<ResendStatus>('idle');
-  const [resendMessage, setResendMessage] = useState('');
+  const [serverError, setServerError] = useState("");
+  const [resendStatus, setResendStatus] = useState<ResendStatus>("idle");
+  const [resendMessage, setResendMessage] = useState("");
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [isVisible, setVisible] = useState(false);
   const [cooldown, setCooldown] = useState(0);
@@ -44,10 +48,10 @@ export default function ForgotPasswordForm() {
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordFormSchema),
     defaultValues: {
-      email: '',
-      code: '',
-      newPassword: '',
-      confirmNewPassword: '',
+      email: "",
+      code: "",
+      newPassword: "",
+      confirmNewPassword: "",
     },
   });
 
@@ -71,10 +75,10 @@ export default function ForgotPasswordForm() {
     const valid = await trigger(STEP_FIELDS[step]);
     if (!valid) return;
 
-    setServerError('');
+    setServerError("");
 
     if (step === 1) {
-      const email = getValues('email');
+      const email = getValues("email");
       setIsSendingCode(true);
 
       const res = await forgotPasswordAction(email);
@@ -95,7 +99,7 @@ export default function ForgotPasswordForm() {
 
       const res = await verifyEmailAction(
         { email: payload.email, code: payload.code },
-        'FORGOT_PASSWORD'
+        "FORGOT_PASSWORD",
       );
 
       setIsSendingCode(false);
@@ -114,45 +118,50 @@ export default function ForgotPasswordForm() {
   };
 
   const handleBack = () => {
-    setServerError('');
+    setServerError("");
     setStep((s) => s - 1);
   };
 
   const handleResend = async () => {
-    const email = getValues('email');
-    setResendStatus('loading');
-    setResendMessage('');
+    const email = getValues("email");
+    setResendStatus("loading");
+    setResendMessage("");
     setCooldown(60);
 
     try {
       const res = await forgotPasswordAction(email);
-      setResendStatus('success');
-      setResendMessage(res?.message ?? 'A new code was sent to your email.');
+      setResendStatus("success");
+      setResendMessage(res?.message ?? "A new code was sent to your email.");
     } catch (error) {
-      setResendStatus('error');
+      setResendStatus("error");
       setResendMessage(
-        error instanceof Error ? error.message : 'Something went wrong. Please try again.'
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
       );
     }
   };
 
   async function onSubmit(data: ForgotPasswordFormData) {
     if (!verifyToken) {
-      setServerError('Verification token is missing. Please restart the process.');
+      setServerError(
+        "Verification token is missing. Please restart the process.",
+      );
       return;
     }
 
     try {
-      setServerError('');
+      setServerError("");
 
       const res = await resetPasswordAction(data, verifyToken);
 
       if (res?.success) {
         sileo.success({
-          title: 'Password Reset',
-          description: 'Your password has been reset successfully. Please log in with your new password.',
+          title: "Password Reset",
+          description:
+            "Your password has been reset successfully. Please log in with your new password.",
         });
-        router.push('/login');
+        router.push("/login");
         return;
       }
 
@@ -160,8 +169,8 @@ export default function ForgotPasswordForm() {
         setServerError(res.error);
       }
     } catch (error) {
-      setServerError('An unexpected error occurred. Please try again.');
-      console.error('Client caught error:', error);
+      setServerError("An unexpected error occurred. Please try again.");
+      console.error("Client caught error:", error);
     }
   }
 
@@ -169,8 +178,8 @@ export default function ForgotPasswordForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-8">
       {serverError && <ServerError serverError={serverError} />}
 
-      {/* Step 1: Email Input */}
-      <div className={step === 1 ? 'block' : 'hidden'}>
+      {/*         : Email Input */}
+      <div className={step === 1 ? "block" : "hidden"}>
         <PrimaryInput
           label="Email"
           placeholder="Enter your email here..."
@@ -180,12 +189,12 @@ export default function ForgotPasswordForm() {
           iconPosition="right"
           isInvalid={!!errors.email}
           errorMessage={errors.email?.message}
-          {...register('email')}
+          {...register("email")}
         />
       </div>
 
-      {/* Step 2: OTP Input */}
-      <div className={step === 2 ? 'block' : 'hidden'}>
+      {/*          : OTP Input */}
+      <div className={step === 2 ? "block" : "hidden"}>
         <Controller
           name="code"
           control={control}
@@ -211,12 +220,12 @@ export default function ForgotPasswordForm() {
       </div>
 
       {/* Step 3: Password Reset Fields */}
-      <div className={step === 3 ? 'flex flex-col gap-8' : 'hidden'}>
+      <div className={step === 3 ? "flex flex-col gap-8" : "hidden"}>
         <PrimaryInput
-          {...register('newPassword')}
+          {...register("newPassword")}
           label="New Password"
           placeholder="Enter your new password..."
-          type={isVisible ? 'text' : 'password'}
+          type={isVisible ? "text" : "password"}
           icon={isVisible ? Eye : EyeSlash}
           iconPosition="right"
           onIconClick={() => setVisible((prev) => !prev)}
@@ -224,10 +233,10 @@ export default function ForgotPasswordForm() {
           errorMessage={errors.newPassword?.message}
         />
         <PrimaryInput
-          {...register('confirmNewPassword')}
+          {...register("confirmNewPassword")}
           label="Confirm Password"
           placeholder="Confirm new password..."
-          type={isVisible ? 'text' : 'password'}
+          type={isVisible ? "text" : "password"}
           icon={isVisible ? Eye : EyeSlash}
           iconPosition="right"
           onIconClick={() => setVisible((prev) => !prev)}
@@ -236,26 +245,28 @@ export default function ForgotPasswordForm() {
         />
       </div>
 
-      {/* Resend Cooldown UI (Step 2 Only) */}
+      {/* Resend Cooldown UI (          Only) */}
       {step === 2 && (
         <div className="space-y-1 text-center">
           <p className="text-xs text-muted">
-            Didn't receive OTP code?{' '}
+            Didn't receive OTP code?{" "}
             <button
               type="button"
-              disabled={resendStatus === 'loading' || cooldown > 0}
+              disabled={resendStatus === "loading" || cooldown > 0}
               onClick={handleResend}
               className="text-linear-main cursor-pointer hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {resendStatus === 'loading'
-                ? 'Sending...'
+              {resendStatus === "loading"
+                ? "Sending..."
                 : cooldown > 0
                   ? `Resend in ${cooldown}s`
-                  : 'Resend code'}
+                  : "Resend code"}
             </button>
           </p>
           {resendMessage && (
-            <p className={`text-xs ${resendStatus === 'success' ? 'text-success' : 'text-danger'}`}>
+            <p
+              className={`text-xs ${resendStatus === "success" ? "text-success" : "text-danger"}`}
+            >
               {resendMessage}
             </p>
           )}
@@ -285,7 +296,7 @@ export default function ForgotPasswordForm() {
             disabled={isSendingCode}
             onClick={handleNext}
           >
-            {isSendingCode ? 'Verifying...' : 'Next'}
+            {isSendingCode ? "Verifying..." : "Next"}
           </PrimaryButton>
         ) : (
           <PrimaryButton
@@ -294,7 +305,7 @@ export default function ForgotPasswordForm() {
             size="md"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Resetting...' : 'Reset Password'}
+            {isSubmitting ? "Resetting..." : "Reset Password"}
           </PrimaryButton>
         )}
       </div>

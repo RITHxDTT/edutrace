@@ -147,13 +147,10 @@ function getAttachmentIcon(type: string) {
   switch (type) {
     case "youtube":
       return <PlayIcon />;
-
     case "zip":
       return <ZipIcon />;
-
     case "pdf":
       return <PdfIcon />;
-
     default:
       return <DocIcon />;
   }
@@ -162,81 +159,80 @@ function getAttachmentIcon(type: string) {
 function getAttachmentColor(type: string) {
   switch (type) {
     case "youtube":
-      return {
-        color: "#ef4444",
-        background: "#fef2f2",
-      };
-
+      return { color: "#ef4444", background: "#fef2f2" };
     case "zip":
-      return {
-        color: "#f59e0b",
-        background: "#fef9ee",
-      };
-
+      return { color: "#f59e0b", background: "#fef9ee" };
     case "pdf":
-      return {
-        color: "#dc2626",
-        background: "#fef2f2",
-      };
-
+      return { color: "#dc2626", background: "#fef2f2" };
     default:
-      return {
-        color: "#5b52e8",
-        background: "#eff0fe",
-      };
+      return { color: "#5b52e8", background: "#eff0fe" };
   }
 }
 
+// ── Check if a string is HTML or plain text ───────────────────────────────────
+function isHtml(str: string) {
+  return /<[a-z][\s\S]*>/i.test(str);
+}
+
 export default function Instruction({ assessment }: Props) {
-  //   FIX: use assessment if it exists (any truthy object), fallback only if null/undefined
   const data = assessment ?? DEFAULT_ASSESSMENTS[0];
 
   const totalPts =
     data.gradingRubric?.reduce((acc, item) => acc + item.points, 0) || 0;
 
+  // description may be raw HTML (from InstructionEditor) or plain text (from old data)
+  const descriptionIsHtml = isHtml(data.description || "");
+
   return (
     <div className={styles.grid}>
-      {/* Task Description */}
+      {/* ── Task Description ── */}
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <div
             className={styles.cardIconWrap}
-            style={{
-              color: "#6b5ef8",
-              background: "rgba(107,94,248,0.12)",
-            }}
+            style={{ color: "#6b5ef8", background: "rgba(107,94,248,0.12)" }}
           >
             <DocIcon />
           </div>
-
           <h2 className={styles.cardTitle}>Task Description</h2>
         </div>
 
         <div className={styles.divider} />
 
-        <p className={styles.taskDesc}>{data.description}</p>
-
-        <p className={styles.reqLabel}>REQUIREMENTS</p>
-
-        <ul className={styles.reqList}>
-          {data.requirements?.map((requirement) => (
-            <li key={requirement} className={styles.reqItem}>
-              <span className={styles.reqDot} />
-              {requirement}
-            </li>
-          ))}
-        </ul>
+        {descriptionIsHtml ? (
+          //   Render HTML from InstructionEditor properly
+          <div
+            className={styles.taskDesc}
+            dangerouslySetInnerHTML={{ __html: data.description || "" }}
+            style={{
+              lineHeight: 1.7,
+              fontSize: 14,
+              color: "#374151",
+            }}
+          />
+        ) : (
+          // Legacy plain-text fallback
+          <>
+            <p className={styles.taskDesc}>{data.description}</p>
+            <p className={styles.reqLabel}>REQUIREMENTS</p>
+            <ul className={styles.reqList}>
+              {data.requirements?.map((requirement) => (
+                <li key={requirement} className={styles.reqItem}>
+                  <span className={styles.reqDot} />
+                  {requirement}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
       </div>
 
-      {/* Attachments */}
+      {/* ── Attachments ── */}
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <div
             className={styles.cardIconWrap}
-            style={{
-              color: "#22d3a0",
-              background: "rgba(34,211,160,0.12)",
-            }}
+            style={{ color: "#22d3a0", background: "rgba(34,211,160,0.12)" }}
           >
             <svg
               width="20"
@@ -253,10 +249,8 @@ export default function Instruction({ assessment }: Props) {
               />
             </svg>
           </div>
-
           <div>
             <h2 className={styles.cardTitle}>Attachments</h2>
-
             <p className={styles.attachCount}>
               {data.attachments?.length || 0} files
             </p>
@@ -268,7 +262,6 @@ export default function Instruction({ assessment }: Props) {
         <div className={styles.attachList}>
           {data.attachments?.map((attachment) => {
             const attachmentStyle = getAttachmentColor(attachment.type);
-
             return (
               <div key={attachment.id} className={styles.attachRow}>
                 <div
@@ -280,16 +273,13 @@ export default function Instruction({ assessment }: Props) {
                 >
                   {getAttachmentIcon(attachment.type)}
                 </div>
-
                 <div className={styles.attachInfo}>
                   <p className={styles.attachName}>{attachment.name}</p>
-
                   <p className={styles.attachMeta}>
                     {attachment.type.toUpperCase()}
                     {attachment.size ? ` · ${attachment.size}` : ""}
                   </p>
                 </div>
-
                 <a
                   href={attachment.url}
                   target="_blank"
@@ -300,7 +290,6 @@ export default function Instruction({ assessment }: Props) {
                   ) : (
                     <ExternalIcon />
                   )}
-
                   {attachment.action}
                 </a>
               </div>
@@ -309,23 +298,18 @@ export default function Instruction({ assessment }: Props) {
         </div>
       </div>
 
-      {/* Grading Rubric */}
+      {/* ── Grading Rubric ── */}
       <div className={styles.card}>
         <div className={styles.cardHeaderRow}>
           <div className={styles.cardHeader}>
             <div
               className={styles.cardIconWrap}
-              style={{
-                color: "#6b5ef8",
-                background: "rgba(107,94,248,0.12)",
-              }}
+              style={{ color: "#6b5ef8", background: "rgba(107,94,248,0.12)" }}
             >
               <DocIcon />
             </div>
-
             <h2 className={styles.cardTitle}>Grading Rubric</h2>
           </div>
-
           <div className={styles.totalPts}>
             Total Points{" "}
             <span className={styles.totalPtsVal}>{totalPts} pts</span>
@@ -338,7 +322,6 @@ export default function Instruction({ assessment }: Props) {
           {data.gradingRubric?.map((item) => (
             <div key={item.label} className={styles.rubricItem}>
               <span className={styles.rubricLabel}>{item.label}</span>
-
               <span className={styles.rubricPts} style={{ color: "#6b5ef8" }}>
                 {item.points} pts
               </span>
@@ -351,10 +334,7 @@ export default function Instruction({ assessment }: Props) {
             <div
               key={item.label}
               className={styles.rubricBarSegment}
-              style={{
-                flex: item.points,
-                background: "#6b5ef8",
-              }}
+              style={{ flex: item.points, background: "#6b5ef8" }}
             />
           ))}
         </div>
@@ -363,7 +343,6 @@ export default function Instruction({ assessment }: Props) {
           <span className={styles.rubricFooterLeft}>
             {data.gradingRubric?.length || 0} criteria total
           </span>
-
           <span className={styles.rubricFooterRight}>
             Passing score:
             <strong>
@@ -374,19 +353,15 @@ export default function Instruction({ assessment }: Props) {
         </div>
       </div>
 
-      {/* Assessment Time */}
+      {/* ── Assessment Time ── */}
       <div className={styles.card}>
         <div className={styles.cardHeader}>
           <div
             className={styles.cardIconWrap}
-            style={{
-              color: "#2E25C9",
-              background: "#EEEFFF",
-            }}
+            style={{ color: "#2E25C9", background: "#EEEFFF" }}
           >
-            <ClockIcon /> {/* just the SVG, no wrapper */}
+            <ClockIcon />
           </div>
-
           <h2 className={styles.cardTitle}>Assessment Time</h2>
         </div>
 
@@ -397,10 +372,8 @@ export default function Instruction({ assessment }: Props) {
             <div className={styles.timeCardIcon}>
               <ClockIcon size={22} />
             </div>
-
             <div>
               <p className={styles.timeCardLabel}>Required Daily (minutes)</p>
-
               <p className={styles.timeCardValue}>
                 {data.requiredDailyMinutes}
                 <span className={styles.timeCardUnit}> min</span>
@@ -412,10 +385,8 @@ export default function Instruction({ assessment }: Props) {
             <div className={styles.timeCardIcon}>
               <ClockIcon size={22} />
             </div>
-
             <div>
               <p className={styles.timeCardLabel}>Days until deadline</p>
-
               <p className={styles.timeCardValue}>
                 {data.daysUntilDeadline}
                 <span className={styles.timeCardUnit}> days</span>

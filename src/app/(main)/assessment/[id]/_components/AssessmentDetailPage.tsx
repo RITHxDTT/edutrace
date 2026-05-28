@@ -3,26 +3,28 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-import Instruction from "./_components/Instruction/Instruction";
-import Studentwork from "./_components/StudentWork/StudentWork";
-import EditTaskModal from "../_components/EditTaskModal";
-import SubmitAssignment from "./_components/SubmitAssignment/SubmitAssignment";
+import Instruction from "./Instruction/Instruction";
+import Studentwork from "./StudentWork/StudentWork";
+import EditTaskModal from "../../_components/EditTaskModal";
+import SubmitAssignment from "./SubmitAssignment/SubmitAssignment";
 
-import styles from "../[id]/_components/Instruction/Instruction.module.css";
+import styles from "./Instruction/Instruction.module.css";
 
-import { Assessment } from "../types";
-import { STORAGE_KEY, DEFAULT_ASSESSMENTS } from "../mockData";
-import { useRole } from "../hook/useRole";
-import VideoMeeting from "../communication/[id]/_components/VideoMeeting";
-import { participants } from "../communication/[id]/_components/User.mock";
-import { BookOpen } from "lucide-react";
-import { Calendar, User } from "iconsax-react";
+import { Assessment } from "../../types";
+import { STORAGE_KEY, DEFAULT_ASSESSMENTS } from "../../mockData";
+import { Calendar, Note} from "iconsax-react";
+import { BookOpen, User} from "lucide-react";
 
 type Tab = "instruction" | "communication" | "submitassignment" | "studentwork";
 
-export default function AssessmentDetailPage() {
+interface AssessmentDetailPageProps {
+  isStudent: boolean;
+}
+
+export default function AssessmentDetailPage({
+  isStudent,
+}: AssessmentDetailPageProps) {
   const { id } = useParams<{ id: string }>();
-  const { isStudent } = useRole(); 
 
   const [assessment, setAssessment] = useState<Assessment | null>(null);
   const [loading, setLoading] = useState(true);
@@ -116,76 +118,34 @@ export default function AssessmentDetailPage() {
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <div className={styles.headerIcon}>
-            <svg
-              width="22"
-              height="22"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect x="8" y="2" width="8" height="3" rx="1.5" fill="white" />
-              <path
-                d="M6 3.5H5C3.895 3.5 3 4.395 3 5.5V20C3 21.105 3.895 22 5 22H19C20.105 22 21 21.105 21 20V5.5C21 4.395 20.105 3.5 19 3.5H18"
-                stroke="white"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-              <rect
-                x="8"
-                y="1.5"
-                width="8"
-                height="4"
-                rx="2"
-                stroke="white"
-                strokeWidth="1.8"
-                fill="none"
-              />
-              <line
-                x1="8"
-                y1="11"
-                x2="16"
-                y2="11"
-                stroke="white"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-              <line
-                x1="8"
-                y1="15"
-                x2="14"
-                y2="15"
-                stroke="white"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-              />
-            </svg>
+            <Note size={20} color="white" />
           </div>
           <div>
             <h1 className={styles.title}>{assessment.title}</h1>
             <div className={styles.meta}>
               <span className={styles.metaDate}>
-                <BookOpen size={20} color="#6B7280" />
+                <BookOpen size={20} color="#000000" />
                 Subject:<strong> {assessment.category}</strong>
               </span>
 
               <div className={styles.metaDivider} />
 
               <span className={styles.metaDate}>
-                <User size={20} color="#6B7280" />
+                <User size={20} color="#000000" />
                 Assigned By:<strong> {assessment.assignedBy}</strong>
               </span>
 
               <div className={styles.metaDivider} />
 
               <span className={styles.metaDate}>
-                <Calendar size={20} color="#6B7280" />
+                <Calendar size={20} color="#000000" />
                 Start:<strong> {assessment.startDate}</strong>
               </span>
 
               <div className={styles.metaDivider} />
 
               <span className={styles.metaDate}>
-                <Calendar size={20} color="#6B7280" />
+                <Calendar size={20} color="#000000" />
                 Due:<strong> {assessment.endDate}</strong>
               </span>
             </div>
@@ -195,7 +155,7 @@ export default function AssessmentDetailPage() {
         <div className={styles.headerActions}>
           <div className={styles.pointsBadge}>{assessment.points} Points</div>
 
-          {/* Only teacher/ see the menu */}
+          {/* Only teacher sees the menu */}
           {!isStudent && (
             <div className={styles.menuWrapper}>
               <button
@@ -243,7 +203,6 @@ export default function AssessmentDetailPage() {
         {[
           { key: "instruction", label: "Instruction" },
           { key: "communication", label: "Communication Room" },
-          // Submit Assignment tab only for students
           ...(isStudent
             ? [{ key: "submitassignment", label: "Submit Assignment" }]
             : []),
@@ -264,13 +223,13 @@ export default function AssessmentDetailPage() {
 
       {activeTab === "communication" && (
         <div style={{ padding: "40px", textAlign: "center", color: "#9ca3af" }}>
-          <VideoMeeting initialParticipants={participants} />
+          Communication Room coming soon...
         </div>
       )}
 
       {activeTab === "submitassignment" && <SubmitAssignment />}
 
-      {activeTab === "studentwork" && <Studentwork />}
+      {activeTab === "studentwork" && <Studentwork isStudent={isStudent} />}
 
       {/* EDIT MODAL — teacher/admin only */}
       {!isStudent && editOpen && assessment && (

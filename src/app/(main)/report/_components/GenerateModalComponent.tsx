@@ -10,16 +10,12 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-export interface GeneratePayload {
-  reportName: string;
-  reportType: "CLASS" | "ASSESSMENT";
-  displayType: string;
-  period: string;
-}
+import type { Report } from "./TableDataReport";
 
 interface GenerateReportModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onGenerate?: (report: Report) => void;
 }
 
 const CLASS_OPTIONS = ["All Classes", "PVH", "SR", "PP"];
@@ -30,19 +26,11 @@ const TASK_OPTIONS = [
   "Parking_system",
 ];
 
-// function formatInputDate(dateStr: string) {
-//   if (!dateStr) return "";
-//   const [y, m, d] = dateStr.split("-").map(Number);
-//   return new Date(y, m - 1, d).toLocaleDateString("en-US", {
-//     month: "short",
-//     day: "numeric",
-//     year: "numeric",
-//   });
-// }
 
 export default function GenerateReportModalComponent({
   isOpen,
   onClose,
+  onGenerate,
 }: GenerateReportModalProps) {
   const [activeTab, setActiveTab] = useState<"class" | "task">("class");
   const [reportName, setReportName] = useState("");
@@ -279,6 +267,29 @@ export default function GenerateReportModalComponent({
             size="sm"
             disabled={!canGenerate}
             className={!canGenerate ? "opacity-40 cursor-not-allowed" : ""}
+            onClick={() => {
+              if (!canGenerate) return;
+              const isTask = activeTab === "task";
+              const period = isTask
+                ? new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
+                : `${new Date(startDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} - ${new Date(endDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
+              const classScope = isTask
+                ? undefined
+                : selectedClasses.includes("All Classes") || selectedClasses.length > 1
+                  ? "ALL"
+                  : selectedClasses[0];
+              onGenerate?.({
+                reportId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+                reportName,
+                reportType: isTask ? "ASSESSMENT" : "CLASS",
+                displayType: isTask ? "Task Based" : "Class Based",
+                period,
+                generatedAt: new Date().toISOString(),
+                classScope,
+              });
+              resetForm();
+              onClose();
+            }}
           >
             Generate
           </PrimaryButton>

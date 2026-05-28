@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -26,7 +26,7 @@ import ServerError from '../../_components/ServerError';
 export default function SignUpForm({ classrooms }: ClassroomProps) {
 
   const [isVisible, setVisible] = useState(false);
-  const [serverError, setServerError] = useState('');
+  const [serverError, setServerError] = useState("");
 
   const router = useRouter();
 
@@ -45,7 +45,7 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
       password: '',
       // gender: 'MALE',
     },
-    mode: 'onTouched',
+    mode: "onTouched",
   });
 
   const onSubmit = async (data: RegisterFormData) => {
@@ -152,7 +152,6 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
           </PrimaryButton>
 
         </div>
-
       </form>
 
     </div>

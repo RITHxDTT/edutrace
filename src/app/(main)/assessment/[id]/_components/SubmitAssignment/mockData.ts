@@ -1,6 +1,6 @@
-import { EvaluationResult, EvaluationFile } from "./types";
+import { EvaluationFile, EvaluationResult } from "./types";
 
-// ── Student's submitted files (shown in both states) ──────────────────────────
+//          Student's submitted files (shown in both states) ──────────────────────────
 export const MOCK_SUBMITTED_FILES: EvaluationFile[] = [
   {
     name: "12_KEO_VUTHTHANA_SR_WEB_001.zip",
@@ -16,7 +16,7 @@ export const MOCK_SUBMITTED_FILES: EvaluationFile[] = [
   },
 ];
 
-// ── Evaluated mockup ──────────────────────────────────────────────────────────
+//          Evaluated mockup        ───────────
 export const MOCK_EVALUATION: EvaluationResult = {
   score: 92,
   total: 100,
@@ -35,6 +35,6 @@ export const MOCK_EVALUATION: EvaluationResult = {
   files: MOCK_SUBMITTED_FILES,
 };
 
-// ── Not yet evaluated mockup ──────────────────────────────────────────────────
+//          Not yet evaluated mockup        ───
 export const MOCK_PENDING: EvaluationResult | null = null;
 export const TEST_EVALUATION: EvaluationResult | null = MOCK_PENDING;
