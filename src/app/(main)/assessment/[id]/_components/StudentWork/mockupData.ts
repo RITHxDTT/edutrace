@@ -1,10 +1,10 @@
-import { Assessment, Student, ActivityLog, SessionLog } from "./types";
+import { ActivityLog, Assessment, SessionLog, Student } from "./types";
 
-// ── Storage Key ───────────────────────────────────────────────────────────────
+//          Storage Key        ────────────────
 
 export const STORAGE_KEY = "assessments";
 
-// ── Assessments ───────────────────────────────────────────────────────────────
+//          Assessments        ────────────────
 
 export const DEFAULT_ASSESSMENTS: Assessment[] = [
   {
@@ -33,7 +33,7 @@ export const DEFAULT_ASSESSMENTS: Assessment[] = [
   },
 ];
 
-// ── Students ──────────────────────────────────────────────────────────────────
+//          Students        ───────────────────
 
 export const MOCK_STUDENTS: Student[] = [
   {
@@ -108,7 +108,7 @@ export const MOCK_STUDENTS: Student[] = [
   },
 ];
 
-// ── Activity Log ──────────────────────────────────────────────────────────────
+//          Activity Log        ───────────────
 
 export const MOCK_ACTIVITY_LOG: ActivityLog[] = [
   {
@@ -161,7 +161,7 @@ export const MOCK_ACTIVITY_LOG: ActivityLog[] = [
   },
 ];
 
-// ── Session Log ───────────────────────────────────────────────────────────────
+//          Session Log        ────────────────
 
 export const MOCK_SESSION_LOG: SessionLog[] = [
   {
@@ -190,7 +190,7 @@ export const MOCK_SESSION_LOG: SessionLog[] = [
   },
 ];
 
-// ── Student Time Constants ────────────────────────────────────────────────────
+//          Student Time Constants        ─────
 
 export const DAILY_REQUIRED = 60;
 export const TIME_SPENT_TODAY = 45;

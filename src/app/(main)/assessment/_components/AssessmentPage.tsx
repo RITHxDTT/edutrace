@@ -1,15 +1,14 @@
 "use client";
 
+import NavbarTitle from "@/components/Topbar/NavbarTitle";
 import { useEffect, useState } from "react";
+import AssessmentFilter from "./AssessmentFilter";
+import AssessmentGrid from "./AssessmentGrid";
+import AssessmentHeader from "./AssessmentHeader";
+import CreateTaskModal from "./CreateTaskModal";
 
-import AssessmentHeader from "./_components/AssessmentHeader";
-import AssessmentFilter from "./_components/AssessmentFilter";
-import AssessmentGrid from "./_components/AssessmentGrid";
-import CreateTaskModal from "./_components/CreateTaskModal";
-
-import { Assessment } from "./types";
-import { DEFAULT_ASSESSMENTS, STORAGE_KEY } from "./mockData";
-import { useRole } from "./hook/useRole";
+import { DEFAULT_ASSESSMENTS, STORAGE_KEY } from "../mockData";
+import { Assessment } from "../types";
 
 const STATUS_OPTIONS = [
   "All Status",
@@ -33,8 +32,11 @@ function saveAssessments(assessments: Assessment[]) {
   } catch {}
 }
 
-export default function AssessmentPage() {
-  const { isStudent } = useRole();
+interface AssessmentPageProps {
+  isStudent: boolean;
+}
+
+export default function AssessmentPage({ isStudent }: AssessmentPageProps) {
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,27 +50,33 @@ export default function AssessmentPage() {
     if (assessments !== null) saveAssessments(assessments);
   }, [assessments]);
 
-  // ── handleCreate receives already-processed data from CreateTaskModal ─────
-  // No re-mapping needed — field names already match the Assessment interface
-  const handleCreate: NonNullable<
-    React.ComponentProps<typeof CreateTaskModal>["onCreate"]
-  > = (data) => {
+  const handleCreate = (data: {
+    title: string;
+    acceptLate: boolean;
+    instruction: string;
+    assessmentDate: string;
+    dailyRequired: string;
+    point: string;
+    topic: string;
+    classes: string[];
+    gradingRubric: string;
+    attachments: File[];
+  }) => {
+    const parts = data.assessmentDate.split("-").map((s) => s.trim());
+    const startDate = parts[0] || "-";
+    const endDate = parts[1] || "-";
+
     const newAssessment: Assessment = {
       id: Date.now(),
-      title: data.title,
-      description: data.description,
-      category: data.category,
-      status: data.status,
-      startDate: data.startDate,
-      endDate: data.endDate,
+      category: data.topic || "General",
+      title: data.title || "Untitled",
+      description: data.instruction || "No description provided.",
+      status: "In Progress",
+      startDate,
+      endDate,
       assignedBy: "Tan Dara",
-      points: data.points,
-      attachments: data.attachments,
-      gradingRubric: data.gradingRubric,
-      passingScore: data.passingScore,
-      requiredDailyMinutes: data.requiredDailyMinutes,
-      daysUntilDeadline: data.daysUntilDeadline,
-      requirements: [],
+      points: Number(data.point) || 100,
+      requiredDailyMinutes: Number(data.dailyRequired) || 60,
     };
 
     setAssessments((prev) => [newAssessment, ...(prev ?? [])]);
@@ -84,6 +92,7 @@ export default function AssessmentPage() {
 
   return (
     <>
+      <NavbarTitle title="Assessment" override />
       <div className="flex-1 min-h-0 px-8 pt-7 pb-10 overflow-visible">
         <AssessmentHeader
           title="Assessment"

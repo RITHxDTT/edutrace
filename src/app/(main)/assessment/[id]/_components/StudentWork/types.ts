@@ -1,6 +1,4 @@
-// ── Assessment ────────────────────────────────────────────────────────────────
-
-import { StaticImageData } from "next/image";
+//          Assessment        ─────────────────
 
 export interface Assessment {
   id: number;
@@ -11,12 +9,12 @@ export interface Assessment {
   points: number;
 }
 
-// ── Student ───────────────────────────────────────────────────────────────────
+//          Student        ────────────────────
 
 export interface Student {
   id: number;
   name: string;
-  avatar: string
+  avatar: string;
   file: string;
   date: string;
   time: string;
@@ -24,7 +22,7 @@ export interface Student {
   status: "Handed In" | "Pending" | "Late";
 }
 
-// ── Activity Log ──────────────────────────────────────────────────────────────
+//          Activity Log        ───────────────
 
 export interface ActivityLog {
   id: number;
@@ -35,7 +33,7 @@ export interface ActivityLog {
   datetime: string;
 }
 
-// ── Session Log ───────────────────────────────────────────────────────────────
+//          Session Log        ────────────────
 
 export type SessionStatus = "Completed" | "Uncompleted" | "In Progress";
 

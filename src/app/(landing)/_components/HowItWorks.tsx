@@ -1,5 +1,3 @@
-import React from "react";
-
 export default function HowItWorks() {
   return (
     <section className="bg-white py-24 px-6 max-w-7xl mx-auto">
@@ -14,7 +12,7 @@ export default function HowItWorks() {
 
       {/* Grid Process Pipeline */}
       <div className="flex gap-10 max-w-6xl mx-auto">
-        {/* Step 1 */}
+        {/*          */}
         <div className="h-[280px] w-[330px] flex flex-col justify-between bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">
           <div className="flex items-center gap-3">
             <span className="w-6 h-6 rounded-full bg-accent-linear-purple bg-clip-text text-transparent flex items-center justify-center">
@@ -38,7 +36,7 @@ export default function HowItWorks() {
           </div>
         </div>
 
-        {/* Step 2 */}
+        {/*           */}
         <div className="h-[280px] w-[330px] flex flex-col justify-between  bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">
           <div className="flex items-start gap-3">
             <span className="w-6 h-6 rounded-full bg-accent-linear-purple bg-clip-text text-transparent flex items-center justify-center">
