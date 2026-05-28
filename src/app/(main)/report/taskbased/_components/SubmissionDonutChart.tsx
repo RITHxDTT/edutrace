@@ -1,5 +1,3 @@
-"use client";
-
 type SubmissionRing = {
   radius: number;
   strokeWidth: number;
@@ -93,29 +91,31 @@ export function SubmissionDonutChart({
   ];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 h-full w-full flex flex-col justify-center shadow-sm">
-      <p className="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-1">
+    <div className="bg-white border border-gray-200 rounded-2xl p-6 h-full w-full  shadow-sm">
+      <p className="text-md font-medium text-gray-400 uppercase tracking-widest mb-1">
         Submission Behavior
       </p>
 
-      <p className="text-sm font-semibold text-gray-900 mb-5">
+      <p className="text-2xl font-semibold text-gray-900 mb-5">
         On-Time, Late, and Missing Submission
       </p>
 
-      <div className="flex items-center gap-7">
-        <svg
-          width={SVG_SIZE}
-          height={SVG_SIZE}
-          viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-          className="shrink-0"
-        >
-          {submissionRings.map((ring) => (
-            <DonutProgressRing key={ring.label} {...ring} />
-          ))}
-        </svg>
+      <div className="flex items-center justify-between gap-10 px-44">
+        <div>
+          <svg
+            width={SVG_SIZE}
+            height={SVG_SIZE}
+            viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
+            className="shrink-0"
+          >
+            {submissionRings.map((ring) => (
+              <DonutProgressRing key={ring.label} {...ring} />
+            ))}
+          </svg>
+        </div>
 
         <div>
-          <p className="text-2xl font-bold text-gray-900 tracking-tight mb-5">
+          <p className="text-2xl font-medium text-gray-900 tracking-tight mb-5">
             Submission
           </p>
 

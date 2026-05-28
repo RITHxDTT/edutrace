@@ -1,13 +1,16 @@
 import dynamic from "next/dynamic";
-import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import KpiCardTaskBased from "./_components/KpiCardTaskBased";
 import KpiCardComponent from "../_components/KpiCardComponent";
 import TopPerformersCard from "./_components/TopPerformersCard";
 import AtRiskStudentsCard from "./_components/AtRiskStudentsCard";
+import TaskBasedActions from "./_components/TaskBasedAction";
+import AiChatWrapper from "../../ai/_components/AI/AiChatWrapper";
 
 const TickPlacementBars = dynamic(() => import("./_components/BarChart"));
 const SubmissionDonutChart = dynamic(() =>
-  import("./_components/SubmissionDonutChart").then((m) => m.SubmissionDonutChart)
+  import("./_components/SubmissionDonutChart").then(
+    (m) => m.SubmissionDonutChart,
+  ),
 );
 
 const mockReport = {
@@ -73,17 +76,16 @@ export default function page() {
             <span className="text-blue-600">{viewingLabel}</span>
           </p>
         </div>
-        <div className="flex items-center gap-1">
-          <PrimaryButton>Back</PrimaryButton>
-          <PrimaryButton>Export PDF</PrimaryButton>
-        </div>
+        <TaskBasedActions />
       </div>
 
       <div className="flex items-start mt-6">
-        <KpiCardTaskBased
-          totalStudents={summary.totalStudents}
-          className={classroom.className}
-        />
+        <div className="w-111 h-111">
+          <KpiCardTaskBased
+            totalStudents={summary.totalStudents}
+            className={classroom.className}
+          />
+        </div>
         <div className="flex-1 grid grid-cols-3 gap-4 ml-4">
           {kpiCards.map((card) => (
             <KpiCardComponent
@@ -113,6 +115,9 @@ export default function page() {
       <div className="mt-4 grid grid-cols-2 gap-4">
         <TopPerformersCard data={topPerformers} />
         <AtRiskStudentsCard data={atRiskStudents} />
+      </div>
+      <div className="fixed bottom-0 right-0 pointer-events-none z-50">
+        <AiChatWrapper />
       </div>
     </div>
   );

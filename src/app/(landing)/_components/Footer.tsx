@@ -7,8 +7,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-8 border-b border-white/10 pb-12">
         <div className="max-w-md">
           <div className="flex items-center  gap-2 mb-4">
-          <img src="./images/logo/growthyflow-logo.png" alt="" className='w-[33px] h-[40px]'/>
-          <p className='text-[24px] font-semibold'>GrowtyhFlow</p>
+          <img src="./images/logo/edutraceLogo.png" alt="" className='w-[33px] h-[40px]'/>
+          <p className='text-[24px] font-semibold'>Edutrace</p>
           </div>
           <p className="text-sm leading-relaxed text-white/60">
             A collaborative educational hub designed to bridge the gap between classroom teaching and student understanding. An accessible academic support platform that fosters peer-to-peer learning through incentives, while ensuring accuracy and integrity with instructor-reviewed answers.

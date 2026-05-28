@@ -5,13 +5,15 @@ import { tv } from "tailwind-variants";
 type TabType = {
     key: string;
     title: string;
-    content: ReactNode;
+    content?: ReactNode;
 }
 
 type tabs = {
     tabs: TabType[];
     colors?: "primary" | "secondary";
     variant?: "underlined";
+    selectedKey?: string;
+    onSelectionChange?: (key: string) => void;
 }
 
 const tabVariant = tv({
@@ -46,11 +48,15 @@ const tabVariant = tv({
     },
 });
 
-export default function PrimaryTabs({ tabs, colors = "secondary", variant }: tabs) {
+export default function PrimaryTabs({ tabs, colors = "secondary", variant, selectedKey, onSelectionChange }: tabs) {
 
     const styles = tabVariant({ color: colors });
     return (
-        <Tabs aria-label="Options" classNames={{
+        <Tabs
+            aria-label="Options"
+            {...(selectedKey !== undefined && { selectedKey })}
+            {...(onSelectionChange && { onSelectionChange: (key) => onSelectionChange(key as string) })}
+            classNames={{
             base: styles.base(),
             tabList: styles.tabList(),
             cursor: styles.cursor(),

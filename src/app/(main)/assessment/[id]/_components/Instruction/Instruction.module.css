@@ -1,5 +1,5 @@
 .iconEdit {
-  stroke: #3b82f6; 
+  stroke: #3b82f6;
   transition: stroke 0.2s ease;
 }
 
@@ -13,11 +13,11 @@
 }
 
 .iconDelete:hover {
-  stroke: #b91c1c; 
+  stroke: #b91c1c;
 }
 
 .iconLink {
-  stroke: #6b7280; 
+  stroke: #6b7280;
   transition: stroke 0.2s ease;
 }
 
@@ -56,7 +56,7 @@
   background: white;
   border: 1px solid #ececf3;
   border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   padding: 8px;
   z-index: 100;
 }
@@ -196,7 +196,7 @@
   color: #374151;
 }
 .tabActive {
-  color: #2E25C9;
+  color: #2e25c9;
   font-weight: 600;
   border-bottom-color: #5b52e8;
   background: none;
@@ -315,7 +315,9 @@
   box-shadow: 0 2px 8px rgba(80, 80, 140, 0.08);
   border: 1px solid #f0f1f8;
   cursor: pointer;
-  transition: box-shadow 0.15s, transform 0.15s;
+  transition:
+    box-shadow 0.15s,
+    transform 0.15s;
 }
 .attachRow:last-child {
   border-bottom: none;
@@ -365,15 +367,15 @@
   background: #f0effd;
 }
 
-/* ─── Grading Rubric ─── */
+/* ─         Grading Rubric ─         */
 .totalPts {
   font-size: 13px;
   color: #6b7280;
   display: flex;
   align-items: center;
   gap: 6px;
-  background: #EEEFFF;
- 
+  background: #eeefff;
+
   border-radius: 10px;
   padding: 6px 14px;
 }
@@ -397,7 +399,7 @@
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  background: #EEEFFF;
+  background: #eeefff;
   border-radius: 10px;
 }
 .rubricItem:first-child {
@@ -461,8 +463,8 @@
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  background: #EEEFFF;
-  
+  background: #eeefff;
+
   display: flex;
   align-items: center;
   justify-content: center;

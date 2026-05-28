@@ -1,4 +1,4 @@
-// ── Submit Assignment ─────────────────────────────────────────────────────────
+//          Submit Assignment        ──────────
 
 export interface Instructor {
   name: string;

@@ -1,36 +1,35 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { verifyEmailFormSchema } from '@/schemas/VerifyEmailFormSchema';
-import { InputOtp } from '@heroui/input-otp';
-import { verifyEmailAction } from '@/actions/auth.action';
-import { useRouter } from 'next/navigation';
-import ServerError from '../../_components/ServerError';
-import PrimaryInput from '@/components/Inputs/PrimaryInputField';
-import { SmsEdit } from 'iconsax-react';
-import { resendOtpCodeService } from '@/services/auth.service';
-import { sileo } from 'sileo';
-import { OtpFormData } from '@/types/auth';
+import { verifyEmailAction } from "@/actions/auth.action";
+import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
+import PrimaryInput from "@/components/Inputs/PrimaryInputField";
+import { verifyEmailFormSchema } from "@/schemas/VerifyEmailFormSchema";
+import { resendOtpCodeService } from "@/services/auth.service";
+import { OtpFormData } from "@/types/auth";
+import { InputOtp } from "@heroui/input-otp";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SmsEdit } from "iconsax-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { sileo } from "sileo";
+import ServerError from "../../_components/ServerError";
 
 const STEP_FIELDS: Record<number, (keyof OtpFormData)[]> = {
-  1: ['email'],
-  2: ['code'],
+  1: ["email"],
+  2: ["code"],
 };
 
-type ResendStatus = 'idle' | 'loading' | 'success' | 'error';
+type ResendStatus = "idle" | "loading" | "success" | "error";
 
 export default function VerifyEmailForm() {
   const [step, setStep] = useState(1);
-  const [serverError, setServerError] = useState('');
-  const [resendStatus, setResendStatus] = useState<ResendStatus>('idle');
-  const [resendMessage, setResendMessage] = useState('');
+  const [serverError, setServerError] = useState("");
+  const [resendStatus, setResendStatus] = useState<ResendStatus>("idle");
+  const [resendMessage, setResendMessage] = useState("");
   const [cooldown, setCooldown] = useState(0);
 
   const router = useRouter();
-
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -48,7 +47,6 @@ export default function VerifyEmailForm() {
     return () => clearInterval(timer);
   }, [cooldown]);
 
-
   const {
     register,
     handleSubmit,
@@ -59,8 +57,8 @@ export default function VerifyEmailForm() {
   } = useForm<OtpFormData>({
     resolver: zodResolver(verifyEmailFormSchema),
     defaultValues: {
-      email: '',
-      code: '',
+      email: "",
+      code: "",
     },
   });
 
@@ -74,38 +72,37 @@ export default function VerifyEmailForm() {
   const handleResend = async () => {
     if (cooldown > 0) return;
 
-    const email = getValues('email');
+    const email = getValues("email");
 
-    setResendStatus('loading');
-    setResendMessage('');
+    setResendStatus("loading");
+    setResendMessage("");
 
     try {
-      const res = await resendOtpCodeService(email, 'REGISTRATION');
+      const res = await resendOtpCodeService(email, "REGISTRATION");
 
-      setResendStatus('success');
-      setResendMessage(res.message ?? 'A new code was sent to your email.');
+      setResendStatus("success");
+      setResendMessage(res.message ?? "A new code was sent to your email.");
 
       setCooldown(60);
-
     } catch (error) {
-      setResendStatus('error');
+      setResendStatus("error");
 
       setResendMessage(
         error instanceof Error
           ? error.message
-          : 'Something went wrong. Please try again.'
+          : "Something went wrong. Please try again.",
       );
     }
   };
 
   async function onSubmit(data: OtpFormData) {
     try {
-      const res = await verifyEmailAction(data, 'REGISTRATION');
+      const res = await verifyEmailAction(data, "REGISTRATION");
 
       if (res?.success) {
-        setServerError('');
+        setServerError("");
         sileo.success({ title: "Account Verified", description: res.message });
-        router.push('/login');
+        router.push("/login");
         return;
       }
 
@@ -113,8 +110,8 @@ export default function VerifyEmailForm() {
         setServerError(res.error);
       }
     } catch (error) {
-      setServerError('An unexpected error occurred. Please try again.');
-      console.error('Client caught error:', error);
+      setServerError("An unexpected error occurred. Please try again.");
+      console.error("Client caught error:", error);
     }
   }
 
@@ -132,7 +129,7 @@ export default function VerifyEmailForm() {
           iconPosition="right"
           isInvalid={!!errors.email}
           errorMessage={errors.email?.message}
-          {...register('email')}
+          {...register("email")}
         />
       )}
 
@@ -154,35 +151,36 @@ export default function VerifyEmailForm() {
                 }}
                 size="lg"
                 errorMessage={errors.code?.message}
-                {...register('code')}
+                {...register("code")}
               />
             </div>
           )}
         />
       )}
 
-      {/* Resend code — only relevant on step 2 */}
+      {/* Resend code — only relevant on           */}
       {step === 2 && (
         <div className="space-y-1 text-center">
           <p className="text-xs text-muted">
-            Didn't receive OTP code?{' '}
+            Didn't receive OTP code?{" "}
             <button
               type="button"
-              disabled={resendStatus === 'loading' || cooldown > 0}
+              disabled={resendStatus === "loading" || cooldown > 0}
               onClick={handleResend}
               className="text-linear-main font-bold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {resendStatus === 'loading'
-                ? 'Sending...'
+              {resendStatus === "loading"
+                ? "Sending..."
                 : cooldown > 0
                   ? `Resend in ${cooldown}s`
-                  : 'Resend code'}
+                  : "Resend code"}
             </button>
           </p>
           {resendMessage && (
             <p
-              className={`text-xs ${resendStatus === 'success' ? 'text-success' : 'text-danger'
-                }`}
+              className={`text-xs ${
+                resendStatus === "success" ? "text-success" : "text-danger"
+              }`}
             >
               {resendMessage}
             </p>
@@ -219,7 +217,7 @@ export default function VerifyEmailForm() {
             size="md"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Verifying...' : 'Verify'}
+            {isSubmitting ? "Verifying..." : "Verify"}
           </PrimaryButton>
         )}
       </div>

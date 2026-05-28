@@ -22,7 +22,7 @@ export default function LandingPage() {
           <div className=" flex flex-col justify-center items-center gap-5">
             <h1 className="  text-[48px] tracking-tight text-ai max-w-4xl mx-auto leading-tight">
               <span className="text-[48px] text-linear-main font-medium">
-                Stay on track. Don't miss tasks.
+                Stay on track. Do not miss tasks.
               </span>{" "}
               Achieve more with confidence.
             </h1>
@@ -90,7 +90,7 @@ export default function LandingPage() {
         <div className="flex flex-col gap-[20] items-start ">
           <p className="text-ai text-[32px]">
             <span className="bg-accent-linear-purple bg-clip-text text-transparent font-semibold text-[42px] x-5">
-              GrowthyFlow {" "}
+              Endutrance {" "}
             </span>
             is built to help students and instructors manage tasks, track
             progress, and communicate efficiently in one centralized platform.

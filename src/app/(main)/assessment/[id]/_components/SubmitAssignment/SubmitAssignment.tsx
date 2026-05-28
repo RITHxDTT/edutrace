@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { MOCK_SUBMITTED_FILES, TEST_EVALUATION } from "./mockData";
 import type { EvaluationResult } from "./types";
 
-// ── Icons ─────────────────────────────────────────────────────────────────────
+//          Icons        ──────────────────────
 
 function UploadIcon() {
   return (
@@ -125,7 +125,7 @@ function QuoteIcon() {
   );
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+//          Helpers        ────────────────────
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -137,7 +137,7 @@ function getExt(name: string): string {
   return name.split(".").pop()?.toUpperCase() ?? "FILE";
 }
 
-// ── Props ─────────────────────────────────────────────────────────────────────
+//          Props        ──────────────────────
 
 interface SubmitAssignmentProps {
   onSubmit?: (files: File[]) => void;
@@ -145,7 +145,7 @@ interface SubmitAssignmentProps {
   evaluation?: EvaluationResult | null;
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+//          Main Component        ─────────────
 
 export default function SubmitAssignment({
   onSubmit,
@@ -178,7 +178,7 @@ export default function SubmitAssignment({
     onSubmit?.(files);
   };
 
-  // ── File list source ───────────────────────────────────────────────────────
+  //          File list source        ────────
   const evaluationFiles = evaluation?.files ?? [];
   const showEvaluationFiles = isEvaluated && evaluationFiles.length > 0;
 
@@ -197,7 +197,7 @@ export default function SubmitAssignment({
         alignItems: "start",
       }}
     >
-      {/* ── LEFT — Submit form ────────────────────────────────────────────── */}
+      {/*          LEFT — Submit form           ──────────────         */}
       <div
         style={{
           background: "#fff",
@@ -257,7 +257,7 @@ export default function SubmitAssignment({
         </div>
 
         <div style={{ padding: "22px 24px", flex: 1 }}>
-          {/* ── File list (shown above drop zone) ─────────────────────────── */}
+          {/*          File list (shown above drop zone) ─────────────────────────         */}
           {(showEvaluationFiles || showSubmittedFiles || showLocalFiles) && (
             <div style={{ marginBottom: 24 }}>
               <p
@@ -534,7 +534,7 @@ export default function SubmitAssignment({
           </div>
         </div>
 
-        {/* ── Submit / Unsubmit button ───────────────────────────────────────── */}
+        {/*          Submit / Unsubmit button           ─────────         */}
         <div style={{ padding: "0 24px 24px" }}>
           {isEvaluated ? (
             <button
@@ -595,7 +595,7 @@ export default function SubmitAssignment({
         </div>
       </div>
 
-      {/* ── RIGHT — Evaluation result panel ──────────────────────────────────── */}
+      {/*          RIGHT — Evaluation result panel           ────         */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <h2 style={{ fontSize: 20, fontWeight: 700, color: "#111827" }}>
           Evaluation Result
