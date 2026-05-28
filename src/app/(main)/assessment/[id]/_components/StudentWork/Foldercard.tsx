@@ -10,11 +10,23 @@ interface FolderCardProps {
   fileSize?: string;
 }
 
-const statusConfig = {
-  "Handed In": { bg: "#e6f9f0", color: "#1db866" },
-  Pending: { bg: "#fff8e1", color: "#f59e0b" },
-  Late: { bg: "#fde8e8", color: "#e53e3e" },
-};
+const STATUS_CONFIG = {
+  "Handed In": {
+    bg: "bg-emerald-50",
+    text: "text-emerald-600",
+    dot: "bg-emerald-500",
+  },
+  Pending: {
+    bg: "bg-amber-50",
+    text: "text-amber-500",
+    dot: "bg-amber-400",
+  },
+  Late: {
+    bg: "bg-red-50",
+    text: "text-red-500",
+    dot: "bg-red-400",
+  },
+} as const;
 
 export default function FolderCard({
   avatarUrl,
@@ -25,139 +37,69 @@ export default function FolderCard({
   time = "11:00 PM",
   fileSize = "42 MB",
 }: FolderCardProps) {
-  const { color } = statusConfig[status] ?? statusConfig["Handed In"];
-  const truncated =
-    fileName.length > 18 ? fileName.slice(0, 18) + "..." : fileName;
+  const cfg = STATUS_CONFIG[status];
 
   return (
-    <div style={{ paddingTop: 28, display: "inline-block" }}>
-      <div
-        style={{
-          fontFamily:
-            "-apple-system, 'SF Pro Display', 'Helvetica Neue', sans-serif",
-          background: "#fff",
-          borderRadius: 18,
-          padding: "36px 20px 16px",
-          width: 370,
-          boxShadow: "0 2px 20px rgba(0,0,0,0.10)",
-          position: "relative",
-        }}
-      >
-        {/* Watermark icon */}
-        <div
-          style={{
-            position: "absolute",
-            right: -18,
-            bottom: -10,
-            opacity: 0.045,
-            pointerEvents: "none",
-            userSelect: "none",
-          }}
-        >
-          <svg
-            width="160"
-            height="160"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#000"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="9" y1="13" x2="15" y2="13" />
-            <line x1="9" y1="17" x2="13" y2="17" />
-          </svg>
+    <div className="w-full pt-6">
+      <div className="relative rounded-2xl border border-slate-200 bg-white px-4 pb-4 pt-8 shadow-sm transition hover:shadow-md sm:px-5 sm:pb-5 sm:pt-9">
+        
+        {/* Watermark */}
+        <div className="pointer-events-none absolute -bottom-4 -right-4 opacity-[0.04]">
+          <WatermarkIcon />
         </div>
 
-        {/* Avatar — overlaps top edge */}
-        <div
-          style={{
-            position: "absolute",
-            top: -22,
-            left: 16,
-            width: 44,
-            height: 44,
-            borderRadius: "50%",
-            overflow: "hidden",
-            border: "2.5px solid #fff",
-            boxShadow: "0 1px 6px rgba(0,0,0,0.13)",
-            background: "#c8d8f0",
-          }}
-        >
+        {/* Avatar */}
+        <div className="absolute -top-5 left-4 h-11 w-11 overflow-hidden rounded-full border-2 border-white bg-slate-200 shadow-md">
           {avatarUrl ? (
             <img
               src={avatarUrl}
               alt={studentName}
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              className="h-full w-full object-cover"
             />
           ) : (
-            <svg
-              width="44"
-              height="44"
-              viewBox="0 0 44 44"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <rect width="44" height="44" fill="#c8d8f0" />
-              <circle cx="22" cy="17" r="8" fill="#7a9fc2" />
-              <ellipse cx="22" cy="36" rx="14" ry="9" fill="#7a9fc2" />
-            </svg>
+            <DefaultAvatar />
           )}
         </div>
 
-        {/* Name + Badge row */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: 10,
-          }}
-        >
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#1a1a1a" }}>
+        {/* Header */}
+        <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          
+          {/* Name */}
+          <h3 className="max-w-full truncate pr-2 text-sm font-semibold text-slate-900 sm:max-w-[180px]">
             {studentName}
-          </div>
+          </h3>
+
+          {/* Status */}
           <span
-            style={{
-              color,
-              fontSize: 11,
-              fontWeight: 700,
-              padding: "4px 10px",
-              borderRadius: 20,
-              whiteSpace: "nowrap",
-            }}
+            className={`inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${cfg.bg} ${cfg.text}`}
           >
+            <span
+              className={`h-1.5 w-1.5 rounded-full ${cfg.dot}`}
+            />
+
             {status}
           </span>
         </div>
 
-        {/* File name */}
-        <div
-          title={fileName}
-          style={{
-            fontSize: 22,
-            fontWeight: 800,
-            color: "#111",
-            letterSpacing: -0.5,
-            margin: "10px 0 18px",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {truncated}
+        {/* Divider */}
+        <div className="mb-4 h-px bg-slate-100" />
+
+        {/* File */}
+        <div className="min-w-0">
+          <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+            File
+          </p>
+
+          <p
+            title={fileName}
+            className="truncate text-sm font-bold text-slate-900 sm:text-base"
+          >
+            {fileName}
+          </p>
         </div>
 
-        {/* Meta row */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            paddingTop: 12,
-          }}
-        >
+        {/* Footer Meta */}
+        <div className="mt-4 grid grid-cols-3 gap-2 border-t border-slate-100 pt-4">
           <MetaItem icon={<CalendarIcon />} label={date} />
           <MetaItem icon={<ClockIcon />} label={time} />
           <MetaItem icon={<FileIcon />} label={fileSize} />
@@ -167,33 +109,69 @@ export default function FolderCard({
   );
 }
 
-function MetaItem({ icon, label }: { icon: React.ReactNode; label: string }) {
+function MetaItem({
+  icon,
+  label,
+}: {
+  icon: React.ReactNode;
+  label: string;
+}) {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 4,
-        flex: 1,
-      }}
-    >
+    <div className="flex min-w-0 flex-col items-center gap-1 text-center">
       {icon}
-      <span style={{ fontSize: 10, color: "#777", fontWeight: 500 }}>
+
+      <span className="truncate text-[10px] font-medium text-slate-400 sm:text-[11px]">
         {label}
       </span>
     </div>
   );
 }
 
+function DefaultAvatar() {
+  return (
+    <svg
+      width="44"
+      height="44"
+      viewBox="0 0 44 44"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-full w-full"
+    >
+      <rect width="44" height="44" fill="#cbd5e1" />
+      <circle cx="22" cy="17" r="8" fill="#94a3b8" />
+      <ellipse cx="22" cy="36" rx="14" ry="9" fill="#94a3b8" />
+    </svg>
+  );
+}
+
+function WatermarkIcon() {
+  return (
+    <svg
+      width="140"
+      height="140"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="text-black"
+    >
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="9" y1="13" x2="15" y2="13" />
+      <line x1="9" y1="17" x2="13" y2="17" />
+    </svg>
+  );
+}
+
 function CalendarIcon() {
   return (
     <svg
-      width="17"
-      height="17"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#aab0bb"
+      stroke="#cbd5e1"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -209,11 +187,11 @@ function CalendarIcon() {
 function ClockIcon() {
   return (
     <svg
-      width="17"
-      height="17"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#aab0bb"
+      stroke="#cbd5e1"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -227,11 +205,11 @@ function ClockIcon() {
 function FileIcon() {
   return (
     <svg
-      width="17"
-      height="17"
+      width="16"
+      height="16"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#aab0bb"
+      stroke="#cbd5e1"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

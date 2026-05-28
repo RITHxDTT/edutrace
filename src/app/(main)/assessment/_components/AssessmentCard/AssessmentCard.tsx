@@ -5,13 +5,19 @@ type AssessmentCardProps = {
   className?: string;
 };
 
-function AssessmentCard({ children, className = "" }: AssessmentCardProps) {
+function AssessmentCard({
+  children,
+  className = "",
+}: AssessmentCardProps) {
   return (
-    <div className="relative flex flex-col">
+    <div
+      className={`relative w-fit min-w-[300px] ${className}`}
+    >
+      {/* Background SVG */}
       <svg
-        width="496"
-        height="407"
+        className="absolute inset-0 w-full h-full"
         viewBox="0 0 496 407"
+        preserveAspectRatio="none"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -21,6 +27,7 @@ function AssessmentCard({ children, className = "" }: AssessmentCardProps) {
             fill="white"
           />
         </g>
+
         <defs>
           <filter
             id="filter0_d_54852_33348"
@@ -29,33 +36,44 @@ function AssessmentCard({ children, className = "" }: AssessmentCardProps) {
             width="496"
             height="406.043"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+
             <feColorMatrix
               in="SourceAlpha"
               type="matrix"
               values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
               result="hardAlpha"
             />
+
             <feMorphology
               radius="3"
               operator="dilate"
               in="SourceAlpha"
               result="effect1_dropShadow_54852_33348"
             />
+
             <feOffset />
+
             <feGaussianBlur stdDeviation="7.5" />
-            <feComposite in2="hardAlpha" operator="out" />
+
+            <feComposite
+              in2="hardAlpha"
+              operator="out"
+            />
+
             <feColorMatrix
               type="matrix"
               values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0"
             />
+
             <feBlend
               mode="normal"
               in2="BackgroundImageFix"
               result="effect1_dropShadow_54852_33348"
             />
+
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -66,7 +84,10 @@ function AssessmentCard({ children, className = "" }: AssessmentCardProps) {
         </defs>
       </svg>
 
-      <div className={`absolute inset-0 p-4 flex flex-col`}>{children}</div>
+      {/* Content */}
+      <div className="relative z-10 p-6 flex flex-col">
+        {children}
+      </div>
     </div>
   );
 }

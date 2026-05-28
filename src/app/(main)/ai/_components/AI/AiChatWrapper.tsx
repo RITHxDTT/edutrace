@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
-import AiComponent from "@/components/AI/_components/AiComponent";
-import CardAI from "@/components/AI/CardAI";
+import AiComponent from "./_components/AiComponent";
+import CardAI from "./CardAI";
 
 export default function AiChatWrapper() {
     const [isOpen, setIsOpen] = useState(false);
@@ -9,7 +9,7 @@ export default function AiChatWrapper() {
     return (
         <div className="absolute bottom-6 right-6 flex flex-col items-end gap-4 z-50">
             {isOpen && (
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-200 origin-bottom-right shadow-2xl">
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-200 origin-bottom-right shadow-2xl bg-transparent rounded-2xl">
                     <CardAI onClose={() => setIsOpen(false)} />
                 </div>
             )}

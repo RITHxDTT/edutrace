@@ -35,11 +35,13 @@ export interface ActivityLog {
 
 //          Session Log        ────────────────
 
+export type SessionStatus = "Completed" | "Uncompleted" | "In Progress";
+
 export interface SessionLog {
   id: number;
   date: string;
   start: string;
   end: string;
   duration: number;
-  status: "Completed" | "Uncompleted" | "In Progress";
+  status: SessionStatus;
 }
