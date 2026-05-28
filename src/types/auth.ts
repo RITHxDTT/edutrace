@@ -10,7 +10,7 @@ import { CalendarDate } from "@internationalized/date";
 //   birthdate: CalendarDate | null;
 //   address: string;
 // }
-export interface RegisterFormData {
+ interface RegisterFormData {
   firstName: string;
   lastName: string;
   email: string;
