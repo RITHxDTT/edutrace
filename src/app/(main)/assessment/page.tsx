@@ -11,8 +11,6 @@ import { Assessment } from "./types";
 import { DEFAULT_ASSESSMENTS, STORAGE_KEY } from "./mockData";
 import { useRole } from "./hook/useRole";
 
-import { Skeleton } from "@/components/ui/skeleton";
-
 const STATUS_OPTIONS = [
   "All Status",
   "Not Yet",
@@ -26,7 +24,6 @@ function loadAssessments(): Assessment[] {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved) as Assessment[];
   } catch {}
-
   return DEFAULT_ASSESSMENTS;
 }
 
@@ -38,7 +35,6 @@ function saveAssessments(assessments: Assessment[]) {
 
 export default function AssessmentPage() {
   const { isStudent } = useRole();
-
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -52,6 +48,8 @@ export default function AssessmentPage() {
     if (assessments !== null) saveAssessments(assessments);
   }, [assessments]);
 
+  // ── handleCreate receives already-processed data from CreateTaskModal ─────
+  // No re-mapping needed — field names already match the Assessment interface
   const handleCreate: NonNullable<
     React.ComponentProps<typeof CreateTaskModal>["onCreate"]
   > = (data) => {
@@ -104,34 +102,10 @@ export default function AssessmentPage() {
           />
         </div>
 
-        <div className="relative z-0 pt-6">
+        <div className="relative z-0">
           {assessments === null ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="rounded-2xl border border-gray-200 p-5 space-y-4"
-                >
-                  <div className="flex items-center justify-between">
-                    <Skeleton className="h-5 w-28" />
-                    <Skeleton className="h-5 w-16 rounded-full" />
-                  </div>
-
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-4/5" />
-
-                  <div className="space-y-2 pt-2">
-                    <Skeleton className="h-3 w-24" />
-                    <Skeleton className="h-3 w-36" />
-                    <Skeleton className="h-3 w-28" />
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4">
-                    <Skeleton className="h-8 w-24 rounded-lg" />
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                  </div>
-                </div>
-              ))}
+            <div className="text-sm text-gray-400 pt-10 text-center">
+              Loading...
             </div>
           ) : (
             <AssessmentGrid assessments={filtered} />

@@ -62,6 +62,15 @@ export default function SubmissionTrendComponent(
   const [itemData, setItemData] = React.useState<LineItemIdentifier>();
   const [axisData, setAxisData] = React.useState<ChartsAxisData | null>();
 
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+
   return (
     <Stack
       direction={{ xs: 'column', md: 'row' }}

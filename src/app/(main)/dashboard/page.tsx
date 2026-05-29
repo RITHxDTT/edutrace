@@ -20,7 +20,7 @@ export default async function Page() {
   console.log(role)
 
   return (
-    <>
+    <div>
       <NavbarTitle title="Dashboard" override />
       {/* ========================= TEACHER ========================= */}
       {role === 'teacher' && (
@@ -110,7 +110,7 @@ export default async function Page() {
             ))}
           </div> */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
-            {summery
+            {/* {summery
               .filter((item) => item.role.includes('student'))
               .map((item, index) => (
                 <KpiCardComponent
@@ -120,7 +120,7 @@ export default async function Page() {
                   subtitle={item.subtitle}
                   subValue={item.subValue}
                 />
-              ))}
+              ))} */}
           </div>
 
           <div className="flex flex-col w-full gap-5 xl:flex-row">
@@ -156,6 +156,6 @@ export default async function Page() {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
