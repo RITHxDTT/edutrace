@@ -1,7 +1,12 @@
-"use client";
+import { auth } from "@/auth";
+import NavbarTitle from "@/components/Topbar/NavbarTitle";
+import AssessmentPage from "./_components/AssessmentPage";
 
-import { useEffect, useState } from "react";
+export default async function Page() {
+  const session = await auth();
+  const isStudent = session?.user?.role === "student";
 
+<<<<<<< Updated upstream
 import AssessmentHeader from "./_components/AssessmentHeader";
 import AssessmentFilter from "./_components/AssessmentFilter";
 import AssessmentGrid from "./_components/AssessmentGrid";
@@ -124,4 +129,7 @@ export default function AssessmentPage() {
       )}
     </>
   );
+=======
+  return <AssessmentPage isStudent={isStudent} />;
+>>>>>>> Stashed changes
 }
