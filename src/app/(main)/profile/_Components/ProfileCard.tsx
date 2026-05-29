@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { Camera, User } from "iconsax-react";
-import { ClassSvg } from "../_components/ClassSvg";
+import { ClassSvg } from "./ClassSvg";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { changeProfileImageAction } from "@/actions/user.action";

@@ -1,14 +1,4 @@
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableColumn,
-  TableRow,
-  TableCell,
-} from '@heroui/table';
 
-import Image from 'next/image';
-import styles from './kpicard.module.css';
 import SubmissionTrendComponent from './_components/SubmissionTrend/SubmissionTrendComponent';
 import KpiCardComponent from '../dashboard/_components/KpiCard/KpiCardComponent';
 import StudentProgressComponent from './_components/StudentProgress/StudentProgressComponent';
@@ -26,6 +16,8 @@ export default async function Page() {
   const session = await auth();
   // const role = session?.user?.role;
   const role = session?.user?.role as 'teacher' | 'student';
+
+  console.log(role)
 
   return (
     <>
