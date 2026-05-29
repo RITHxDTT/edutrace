@@ -10,6 +10,7 @@ import CreateTaskModal from "./_components/CreateTaskModal";
 import { Assessment } from "./types";
 import { DEFAULT_ASSESSMENTS, STORAGE_KEY } from "./mockData";
 import { useRole } from "./hook/useRole";
+import NavbarTitle from "@/components/Topbar/NavbarTitle";
 
 const STATUS_OPTIONS = [
   "All Status",
@@ -84,6 +85,7 @@ export default function AssessmentPage() {
 
   return (
     <>
+      <NavbarTitle title="Assessment" override />
       <div className="flex-1 min-h-0 px-8 pt-7 pb-10 overflow-visible">
         <AssessmentHeader
           title="Assessment"

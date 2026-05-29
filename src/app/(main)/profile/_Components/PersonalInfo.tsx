@@ -17,7 +17,7 @@ export default function PersonalInfo() {
   const user = session?.user;
 
   const [isEditing, setIsEditing] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
@@ -27,28 +27,28 @@ export default function PersonalInfo() {
   } = useForm({
     resolver: zodResolver(profileFormScehma),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      username: "",
-      gender: undefined,
-      birthdate: undefined,
-      address: "",
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      username: user?.username,
+      gender: (user?.gender as "MALE" | "FEMALE" | undefined) ?? undefined,
+      birthdate: user?.birthdate ? parseDate(user.birthdate) : undefined,
+      address: user?.address,
     },
   });
 
   const onSubmit = async (data: any) => {
-    
+
     setIsEditing(false);
   };
 
   const handleCancel = () => {
     reset({
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
-      username: user?.username || "",
+      firstName: user?.firstName,
+      lastName: user?.lastName,
+      username: user?.username,
       gender: (user?.gender as "MALE" | "FEMALE" | undefined) ?? undefined,
       birthdate: user?.birthdate ? parseDate(user.birthdate) : undefined,
-      address: user?.address || "",
+      address: user?.address,
     });
     setIsEditing(false);
   };
@@ -57,14 +57,14 @@ export default function PersonalInfo() {
     if (!user) return;
 
     reset({
-      firstName: user.firstName || "",
-      lastName: user.lastName || "",
-      username: user.username || "",
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
       gender: (user.gender as "MALE" | "FEMALE" | undefined) ?? undefined,
       birthdate: user.birthdate ? parseDate(user.birthdate) : undefined,
-      address: user.address || "",
+      address: user.address,
     });
-  },  [user, reset]);
+  }, [user, reset]);
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border p-6 flex flex-col gap-6">
@@ -75,34 +75,58 @@ export default function PersonalInfo() {
 
           {/* Left */}
           <div className="flex-1 space-y-4">
-            <PrimaryInput
-              label="First Name"
-              type="text"
-              placeholder="First Name"
-              isDisabled={!isEditing}
-              {...register("firstName")}
-              isInvalid={!!errors.firstName}
-              errorMessage={errors.firstName?.message}
+            <Controller
+              name="firstName"
+              control={control}
+              render={({ field }) => (
+                <PrimaryInput
+                  label="First Name"
+                  type="text"
+                  placeholder="First Name"
+                  isDisabled={!isEditing}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  isInvalid={!!errors.firstName}
+                  errorMessage={errors.firstName?.message}
+                />
+              )}
             />
 
-            <PrimaryInput
-              label="Last Name"
-              type="text"
-              placeholder="Last Name"
-              isDisabled={!isEditing}
-              {...register("lastName")}
-              isInvalid={!!errors.lastName}
-              errorMessage={errors.lastName?.message}
+            <Controller
+              name="lastName"
+              control={control}
+              render={({ field }) => (
+                <PrimaryInput
+                  label="Last Name"
+                  type="text"
+                  placeholder="Last Name"
+                  isDisabled={!isEditing}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  isInvalid={!!errors.lastName}
+                  errorMessage={errors.lastName?.message}
+                />
+              )}
             />
 
-            <PrimaryInput
-              label="Username"
-              type="text"
-              placeholder="username"
-              isDisabled={!isEditing}
-              {...register("username")}
-              isInvalid={!!errors.username}
-              errorMessage={errors.username?.message}
+            <Controller
+              name="username"
+              control={control}
+              render={({ field }) => (
+                <PrimaryInput
+                  label="Username"
+                  type="text"
+                  placeholder="username"
+                  isDisabled={!isEditing}
+                  value={field.value}
+                  onChange={field.onChange}
+                  onBlur={field.onBlur}
+                  isInvalid={!!errors.username}
+                  errorMessage={errors.username?.message}
+                />
+              )}
             />
           </div>
 
@@ -167,14 +191,28 @@ export default function PersonalInfo() {
               Cancel
             </PrimaryButton>
           )}
+          {
+            isEditing ? (
+              <PrimaryButton
+                type="submit"
+                className="px-6 py-2"
+              >
+                {isSubmitting ? "Saving..." : "Save Changes"}
+              </PrimaryButton>
+            ) : (
+              <PrimaryButton
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsEditing(true);
+                }}
+                className="px-6 py-2"
+              >
+                Edit Profile
+              </PrimaryButton>
+            )
+          }
 
-          <PrimaryButton
-            type={isEditing ? "submit" : "button"}
-            onClick={!isEditing ? () => setIsEditing(true) : undefined}
-            className="px-6 py-2"
-          >
-            {isSubmitting ? "Saving..." : isEditing ? "Save Changes" : "Edit Profile"}
-          </PrimaryButton>
         </div>
       </form>
     </div>

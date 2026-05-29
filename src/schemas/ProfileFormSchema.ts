@@ -6,15 +6,21 @@ export const profileFormScehma =
         firstName: z
             .string()
             .min(3, { message: "First name must be at least 3 characters long." }),
+
         lastName: z
             .string()
             .min(3, { message: "Last name must be at least 3 characters long." }),
+
         username: z
             .string()
             .min(3, { message: "User must be at least 3 characters long." }),
+
         gender: z.enum(["MALE", "FEMALE"], {
             message: "Please select a gender.",
-        }),
+        })
+            .optional()
+            .or(z.literal("")),
+
         birthdate: z
             .instanceof(CalendarDate, {
                 message: "Birthdate is required.",
@@ -29,10 +35,13 @@ export const profileFormScehma =
             }, {
                 message: "Birthdate must be in the past.",
             }),
+
         address: z
             .string()
+            .trim()
             .min(5, {
                 message: "Address must be at least 5 characters long.",
             })
-            .trim(),
+            .optional()
+            .or(z.literal("")),
     });
