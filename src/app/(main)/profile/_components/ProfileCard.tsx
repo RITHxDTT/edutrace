@@ -2,11 +2,13 @@
 
 import { useRef, useState } from "react";
 import { Camera, User } from "iconsax-react";
+<<<<<<< Updated upstream:src/app/(main)/profile/_components/ProfileCard.tsx
 import { ClassSvg } from "../../assessment/[id]/_components/StudentWork/_components/ClassSvg";
+=======
+>>>>>>> Stashed changes:src/app/(main)/profile/_Components/ProfileCard.tsx
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { changeProfileImageAction } from "@/actions/user.action";
-
 export default function ProfileCard() {
   const { data: session, update } = useSession();
   const user = session?.user;
@@ -187,7 +189,7 @@ export default function ProfileCard() {
           <div className="flex items-center gap-2 mt-2">
             {classroomAbbrev && (
               <div className="flex items-center gap-2 bg-indigo-50 px-3 py-1 rounded-full">
-                <ClassSvg />
+              
                 <span className="text-xs text-indigo-600">
                   Class {classroomAbbrev}
                 </span>
