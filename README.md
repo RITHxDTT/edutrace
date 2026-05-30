@@ -84,13 +84,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser. Make sure t
 | `npm run lint` | Run ESLint |
 | `npm run test` | Run tests |
 
-## Connecting to the API
-
-The UI expects the backend API to be running at the URL specified in `NEXT_PUBLIC_API_URL`. Make sure to:
-
-1. Start the API server first (see [API README](./API-readme.md))
-2. Ensure CORS is configured on the API to allow `http://localhost:3000`
-
 ## Production Build
 
 ```bash
