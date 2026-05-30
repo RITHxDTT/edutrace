@@ -3,7 +3,7 @@ import KpiCardTaskBased from "../taskbased/_components/KpiCardTaskBased";
 import KpiCardComponent from "../_components/KpiCardComponent";
 import TaskBasedActions from "../taskbased/_components/TaskBasedAction";
 import TableStudent from "./_components/tableStudent";
-import AiChatWrapper from "../../ai/_components/AI/AiChatWrapper";
+import AiChatWrapper from "../AI/_components/AI/AiChatWrapper";
 
 const TickPlacementBars = dynamic(
   () => import("../taskbased/_components/BarChart"),

@@ -4,7 +4,7 @@ import KpiCardComponent from "../_components/KpiCardComponent";
 import TopPerformersCard from "./_components/TopPerformersCard";
 import AtRiskStudentsCard from "./_components/AtRiskStudentsCard";
 import TaskBasedActions from "./_components/TaskBasedAction";
-import AiChatWrapper from "../../ai/_components/AI/AiChatWrapper";
+import AiChatWrapper from "../AI/_components/AI/AiChatWrapper";
 
 const TickPlacementBars = dynamic(() => import("./_components/BarChart"));
 const SubmissionDonutChart = dynamic(() =>

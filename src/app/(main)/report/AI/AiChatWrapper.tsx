@@ -14,13 +14,13 @@ export default function AiChatWrapper() {
                 </div>
             )}
 
-            <button 
+            <div 
                 onClick={() => setIsOpen(!isOpen)}
                 className="cursor-pointer transition-transform duration-200 active:scale-95 hover:scale-105"
                 aria-label="Toggle AI Assistant"
             >
                 <AiComponent width={70} height={70} />
-            </button>
+            </div>
         </div>
     );
 }
