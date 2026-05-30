@@ -37,7 +37,6 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.39.0",
     "heroui-cli": "^3.0.1",
-    "i": "^0.3.7",
     "iconsax-react": "^0.0.8",
     "lucide-react": "^1.16.0",
     "next": "16.2.6",
