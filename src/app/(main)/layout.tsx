@@ -1,4 +1,3 @@
-import { auth } from '@/auth'
 import AppSidebar from '@/components/Sidebar/AppSidebar'
 import AppNavbar from '@/components/Topbar/AppNavbar'
 import { SidebarProvider } from '@/components/ui/sidebar'
