@@ -6,8 +6,8 @@ export const getAllAssessmentAction = async (params?: GetAssessmentParams) => {
   const result = await getAllAssessementService(params);
 
   if (!result.success) {
-    return { success: false, error: result.error };
+    return { success: false, error: result?.error };
   }
 
-  return { success: true, data: result.data };
+  return { success: true, data: result.data?.payload };
 };

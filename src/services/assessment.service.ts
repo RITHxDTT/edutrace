@@ -9,26 +9,26 @@ export const getAllAssessementService = async ({
   type,
   subjectId
 }: GetAssessmentParams = {}) => {
-  try {
-    const searchParmas = new URLSearchParams();
+  const searchParmas = new URLSearchParams();
 
-    searchParmas.set("page", String(page)); // Cast number to string
-    searchParmas.set("size", String(size)); // Cast number to string
+  searchParmas.set("page", String(page)); // Cast number to string
+  searchParmas.set("size", String(size)); // Cast number to string
 
-    if (sortBy) searchParmas.set("sortBy", sortBy);
-    if (status) searchParmas.set("status", status);
-    if (type) searchParmas.set("type", type);
-    if (subjectId) searchParmas.set("subjectId", subjectId);
+  if (sortBy) searchParmas.set("sortBy", sortBy);
+  if (status) searchParmas.set("status", status);
+  if (type) searchParmas.set("type", type);
+  if (subjectId) searchParmas.set("subjectId", subjectId);
 
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments?${searchParmas.toString()}`,
-      {
-        headers: await headerToken(),
-      },
-    );
-    return await res.json();
-  } catch (err) {
-    console.error("Error ", err);
-    return { success: false, error: err };
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments?${searchParmas.toString()}`,
+    {
+      headers: await headerToken(),
+    },
+  );
+  const result = await res.json();
+  if (!res.ok) {
+    return { success: false, error: result?.message || "An error has occured." };
   }
+
+  return { success: true, data: result };
 };

@@ -6,3 +6,17 @@ export type GetAssessmentParams = {
     type?: "ASSIGNMENT" | "PRACTICE" | "HOMEWORK" | "MINI_PROJECT";
     subjectId?: string;
 }
+interface AssessmentType {
+    assessmentId: string;
+    title: string;
+    description?: string;
+    subjectId?: string;
+    gradingRubric?: string[];
+    assessmentType?: string;
+}
+
+interface AssessmentProps {
+    assessments: AssessmentType[]
+}
+
+export type { AssessmentProps, AssessmentType }
