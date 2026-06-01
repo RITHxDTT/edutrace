@@ -70,7 +70,7 @@
   --text-color-disabled: #BABABA;
   --text-color-border-default: #E5E7EB;
   --text-color-main-linear: #5d53f9;
-
+  --text-color-icon-seconary: #6B7280;
 }
 
 @theme inline {
@@ -182,6 +182,7 @@
 
 .df-calendar-container {
   height: 100vh !important;
+  font-family: var(--font-sans);
 }
 
 .df-month-day-cell-content {

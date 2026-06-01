@@ -10,9 +10,16 @@ interface AssessmentType {
     assessmentId: string;
     title: string;
     description?: string;
-    subjectId?: string;
     gradingRubric?: string[];
     assessmentType?: string;
+    status: "NOT_YET" | "IN_PROGRESS" | "SCHEDULED" | "CLOSED" | "ARCHIVED";
+    subject: {
+        subjectId?: string;
+        subjectName?: string;
+        description?: string;
+    }
+    dueAt?: string;
+    startAt?: string;
 }
 
 interface AssessmentProps {

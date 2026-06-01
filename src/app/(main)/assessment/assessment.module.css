@@ -1,0 +1,26 @@
+:root {
+    /* BADGE BACKGROUND COLORS */
+    --badge-color-is-progress: #E5EEFE;
+    --badge-color-completed: #E3F5EE --badge-color-soon: #F8EDEA;
+    --badge-color-closed: #;
+
+    /* BADGE TEXT COLORS */
+    --badge-text-color-is-progress: #0B52F7;
+    --badge-text-color-completed: #127338;
+    --badge-text-color-soon: #E75D21;
+}
+
+.badgeInProgress {
+    background-color: var(--badge-color-is-progress);
+    color: var(--badge-text-color-is-progress);
+}
+
+.badgeCompleted {
+    background-color: var(--badge-color-completed);
+    color: var(--badge-text-color-completed);
+}
+
+.badgeSoon {
+    background-color: var(--badge-color-soon);
+    color: var(--badge-text-color-soon);
+}

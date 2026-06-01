@@ -3,7 +3,7 @@ import { GetAssessmentParams } from "@/types/assessment";
 
 export const getAllAssessementService = async ({
   page = 1,
-  size = 10,
+  size = 6,
   sortBy,
   status,
   type,
@@ -26,9 +26,18 @@ export const getAllAssessementService = async ({
     },
   );
   const result = await res.json();
-  if (!res.ok) {
-    return { success: false, error: result?.message || "An error has occured." };
-  }
-
-  return { success: true, data: result };
+  return result;
 };
+
+export const getAssessmentByIdService = async (assessmentId: string) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments/${assessmentId}`,
+    {
+      headers: await headerToken()
+    }
+  )
+  const result = await res.json();
+
+  return result;
+
+}
