@@ -1,22 +1,29 @@
 "use client";
 import PrimarySelect from "@/components/Selects/PrimarySelect";
+import { SubjectType } from "@/types/subject";
 import { SelectItem } from "@heroui/select";
 import { FilterIcon } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 type FilterState = {
-  sortBy: string;
   status: string;
-  type: string;
+  subject: string;
+  sortBy: string;
 };
 
 type FilterTaskProps = {
-  onFilterChange: (filters: FilterState) => void;
+  filters: FilterState;
+  onFilterChange: (key: keyof FilterState, value: string) => void;
+  subjects: SubjectType[];
 };
 
-export default function FilterTask({ onFilterChange }: FilterTaskProps) {
-  const handleChange = (key: keyof FilterState, value: string) => {
-    onFilterChange({ sortBy: "", status: "", type: "", [key]: value });
-  };
+export default function FilterTask({
+  filters,
+  subjects,
+  onFilterChange,
+}: FilterTaskProps) {
+  const { data: session } = useSession();
+  const role = session?.user?.role;
 
   return (
     <div className="flex bg-white items-center rounded-[20px] px-7.5 py-5 gap-5">
@@ -29,23 +36,10 @@ export default function FilterTask({ onFilterChange }: FilterTaskProps) {
         <div>
           <PrimarySelect
             label=""
-            placeholder="Sort By"
-            selectType="secondary"
-            onChange={(e) => handleChange("sortBy", e.target.value)}
-          >
-            <SelectItem key="TITLE">Title</SelectItem>
-            <SelectItem key="ASSESSMENT_TYPE">Assessment Type</SelectItem>
-            <SelectItem key="STATUS">Status</SelectItem>
-            <SelectItem key="MAX_SCORE">Max Score</SelectItem>
-            <SelectItem key="CREATED_DATE">Created Date</SelectItem>
-          </PrimarySelect>
-        </div>
-        <div>
-          <PrimarySelect
-            label=""
             placeholder="All Status"
             selectType="secondary"
-            onChange={(e) => handleChange("status", e.target.value)}
+            selectedKeys={[filters.status]}
+            onChange={(e) => onFilterChange("status", e.target.value)}
           >
             <SelectItem key="">All Status</SelectItem>
             <SelectItem key="NOT_YET">Not Yet</SelectItem>
@@ -55,20 +49,26 @@ export default function FilterTask({ onFilterChange }: FilterTaskProps) {
             <SelectItem key="ARCHIVED">Archived</SelectItem>
           </PrimarySelect>
         </div>
-        <div>
-          <PrimarySelect
-            label=""
-            placeholder="All Type"
-            selectType="secondary"
-            onChange={(e) => handleChange("type", e.target.value)}
-          >
-            <SelectItem key="">All Type</SelectItem>
-            <SelectItem key="ASSIGNMENT">Assignment</SelectItem>
-            <SelectItem key="PRACTICE">Practice</SelectItem>
-            <SelectItem key="HOMEWORK">Homework</SelectItem>
-            <SelectItem key="MINI_PROJECT">Mini Project</SelectItem>
-          </PrimarySelect>
-        </div>
+        {role === "student" && (
+          <div>
+            <PrimarySelect
+              label=""
+              placeholder="All Subjects"
+              selectType="secondary"
+              selectedKeys={[filters.subject]}
+              onChange={(e) => onFilterChange("subject", e.target.value)}
+            >
+              <>
+                <SelectItem key="">All Subject</SelectItem>
+                {subjects.map((subject) => (
+                  <SelectItem key={subject.subjectId}>
+                    {subject.subjectName}
+                  </SelectItem>
+                ))}
+              </>
+            </PrimarySelect>
+          </div>
+        )}
       </div>
     </div>
   );

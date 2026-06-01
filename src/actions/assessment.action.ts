@@ -8,7 +8,7 @@ export const getAllAssessmentAction = async (params?: GetAssessmentParams) => {
     return { error: result.message };
   }
 
-  return result.payload;
+  return result.payload.content;
 };
 
 export const getAssessmentByIdAction = async (assessmentId: string) => {
@@ -17,5 +17,5 @@ export const getAssessmentByIdAction = async (assessmentId: string) => {
     return { error: result.message };
   }
 
-  return result.payload;
+  return result.payload.content;
 }

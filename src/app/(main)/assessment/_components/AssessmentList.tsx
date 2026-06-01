@@ -1,6 +1,5 @@
 import { AssessmentProps } from '@/types/assessment'
 import AssessmentCard from './AssessmentCard'
-import { getSubjectByIdAction } from '@/actions/subject.action'
 
 export default function AssessmentList({ assessments }: AssessmentProps) {
     if (!assessments) return <div><p>No Assessment</p></div>
