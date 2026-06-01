@@ -4,21 +4,107 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="62495669-76ac-4f43-953c-f5dab3f93f86" name="Changes" comment="" />
+    <list default="true" id="62495669-76ac-4f43-953c-f5dab3f93f86" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/actions/dashboard.action.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/services/dashboard.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/types/ApiResponse.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/ActivityLog/ActivityLogComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/ActivityLog/ActivityLogComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/CurrentTask/CurrentTaskComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/CurrentTask/CurrentTaskComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/PieChartWithCenterLabel/PieChartWithCenterLabelComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/PieChartWithCenterLabel/PieChartWithCenterLabelComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/RecentTask/RecentTaskComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/RecentTask/RecentTaskComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/Reminder/ReminderComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/Reminder/ReminderComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/StudentProgress/StudentProgressComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/StudentProgress/StudentProgressComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/WeeklyVsRequiredProgress/WeeklyVsRequiredProgress.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/WeeklyVsRequiredProgress/WeeklyVsRequiredProgress.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/mockupData.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/mockupData.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/report/allclasses/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/report/allclasses/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/report/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/report/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/report/specificClass/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/report/specificClass/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/report/taskbased/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/report/taskbased/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/dashboard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/dashboard.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="268" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0000000000003821" />
+      <entry key="S10" value="1.0000007418613073" />
+      <entry key="S30" value="1.0155158912310143" />
+      <entry key="S60" value="1.2552560078716435" />
+      <entry key="M2" value="2.906221990974072" />
+      <entry key="M5" value="17.864711168606128" />
+      <entry key="M10" value="47.584611003972164" />
+      <entry key="M15" value="72.55744972004521" />
+      <entry key="M30" value="146.84378909568363" />
+      <entry key="H1" value="274.71183264980135" />
+      <entry key="H2" value="412.22798195331717" />
+      <entry key="H4" value="516.1933348941426" />
+      <entry key="D1" value="628.9655789743996" />
+      <entry key="W1" value="651.2025000542737" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="4.2565139248029336E-88" />
+      <entry key="MS500" value="3.355913913475926E-18" />
+      <entry key="S2" value="4.28008804517334E-5" />
+      <entry key="S5" value="0.017888794750996948" />
+      <entry key="S10" value="0.13374899906540216" />
+      <entry key="S30" value="0.5114032851619812" />
+      <entry key="S60" value="0.7151246640705345" />
+      <entry key="M2" value="0.8456506531067424" />
+      <entry key="M5" value="0.9408229547402123" />
+      <entry key="M10" value="1.1572754486697165" />
+      <entry key="M15" value="1.6830753513840508" />
+      <entry key="M30" value="4.230550676683257" />
+      <entry key="H1" value="8.852724164258866" />
+      <entry key="H2" value="13.683732850108093" />
+      <entry key="H4" value="17.269769612248286" />
+      <entry key="D1" value="21.116781403512345" />
+      <entry key="W1" value="21.871269704638433" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.7737824967711949" />
+      <entry key="MS500" value="0.950000382874886" />
+      <entry key="S2" value="0.9872799412303247" />
+      <entry key="S5" value="1.0084147280790268" />
+      <entry key="S10" value="1.1137616687995318" />
+      <entry key="S30" value="1.5024298236590694" />
+      <entry key="S60" value="1.9501687180543041" />
+      <entry key="M2" value="3.734087304928963" />
+      <entry key="M5" value="18.79276963809415" />
+      <entry key="M10" value="48.73247968150639" />
+      <entry key="M15" value="74.23156421015037" />
+      <entry key="M30" value="151.06425862491486" />
+      <entry key="H1" value="283.55449337719585" />
+      <entry key="H2" value="425.9040150049939" />
+      <entry key="H4" value="533.4582512836649" />
+      <entry key="D1" value="650.0813703680163" />
+      <entry key="W1" value="673.0736232265245" />
+    </decayedShown>
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="3DvzyJeQ6gLsxntEmGYwczTWSFI" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -32,7 +118,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "feature/calendar",
+    "git-widget-placeholder": "feature/dashboard",
     "javascript.preferred.runtime.type.id": "node",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
@@ -45,7 +131,7 @@
     "nodejs_package_manager_path": "npm",
     "npm.Next.js: server-side.executor": "Run",
     "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "D:\\HRD-Room-Project\\GrowthyFlow\\HRD-Room-UI\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "/home/yannvanneth/Documents/KSHRD/HRDRoom/HRD-Room-UI/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
