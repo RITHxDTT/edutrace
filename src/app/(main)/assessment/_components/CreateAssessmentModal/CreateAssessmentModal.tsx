@@ -56,7 +56,7 @@ export default function CreateAssessmentModal({
         <ModalHeader className="flex flex-col gap-3">
           <div className="flex flex-col">
             <span>Create Assessment</span>
-            <span>Fill in the details to create a new assessment</span>
+            <span className="text-sm text-icon-seconary">Fill in the details to create a new assessment</span>
           </div>
         </ModalHeader>
 

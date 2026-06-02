@@ -36,7 +36,7 @@ const inputVariants = tv({
                 mainWrapper: "w-full",
                 innerWrapper: "",
                 inputWrapper:
-                    "bg-input-field border border-transparent data-[focus=true]:border-primary/20 data-[focus=true]:bg-input-field data-[hover=true]:border-primary/20 data-[hover=true]:bg-input-field rounded-[8px] px-[18px] h-[50px] transition-all duration-150",
+                    "bg-input-field border border-transparent data-[focus=true]:border-primary/20 data-[focus=true]:bg-input-field data-[hover=true]:border-/20 data-[hover=true]:bg-input-field rounded-[8px] px-[18px] h-[50px] transition-all duration-150",
                 input:
                     "text-sm text-primary placeholder:text-tertiary bg-transparent font-normal h-full",
                 clearButton: "text-zinc-400 hover:text-zinc-600",
@@ -47,14 +47,17 @@ const inputVariants = tv({
 
             secondary: {
                 base: "font-sans",
-                label: "",
-                mainWrapper: "",
-                inputWrapper: "",
-                input: "",
-                clearButton: "",
-                helperWrapper: "",
-                description: "",
-                errorMessage: "",
+                label: "font-semibold text-label mb-1 transition-colors duration-150 group-focus-within:text-primary",
+                mainWrapper: "w-full",
+                innerWrapper: "",
+                inputWrapper:
+                    "bg-transparent border data-[focus=true]:bg-transparent data-[hover=true]:bg-transparent rounded-[8px] px-[18px] h-[50px] transition-all duration-150",
+                input:
+                    "text-sm text-primary placeholder:text-tertiary bg-transparent font-normal h-full",
+                clearButton: "text-zinc-400 hover:text-zinc-600",
+                helperWrapper: "px-1 pt-1.5",
+                description: "text-[11px] text-zinc-400",
+                errorMessage: "text-[11px] font-medium text-rose-500",
             },
         },
     },

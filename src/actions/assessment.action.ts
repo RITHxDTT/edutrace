@@ -17,5 +17,5 @@ export const getAssessmentByIdAction = async (assessmentId: string) => {
     return { error: result.message };
   }
 
-  return result.payload.content;
+  return result.payload;
 }
