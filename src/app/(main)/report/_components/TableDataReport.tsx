@@ -11,17 +11,18 @@ export interface Report {
   displayType: string;
   period: string;
   generatedAt: string;
-  classScope?: string; // "ALL" for all-classes view, class abbr (e.g. "SR") for specific class
+  classScope?: string;
 }
 
 interface TableDataComponentProps {
   reports: Report[];
   onDelete: (reportId: string) => void;
   onView: (report: Report) => void;
-  startIndex?: number;
+  startIndex?: number; // Should be passed as: (currentPage - 1) * pageSize
 }
 
 function formatDate(iso: string) {
+  if (!iso) return "—";
   return new Date(iso).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -44,15 +45,15 @@ export default function TableDataComponent({
     }
   }
 
-  if (reports.length === 0) {
+  if (!reports || reports.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-gray-400">
-        <FileText size={64} color="currentColor" />
+        <FileText size={64} className="text-gray-300" />
         <p className="mt-4 text-base font-semibold text-gray-700">
           No Report Yet.
         </p>
         <p className="mt-1 text-sm text-gray-400">
-          please click on a button above to generate your first report.
+          Please click on a button above to generate your first report.
         </p>
       </div>
     );
@@ -60,8 +61,9 @@ export default function TableDataComponent({
 
   return (
     <>
-      <div className="bg-white rounded-2xl overflow-hidden">
-        <div className="grid grid-cols-[40px_1fr_170px_290px_200px_100px] px-6 py-3 bg-gray-50 border-b border-gray-100">
+      <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+        {/* Table Header */}
+        <div className="grid grid-cols-[60px_1fr_150px_250px_180px_100px] px-6 py-3 bg-gray-50 border-b border-gray-100">
           {["#", "Report Name", "Type", "Period", "Generated", "Action"].map(
             (col) => (
               <span
@@ -74,6 +76,7 @@ export default function TableDataComponent({
           )}
         </div>
 
+        {/* Table Rows */}
         {reports.map((report, index) => {
           const rowNumber = startIndex + index + 1;
           const displayId = `RTP-${String(rowNumber).padStart(3, "0")}`;
@@ -82,46 +85,53 @@ export default function TableDataComponent({
           return (
             <div
               key={report.reportId}
-              className={`grid grid-cols-[40px_1fr_170px_290px_200px_100px] px-6 py-4 items-center hover:bg-gray-50/50 transition-colors ${
+              className={`grid grid-cols-[60px_1fr_150px_250px_180px_100px] px-6 py-4 items-center hover:bg-gray-50/50 transition-colors ${
                 index !== reports.length - 1 ? "border-b border-gray-100" : ""
               }`}
             >
-              <span className="text-sm text-gray-500">{rowNumber}</span>
-              <div className="flex items-center gap-3">
+              <span className="text-sm font-medium text-gray-400">{rowNumber}</span>
+              
+              <div className="flex items-center gap-3 min-w-0">
                 <div className="text-gray-400 shrink-0">
-                  <FileText size={24} color="currentColor" />
+                  <FileText size={22} />
                 </div>
-                <div>
-                  <p className="text-sm font-semibold text-gray-800 leading-tight">
+                <div className="truncate">
+                  <p className="text-sm font-semibold text-gray-800 leading-tight truncate">
                     {report.reportName}
                   </p>
                   <p className="text-xs text-gray-400 mt-0.5">{displayId}</p>
                 </div>
               </div>
+
               <div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-600">
-                  <LayoutGrid size={12} color="currentColor" />
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                  isClass ? "bg-blue-50 text-blue-600" : "bg-indigo-50 text-indigo-600"
+                }`}>
+                  <LayoutGrid size={12} />
                   {isClass ? "Class" : "Subject"}
                 </span>
               </div>
-              <span className="text-sm text-gray-600">{report.period}</span>
+
+              <span className="text-sm text-gray-600 truncate">{report.period}</span>
+              
               <span className="text-sm text-gray-600">
                 {formatDate(report.generatedAt)}
               </span>
+
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => onView(report)}
                   className="text-gray-400 hover:text-indigo-500 transition-colors"
                   title="View report"
                 >
-                  <Eye size={20} color="currentColor" />
+                  <Eye size={18} />
                 </button>
                 <button
                   onClick={() => setPendingDelete(report)}
                   className="text-gray-400 hover:text-red-500 transition-colors"
                   title="Delete report"
                 >
-                  <Trash2 size={20} color="currentColor" />
+                  <Trash2 size={18} />
                 </button>
               </div>
             </div>

@@ -1,15 +1,15 @@
 import dynamic from "next/dynamic";
-import KpiCardTaskBased from "../taskbased/_components/KpiCardTaskBased";
+import KpiCardTaskBased from "../_components/_taskBase/KpiCardTaskBased";
 import KpiCardComponent from "../_components/KpiCardComponent";
-import TaskBasedActions from "../taskbased/_components/TaskBasedAction";
+import TaskBasedActions from "../_components/_taskBase/TaskBasedAction";
 import TableStudent from "./_components/tableStudent";
 import AiChatWrapper from "../AI/AiChatWrapper";
 
 const TickPlacementBars = dynamic(
-  () => import("../taskbased/_components/BarChart"),
+  () => import("../_components/_taskBase/BarChart"),
 );
 const SubmissionDonutChart = dynamic(() =>
-  import("../taskbased/_components/SubmissionDonutChart").then(
+  import("../_components/_taskBase/SubmissionDonutChart").then(
     (m) => m.SubmissionDonutChart,
   ),
 );

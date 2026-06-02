@@ -1,36 +1,24 @@
+// src/app/(main)/report/_components/GenerateModalComponent.tsx
 "use client";
 
 import { useState, useRef } from "react";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
-import {
-  Edit2,
-  XCircle,
-  ChevronDown,
-  Search,
-  CheckCircle2,
-} from "lucide-react";
-
-import type { Report } from "./TableDataReport";
+import { taskBaseReport, createClassReport } from "@/actions/report.action"; 
+import { Edit2, XCircle, ChevronDown, Search, CheckCircle2 } from "lucide-react";
 
 interface GenerateReportModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onGenerate?: (report: Report) => void;
+  onGenerateSuccess?: () => void;
 }
 
 const CLASS_OPTIONS = ["All Classes", "PVH", "SR", "PP"];
-const TASK_OPTIONS = [
-  "Loop_01",
-  "Java_mini_project",
-  "OOP_V1",
-  "Parking_system",
-];
-
+const TASK_OPTIONS = ["Loop_01", "Java_mini_project", "OOP_V1", "Parking_system"];
 
 export default function GenerateReportModalComponent({
   isOpen,
   onClose,
-  onGenerate,
+  onGenerateSuccess,
 }: GenerateReportModalProps) {
   const [activeTab, setActiveTab] = useState<"class" | "task">("class");
   const [reportName, setReportName] = useState("");
@@ -40,16 +28,18 @@ export default function GenerateReportModalComponent({
   const [taskDropdownOpen, setTaskDropdownOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState("");
   const [taskSearch, setTaskSearch] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   if (!isOpen) return null;
 
   const filteredTasks = TASK_OPTIONS.filter((t) =>
-    t.toLowerCase().includes(taskSearch.toLowerCase()),
+    t.toLowerCase().includes(taskSearch.toLowerCase())
   );
 
   const canGenerate =
     reportName.trim() !== "" &&
+    !isSubmitting &&
     (activeTab === "class"
       ? selectedClasses.length > 0 && startDate !== "" && endDate !== ""
       : selectedTask !== "");
@@ -65,11 +55,10 @@ export default function GenerateReportModalComponent({
     setActiveTab("class");
   }
 
-
   function toggleClass(cls: string) {
     if (cls === "All Classes") {
       setSelectedClasses((prev) =>
-        prev.includes("All Classes") ? [] : CLASS_OPTIONS,
+        prev.includes("All Classes") ? [] : CLASS_OPTIONS
       );
       return;
     }
@@ -80,6 +69,38 @@ export default function GenerateReportModalComponent({
       if (next.length === CLASS_OPTIONS.length - 1) return CLASS_OPTIONS;
       return next;
     });
+  }
+
+  async function handleFormSubmit() {
+    if (!canGenerate) return;
+    setIsSubmitting(true);
+
+    try {
+      if (activeTab === "task") {
+        // Prepare data payload structure according to your taskBaseReport schema
+        await taskBaseReport({
+          title: reportName,
+          taskId: selectedTask, // Map to your correct payload ID configuration
+        });
+      } else {
+        await createClassReport({
+          title: reportName,
+          subjectId: "default-subject-id", // Update with your actual subject scope
+          classroomIds: selectedClasses.filter((c) => c !== "All Classes"),
+          startDate: new Date(startDate).toISOString(),
+          endDate: new Date(endDate).toISOString(),
+        });
+      }
+      
+      onGenerateSuccess?.();
+      resetForm();
+      onClose();
+    } catch (error) {
+      console.error("Failed to generate report:", error);
+      alert("Error generating report. Please check configuration options.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
@@ -97,18 +118,11 @@ export default function GenerateReportModalComponent({
               <Edit2 size={28} color="#3B82F6" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Generate Report
-              </h2>
-              <p className="text-sm text-gray-400 mt-0.5">
-                Fill in the details to generate a new report
-              </p>
+              <h2 className="text-2xl font-bold text-gray-900">Generate Report</h2>
+              <p className="text-sm text-gray-400 mt-0.5">Fill in the details to generate a new report</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors mt-1"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors mt-1">
             <XCircle size={24} />
           </button>
         </div>
@@ -117,6 +131,7 @@ export default function GenerateReportModalComponent({
           {(["class", "task"] as const).map((tab) => (
             <button
               key={tab}
+              disabled={isSubmitting}
               onClick={() => setActiveTab(tab)}
               className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab
@@ -131,32 +146,27 @@ export default function GenerateReportModalComponent({
 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold text-gray-800">
-              Report Name
-            </label>
+            <label className="text-sm font-bold text-gray-800">Report Name</label>
             <input
               type="text"
+              disabled={isSubmitting}
               value={reportName}
               onChange={(e) => setReportName(e.target.value)}
               placeholder="Enter report name"
-              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm placeholder:text-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition disabled:bg-gray-50"
             />
           </div>
 
           {activeTab === "class" ? (
             <>
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-gray-800">
-                  Select Class
-                </label>
+                <label className="text-sm font-bold text-gray-800">Select Class</label>
                 <div className="flex items-center gap-4 flex-wrap">
                   {CLASS_OPTIONS.map((cls) => (
-                    <label
-                      key={cls}
-                      className="flex items-center gap-1.5 cursor-pointer select-none text-sm text-gray-700"
-                    >
+                    <label key={cls} className="flex items-center gap-1.5 cursor-pointer select-none text-sm text-gray-700">
                       <input
                         type="checkbox"
+                        disabled={isSubmitting}
                         checked={selectedClasses.includes(cls)}
                         onChange={() => toggleClass(cls)}
                         className="w-4 h-4 accent-indigo-500 rounded"
@@ -173,41 +183,31 @@ export default function GenerateReportModalComponent({
                   { label: "End Date", value: endDate, set: setEndDate },
                 ].map(({ label, value, set }) => (
                   <div key={label} className="flex flex-col gap-2">
-                    <label className="text-sm font-bold text-gray-800">
-                      {label}
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="date"
-                        value={value}
-                        onChange={(e) => set(e.target.value)}
-                        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition appearance-none"
-                      />
-                    </div>
+                    <label className="text-sm font-bold text-gray-800">{label}</label>
+                    <input
+                      type="date"
+                      disabled={isSubmitting}
+                      value={value}
+                      onChange={(e) => set(e.target.value)}
+                      className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition appearance-none disabled:bg-gray-50"
+                    />
                   </div>
                 ))}
               </div>
             </>
           ) : (
             <div className="flex flex-col gap-2" ref={dropdownRef}>
-              <label className="text-sm font-bold text-gray-800">
-                Select Tasks
-              </label>
+              <label className="text-sm font-bold text-gray-800">Select Tasks</label>
               <button
                 type="button"
+                disabled={isSubmitting}
                 onClick={() => setTaskDropdownOpen((o) => !o)}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
+                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-indigo-300 transition disabled:bg-gray-50"
               >
-                <span
-                  className={selectedTask ? "text-gray-800" : "text-indigo-400"}
-                >
+                <span className={selectedTask ? "text-gray-800" : "text-indigo-400"}>
                   {selectedTask || "Select Task"}
                 </span>
-                <ChevronDown
-                  size={18}
-                  color="#6366f1"
-                  className={`transition-transform ${taskDropdownOpen ? "rotate-180" : ""}`}
-                />
+                <ChevronDown size={18} color="#6366f1" className={`transition-transform ${taskDropdownOpen ? "rotate-180" : ""}`} />
               </button>
 
               {taskDropdownOpen && (
@@ -225,9 +225,7 @@ export default function GenerateReportModalComponent({
                   </div>
                   <ul className="max-h-48 overflow-y-auto">
                     {filteredTasks.length === 0 ? (
-                      <li className="px-4 py-3 text-sm text-gray-400">
-                        No tasks found
-                      </li>
+                      <li className="px-4 py-3 text-sm text-gray-400">No tasks found</li>
                     ) : (
                       filteredTasks.map((task) => (
                         <li
@@ -240,9 +238,7 @@ export default function GenerateReportModalComponent({
                           className="flex items-center justify-between px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
                         >
                           {task}
-                          {selectedTask === task && (
-                            <CheckCircle2 size={18} color="#6366f1" />
-                          )}
+                          {selectedTask === task && <CheckCircle2 size={18} color="#6366f1" />}
                         </li>
                       ))
                     )}
@@ -259,7 +255,8 @@ export default function GenerateReportModalComponent({
               resetForm();
               onClose();
             }}
-            className="px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
+            disabled={isSubmitting}
+            className="px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
           >
             Cancel
           </button>
@@ -267,31 +264,9 @@ export default function GenerateReportModalComponent({
             size="sm"
             disabled={!canGenerate}
             className={!canGenerate ? "opacity-40 cursor-not-allowed" : ""}
-            onClick={() => {
-              if (!canGenerate) return;
-              const isTask = activeTab === "task";
-              const period = isTask
-                ? new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })
-                : `${new Date(startDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} - ${new Date(endDate + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`;
-              const classScope = isTask
-                ? undefined
-                : selectedClasses.includes("All Classes") || selectedClasses.length > 1
-                  ? "ALL"
-                  : selectedClasses[0];
-              onGenerate?.({
-                reportId: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-                reportName,
-                reportType: isTask ? "ASSESSMENT" : "CLASS",
-                displayType: isTask ? "Task Based" : "Class Based",
-                period,
-                generatedAt: new Date().toISOString(),
-                classScope,
-              });
-              resetForm();
-              onClose();
-            }}
+            onClick={handleFormSubmit}
           >
-            Generate
+            {isSubmitting ? "Generating..." : "Generate"}
           </PrimaryButton>
         </div>
       </div>

@@ -1,9 +1,9 @@
 import KpiCardComponent from "../_components/KpiCardComponent";
-import KpiCardTaskBased from "../taskbased/_components/KpiCardTaskBased";
-import ClassSubmissionCard from "./_components/classCardForCompare";
-import AllClassesActions from "./_components/AllClassesAction";
-import BasicBars from "./_components/barChartThreeLine";
-import HorizontalBars from "./_components/barChartAxis";
+import KpiCardTaskBased from "../_components/_taskBase/KpiCardTaskBased";
+import ClassSubmissionCard from "../_components/_classBase/classCardForCompare";
+import AllClassesActions from "../_components/_classBase/AllClassesAction";
+import BasicBars from "../_components/_classBase/barChartThreeLine";
+import HorizontalBars from "../_components/_classBase/barChartAxis";
 import AiChatWrapper from "../AI/AiChatWrapper";
 
 const reportPayload = {

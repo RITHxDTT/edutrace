@@ -1,61 +1,55 @@
 export interface Report {
+  reportId: string;
 
-  reportId:string;
+  reportName: string;
 
-  reportName:string;
+  reportType: "ASSESSMENT" | "CLASS";
 
-  reportType:
-   | "ASSESSMENT"
-   | "CLASS";
+  displayType: string;
 
-  displayType:string;
+  period: string;
 
-  period:string;
+  generatedAt: string;
 
-  generatedAt:string;
-
-  classScope?:string;
+  classScope?: string;
 }
 
 export interface ReportSummary {
+  totalReports: number;
 
-  totalReports:number;
+  taskBasedReports: number;
 
-  taskBasedReports:number;
+  classBasedReports: number;
 
-  classBasedReports:number;
-
-  lastGenerated?:string;
+  lastGenerated?: string;
 }
 
 export interface ReportResponse {
+  summary: ReportSummary;
 
-  summary:ReportSummary;
+  reports: Report[];
 
-  reports:Report[];
+  totalElements: number;
 
-  totalElements:number;
+  page: number;
 
-  page:number;
+  size: number;
 
-  size:number;
-
-  totalPages:number;
+  totalPages: number;
 }
 
-export interface ApiResponse<T>{
+export interface ApiResponse<T> {
+  success: boolean;
 
-  success:boolean;
+  message: string;
 
-  message:string;
+  payload: T;
 
-  payload:T;
+  status: number;
 
-  status:number;
+  path: string;
 
-  path:string;
-
-  timestamp:string;
+  timestamp: string;
 }
 
 export interface CreateTaskReportDto {
@@ -74,15 +68,14 @@ export interface CreateClassReportDto {
   endDate: string;
 }
 
-export interface summaryReportDto{
-  totalReports:number;
-  taskBasedReports:number;
-  classBasedReports:number;
-  lastGenerated?:string;
+export interface summaryReportDto {
+  totalReports: number;
+  taskBasedReports: number;
+  classBasedReports: number;
+  lastGenerated?: string;
 }
 
-
-export interface taskBaseReport{
+export interface taskBaseReport {
   title: string;
   assessmentId: string;
   startDate: string;

@@ -4,12 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
-import KpiCard from "../../_components/KpiCardComponent";
-import GenerateReportModalComponent from "../../../report/_components/GenerateModalComponent";
+import KpiCard from "../KpiCardComponent";
+import GenerateReportModalComponent from "../GenerateModalComponent";
 import TableDataComponent, {
   Report,
-} from "../../../report/_components/TableDataReport";
-import { PaginationBasic } from "../../../report/_components/pagination";
+} from "../TableDataReport";
+import { PaginationBasic } from "../pagination";
 import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
 import AiChatWrapper from "../../AI/AiChatWrapper";
 

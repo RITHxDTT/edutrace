@@ -25,7 +25,7 @@ export default function AtRiskStudentsCard({ data }: Props) {
         </h3>
       </div>
       <div className="flex flex-col gap-3">
-        {data.map((risk) => (
+        {data?.map((risk) => (
           <div
             key={risk.studentName}
             className="flex items-center justify-between"
