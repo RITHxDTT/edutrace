@@ -40,6 +40,7 @@ async function refreshAccessToken(token: any) {
         return { ...token, error: "RefreshTokenError" };
     }
 }
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
     trustHost: true,
     providers: [
@@ -81,27 +82,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 });
 
                 const data = await res.json();
+                const profile = data.payload;
+                const role = profile.role;
+
+                const isTeacher = role === "teacher";
+                const taughtSubjects = isTeacher ? (profile.taughtSubjects ?? []) : null;
+                const taughtClassrooms = isTeacher ? (profile.taughtClassrooms ?? []) : null;
 
                 return {
                     ...token,
                     access_token: accessToken,
                     refresh_token: user.payload.refreshToken,
                     expires_at: Math.floor(Date.now() / 1000) + user.payload.expiresIn,
-                    role: data.payload.role,
-                    firstName: data.payload.firstName,
-                    lastName: data.payload.lastName,
-                    fullName: data.payload.fullName,
-                    username: data.payload.username,
-                    gender: data.payload.gender,
-                    birthdate: data.payload.birthdate,
-                    email: data.payload.email,
-                    profileImageUrl: data.payload.profileImageUrl,
-                    address: data.payload.address,
-                    userId: data.payload.userId,
-                    classroomAbbre: data.payload.classroom?.classroomAbbre ?? null,
+                    role: role,
+                    firstName: profile.firstName,
+                    lastName: profile.lastName,
+                    fullName: profile.fullName,
+                    username: profile.username,
+                    gender: profile.gender,
+                    birthdate: profile.birthdate,
+                    email: profile.email,
+                    profileImageUrl: profile.profileImageUrl,
+                    address: profile.address,
+                    userId: profile.userId,
+                    classroomAbbre: profile.classroom?.classroomAbbre ?? null,
+                    taughtSubjects,
+                    taughtClassrooms,
                 };
             }
-
 
             if (Date.now() / 1000 >= (token.expires_at as number) - 10) {
                 token = await refreshAccessToken(token);
@@ -134,6 +142,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 profileImageUrl: token.profileImageUrl as string,
                 address: token.address as string,
                 classroomAbbre: token.classroomAbbre,
+                taughtSubjects: token.taughtSubjects,
+                taughtClassrooms: token.taughtClassrooms,
             };
 
             if (token.error) {

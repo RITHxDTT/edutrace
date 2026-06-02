@@ -1,7 +1,7 @@
 import { Textarea } from "@heroui/input";
 import { CreateAssessmentForm } from "@/types/assessment";
 import PrimaryInput from "@/components/Inputs/PrimaryInputField";
-import RichTextEditor from "@/components/RIchTextEditor/TipTap";
+import RichTextEditor from "@/components/RichTextEditor/TipTap";
 
 type Props = {
   form: CreateAssessmentForm;

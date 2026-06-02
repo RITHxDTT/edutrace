@@ -13,11 +13,14 @@ import { useCreateAssessment } from "./useCreateAssessmentForm";
 import StepTitle from "./steps/StepTitle";
 import { Edit } from "iconsax-react";
 import StepAssessment from "./steps/StepAssessment";
+import { ClassroomProps } from "@/types/classroom";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   subjects: SubjectType[];
+  taughtSubjects?: string[];
+  taughtClassrooms?: ClassroomProps[];
 };
 
 const STEPS = ["Basic Info", "Schedule", "Details"];
@@ -26,6 +29,8 @@ export default function CreateAssessmentModal({
   isOpen,
   onClose,
   subjects,
+  taughtSubjects,
+  taughtClassrooms,
 }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
   const { form, handleChange, submit, loading, error } =
@@ -76,7 +81,7 @@ export default function CreateAssessmentModal({
           )}
 
           {currentStep === 1 &&
-            <StepAssessment form={form} onChange={handleChange} />
+            <StepAssessment form={form} onChange={handleChange} taughtSubjects={taughtSubjects} taughtClassrooms={taughtClassrooms}/>
           }
         </ModalBody>
 

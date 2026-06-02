@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NavbarTitle from "@/components/Topbar/NavbarTitle";
 import FilterTask from "./FilterTask";
 import AssessmentList from "./AssessmentList";
@@ -8,6 +8,9 @@ import { AssessmentType } from "@/types/assessment";
 import { SubjectType } from "@/types/subject";
 import CreateAssessmentModal from "./CreateAssessmentModal/CreateAssessmentModal";
 import { useDisclosure } from "@heroui/modal";
+import { BreadcrumbItem, Breadcrumbs } from "@heroui/breadcrumbs";
+import { useSession } from "next-auth/react";
+import { ClassroomProps } from "@/types/classroom";
 
 type FilterState = {
   subject: string;
@@ -19,6 +22,8 @@ type Props = {
   assessments: AssessmentType[];
   subjects: SubjectType[];
   role?: string;
+  taughtSubjects?: string[];
+  taughtClassrooms?: ClassroomProps[];
 };
 
 export default function AssessmentPage({ assessments, role, subjects }: Props) {
@@ -29,6 +34,12 @@ export default function AssessmentPage({ assessments, role, subjects }: Props) {
   });
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const session = useSession();
+
+  console.log(session)
+  const [subjectsTaught, setSubjectsTaught] = useState<Props["taughtSubjects"]>();
+  const [classroomsTaught, setClassroomsTaught] = useState<Props["taughtClassrooms"]>();
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -43,6 +54,17 @@ export default function AssessmentPage({ assessments, role, subjects }: Props) {
       if (filters.sortBy === "STATUS") return a.status.localeCompare(b.status);
       return 0;
     });
+
+  useEffect(() => {
+    if (role === "teacher") {
+      setSubjectsTaught(session?.data?.user?.taughtSubjects);
+      setClassroomsTaught(session?.data?.user?.taughtClassrooms);
+    }
+  }, [
+    role,
+    session?.data?.user?.taughtSubjects,
+    session?.data?.user?.taughtClassrooms,
+  ]);
 
   return (
     <div className="flex flex-col gap-5 p-5">
@@ -63,6 +85,8 @@ export default function AssessmentPage({ assessments, role, subjects }: Props) {
               isOpen={isOpen}
               onClose={onClose}
               subjects={subjects}
+              taughtSubjects={subjectsTaught}
+              taughtClassrooms={classroomsTaught}
             />
           </>
         )}

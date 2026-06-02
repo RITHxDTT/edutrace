@@ -31,9 +31,14 @@ const tabVariant = tv({
             primary: {
                 tabList:
                     "gap-6 w-full relative rounded-none bg-transparent",
-                cursor: "w-full border-menta border-b-[1px]",
-                tab: "max-w-fit px-0 h-12 pb-[10px]",
-                tabContent: "group-data-[selected=true]:text-menta group-data-[selected=true]:bg-light-lavendar p-[10px] rounded-[6px]",
+
+                cursor:
+                    "w-full shadow-none w-fit border-menta border-b-[1px] rounded-none",
+
+                tab: "outline-none py-7 data-[focus-visible=true]:ring-2 data-[focus-visible=true]:ring-menta/40",
+
+                tabContent:
+                    "w-full flex items-center justify-center px-6 py-[10px] rounded-md transition-colors group-data-[selected=true]:bg-light-lavendar group-data-[selected=true]:text-menta"
             },
             secondary: {
                 base: "bg-gray rounded-[9px]",

@@ -5,6 +5,7 @@ import { getAllSubjectAction } from "@/actions/subject.action";
 
 export default async function Page() {
   const session = await auth();
+
   const role = session?.user?.role;
   const assessments = await getAllAssessmentAction();
   const subjects = await getAllSubjectAction();

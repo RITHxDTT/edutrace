@@ -121,17 +121,16 @@ export default function AssessmentCard({
               </span>
               <div className="mt-auto flex justify-between items-center border-b py-5">
                 <span
-                  className={`px-2.5 py-2 rounded-[10px] text-xs font-medium ${
-                    statusLabel[status] === "Not Yet"
-                      ? styles.badgeNotYet
-                      : statusLabel[status] === "In Progress"
-                        ? styles.badgeInProgress
-                        : statusLabel[status] === "Scheduled"
-                          ? styles.badgeScheduled
-                          : statusLabel[status] === "Closed"
-                            ? styles.badgeClosed
-                            : "bg-light-gray text-gray"
-                  }`}
+                  className={`px-2.5 py-2 rounded-[10px] text-xs font-medium ${statusLabel[status] === "Not Yet"
+                    ? styles.badgeNotYet
+                    : statusLabel[status] === "In Progress"
+                      ? styles.badgeInProgress
+                      : statusLabel[status] === "Scheduled"
+                        ? styles.badgeScheduled
+                        : statusLabel[status] === "Closed"
+                          ? styles.badgeClosed
+                          : "bg-light-gray text-gray"
+                    }`}
                 >
                   {statusLabel[status]}
                 </span>

@@ -20,6 +20,10 @@ interface AssessmentType {
   };
   dueAt?: string;
   startAt?: string;
+  assignedBy: {
+    userId: string;
+    fullName: string;
+  }
 }
 
 type CreateAssessmentForm = {
