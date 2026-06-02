@@ -42,7 +42,7 @@ const inputVariants = tv({
                 clearButton: "text-zinc-400 hover:text-zinc-600",
                 helperWrapper: "px-1 pt-1.5",
                 description: "text-[11px] text-zinc-400",
-                errorMessage: "text-[11px] font-medium text-rose-500",
+                errorMessage: "text-[11px] font-medium text-error",
             },
 
             secondary: {
@@ -57,7 +57,7 @@ const inputVariants = tv({
                 clearButton: "text-zinc-400 hover:text-zinc-600",
                 helperWrapper: "px-1 pt-1.5",
                 description: "text-[11px] text-zinc-400",
-                errorMessage: "text-[11px] font-medium text-rose-500",
+                errorMessage: "text-[11px] font-medium text-error",
             },
         },
     },

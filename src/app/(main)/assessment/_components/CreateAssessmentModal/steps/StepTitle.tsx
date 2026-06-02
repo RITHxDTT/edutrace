@@ -1,7 +1,7 @@
 import { Textarea } from "@heroui/input";
 import { CreateAssessmentForm } from "@/types/assessment";
 import PrimaryInput from "@/components/Inputs/PrimaryInputField";
-import Tiptap from "@/components/RIchTextEditor/TipTap";
+import RichTextEditor from "@/components/RIchTextEditor/TipTap";
 
 type Props = {
   form: CreateAssessmentForm;
@@ -23,7 +23,7 @@ export default function StepTitle({ form, onChange }: Props) {
         onChange={(e) => onChange("title", e.target.value)}
       />
 
-      <Tiptap />
+      <RichTextEditor />
     </>
   );
 }

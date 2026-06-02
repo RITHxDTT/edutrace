@@ -11,6 +11,8 @@ import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import { SubjectType } from "@/types/subject";
 import { useCreateAssessment } from "./useCreateAssessmentForm";
 import StepTitle from "./steps/StepTitle";
+import { Edit } from "iconsax-react";
+import StepAssessment from "./steps/StepAssessment";
 
 type Props = {
   isOpen: boolean;
@@ -54,10 +56,16 @@ export default function CreateAssessmentModal({
     >
       <ModalContent>
         <ModalHeader className="flex flex-col gap-3">
-          <div className="flex flex-col">
-            <span>Create Assessment</span>
-            <span className="text-sm text-icon-seconary">Fill in the details to create a new assessment</span>
+          <div className="flex items-center gap-3">
+            <div className="bg-light-blue p-3 rounded-[20px]">
+              <Edit size={32} color="#20AEE6" />
+            </div>
+            <div className="flex flex-col">
+              <span>Create Assessment</span>
+              <span className="text-[14px] text-border-focus">Fill in the details to create a new assessment</span>
+            </div>
           </div>
+
         </ModalHeader>
 
         <ModalBody className="flex flex-col gap-4">
@@ -66,6 +74,10 @@ export default function CreateAssessmentModal({
           {currentStep === 0 && (
             <StepTitle form={form} onChange={handleChange} />
           )}
+
+          {currentStep === 1 &&
+            <StepAssessment form={form} onChange={handleChange} />
+          }
         </ModalBody>
 
         <ModalFooter>

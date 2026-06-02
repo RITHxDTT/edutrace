@@ -144,7 +144,7 @@ export default function AssessmentCard({
                 </Link>
               </div>
 
-              <div className="flex justify-between items-center text-sm text-icon-seconary pt-5">
+              <div className="flex justify-between items-center text-sm text-border-focus pt-5">
                 <span className="flex items-center gap-1">
                   <Calendar2 size={16} color="#6B7280" /> Start:{" "}
                   {startAt ? new Date(startAt).toLocaleDateString() : "N/A"}

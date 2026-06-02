@@ -57,8 +57,9 @@
   --background-color-blue: #E9F6FF;
   --background-color-strong-blue: #89BCFF;
   --background-color-strong-purple: #FF86E1;
-
+  --background-color-light-blue: #C3E7FF;
   --background-color-dark-blue: #241CAB;
+
   /* TEXT COLORS */
   --text-color-primary: #000000;
   --text-color-strong: #3A3A3A;
@@ -70,7 +71,7 @@
   --text-color-disabled: #BABABA;
   --text-color-border-default: #E5E7EB;
   --text-color-main-linear: #5d53f9;
-  --text-color-icon-seconary: #6B7280;
+  --text-color-error: #ff2056
 }
 
 @theme inline {

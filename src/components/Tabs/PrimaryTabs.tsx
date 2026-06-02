@@ -1,3 +1,4 @@
+"use client"
 import { Tab, Tabs } from "@heroui/tabs";
 import { ReactNode } from "react";
 import { tv } from "tailwind-variants";
@@ -29,12 +30,12 @@ const tabVariant = tv({
         color: {
             primary: {
                 tabList:
-                    "gap-6 w-full relative rounded-none",
-                cursor: "w-full bg-menta border-b-[1px]",
+                    "gap-6 w-full relative rounded-none bg-transparent",
+                cursor: "w-full border-menta border-b-[1px]",
                 tab: "max-w-fit px-0 h-12 pb-[10px]",
                 tabContent: "group-data-[selected=true]:text-menta group-data-[selected=true]:bg-light-lavendar p-[10px] rounded-[6px]",
             },
-            secondary : {
+            secondary: {
                 base: "bg-gray rounded-[9px]",
                 tabList: "gap-[18px] w-full relative bg-light-gray p-[6px]",
                 cursor: "w-full bg-white",
@@ -51,18 +52,19 @@ const tabVariant = tv({
 export default function PrimaryTabs({ tabs, colors = "secondary", variant, selectedKey, onSelectionChange }: tabs) {
 
     const styles = tabVariant({ color: colors });
+    console.log(tabs)
     return (
         <Tabs
             aria-label="Options"
             {...(selectedKey !== undefined && { selectedKey })}
             {...(onSelectionChange && { onSelectionChange: (key) => onSelectionChange(key as string) })}
             classNames={{
-            base: styles.base(),
-            tabList: styles.tabList(),
-            cursor: styles.cursor(),
-            tab: styles.tab(),
-            tabContent: styles.tabContent(),
-        }}>
+                base: styles.base(),
+                tabList: styles.tabList(),
+                cursor: styles.cursor(),
+                tab: styles.tab(),
+                tabContent: styles.tabContent(),
+            }}>
             {tabs.map((item) => (
                 <Tab key={item?.key} title={item?.title}>
                     {item?.content}
