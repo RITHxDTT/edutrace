@@ -76,7 +76,7 @@ export function usePushNotification() {
     };
 
     autoFetchToken();
-  }, [vapidKey, registerFcmToken]);
+  }, [vapidKey, registerFcmToken, permission]);
 
   /**
    * retrieves the FCM registration token, and saves it in the Knock user channel data.

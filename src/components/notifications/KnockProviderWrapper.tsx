@@ -1,8 +1,9 @@
 "use client";
 
-import React, {JSX, useEffect, useMemo} from "react";
+import React, {JSX, useMemo} from "react";
 import { useSession } from "next-auth/react";
 import { KnockProvider, KnockFeedProvider } from "@knocklabs/react";
+import PushNotificationInitializer from "@/components/notifications/PushNotificationInitializer";
 
 export default function KnockProviderWrapper({
   children,
@@ -11,17 +12,6 @@ export default function KnockProviderWrapper({
 }): JSX.Element {
   const { data: session} = useSession();
   const userId = session?.user?.userId;
-
-  // register service worker
-  useEffect(() => {
-    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      navigator.serviceWorker
-        .register("/firebase-messaging-sw.js")
-        .catch((err) => {
-          console.error("Service Worker registration failed:", err);
-        });
-    }
-  }, []);
 
   // Read config from env
   const apiKey =
@@ -45,6 +35,7 @@ export default function KnockProviderWrapper({
     return (
     <KnockProvider apiKey={apiKey} user={userProp}>
       <KnockFeedProvider feedId={feedId}>
+        <PushNotificationInitializer />
         {children}
       </KnockFeedProvider>
     </KnockProvider>
