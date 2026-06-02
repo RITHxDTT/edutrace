@@ -4,7 +4,6 @@ import AiComponent from "./_components/AiComponent";
 import StarComponent from "./_components/StarComponent";
 import InputChat from "./_components/InputChat";
 import Image from "next/image";
-import { BOT_RESPONSES, DEFAULT_FALLBACK_REPLY } from "./mockResponses";
 
 type ChatState = "idle" | "thinking" | "answered";
 interface Message {
@@ -17,10 +16,14 @@ interface CardAIProps {
   onClose?: () => void;
 }
 
+const AI_STREAM_ENDPOINT = "/api/ai/ask";
+
 function CardAI({ onClose }: CardAIProps) {
   const [currentState, setCurrentState] = useState<ChatState>("idle");
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const revealTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -31,9 +34,19 @@ function CardAI({ onClose }: CardAIProps) {
     }
   }, [messages, currentState]);
 
-  const handleSendMessage = (messageText: string) => {
+  useEffect(() => {
+    return () => {
+      if (revealTimeoutRef.current) {
+        clearTimeout(revealTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleSendMessage = async (messageText: string) => {
     if (!messageText.trim()) return;
+
     setCurrentState("thinking");
+
     const userMessage: Message = {
       id: `user-${Date.now()}`,
       sender: "user",
@@ -41,29 +54,88 @@ function CardAI({ onClose }: CardAIProps) {
     };
     setMessages((prev) => [...prev, userMessage]);
 
-    setTimeout(() => {
-      const text = messageText.toLowerCase();
-      const matchedKey = Object.keys(BOT_RESPONSES).find((key) => {
-        const keywords = key.split("|");
-        return keywords.some((keyword) => {
-          const regex = new RegExp(`\\b${keyword}\\b`, "i");
-          return regex.test(text);
-        });
+    const aiMessageId = `ai-${Date.now()}`;
+    let fullAccumulatedReply = "";
+    let displayCharIndex = 0;
+    let eventCount = 0;
+
+    const revealNextCharacter = () => {
+      if (displayCharIndex < fullAccumulatedReply.length) {
+        displayCharIndex++;
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === aiMessageId 
+              ? { ...msg, text: fullAccumulatedReply.substring(0, displayCharIndex) } 
+              : msg
+          )
+        );
+        revealTimeoutRef.current = setTimeout(revealNextCharacter, 20);
+      }
+    };
+
+    try {
+      setCurrentState("answered");
+      setMessages((prev) => [...prev, { id: aiMessageId, sender: "ai", text: "" }]);
+
+      const url = new URL(AI_STREAM_ENDPOINT, window.location.origin);
+      url.searchParams.append("question", messageText);
+
+      console.log("Opening EventSource to:", url.toString());
+      const eventSource = new EventSource(url.toString());
+      const startTime = Date.now();
+
+      eventSource.addEventListener("answer", (event) => {
+        eventCount++;
+        const now = Date.now();
+        console.log(`[${now - startTime}ms] Event #${eventCount}:`, event.data.substring(0, 100));
+        
+        try {
+          const parsed = JSON.parse(event.data);
+          if (parsed.text) {
+            const previousLength = fullAccumulatedReply.length;
+            fullAccumulatedReply += parsed.text;
+            console.log(`Accumulated text length: ${fullAccumulatedReply.length}`);
+            
+            if (displayCharIndex === previousLength) {
+              revealNextCharacter();
+            }
+          }
+        } catch (error) {
+          console.error("Failed to parse answer event:", error);
+        }
       });
 
-      const replyText = matchedKey
-        ? BOT_RESPONSES[matchedKey]
-        : DEFAULT_FALLBACK_REPLY;
+      eventSource.addEventListener("done", () => {
+        console.log(`Stream completed after ${eventCount} events in ${Date.now() - startTime}ms`);
+        eventSource.close();
+      });
 
-      const aiMessage: Message = {
-        id: `ai-${Date.now()}`,
-        sender: "ai",
-        text: replyText,
+      eventSource.onerror = (error) => {
+        console.error("EventSource error after", eventCount, "events:", error);
+        if (revealTimeoutRef.current) clearTimeout(revealTimeoutRef.current);
+        eventSource.close();
+        setCurrentState("answered");
+
+        const errorMessage: Message = {
+          id: `ai-error-${Date.now()}`,
+          sender: "ai",
+          text: fullAccumulatedReply || "Sorry, the streaming connection was interrupted. Please try again.",
+        };
+        setMessages((prev) => [...prev, errorMessage]);
       };
-
-      setMessages((prev) => [...prev, aiMessage]);
+    } catch (error) {
+      console.error("Streaming error:", error);
+      if (revealTimeoutRef.current) clearTimeout(revealTimeoutRef.current);
       setCurrentState("answered");
-    }, 2000);
+
+      const errorText = error instanceof Error ? error.message : "Unknown error";
+      const errorMessage: Message = {
+        id: `ai-error-${Date.now()}`,
+        sender: "ai",
+        text: `Sorry, there was an issue: ${errorText}`,
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    }
   };
 
   return (
@@ -134,8 +206,8 @@ function CardAI({ onClose }: CardAIProps) {
                           className="rounded-full"
                         />
                       </div>
-                      <div className="bg-white/80 border border-white text-gray-800 px-4 py-2.5 rounded-2xl  shadow-sm text-[14px] z-30">
-                        <p className="leading-relaxed">{msg.text}</p>
+                      <div className="bg-white/80 border border-white text-gray-800 px-4 py-2.5 rounded-2xl shadow-sm text-[14px] z-30">
+                        <p className="leading-relaxed whitespace-pre-wrap wrap-break-word">{msg.text}</p>
                       </div>
                     </div>
                   )}
