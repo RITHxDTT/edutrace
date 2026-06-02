@@ -14,8 +14,6 @@ export default async function Page() {
 
   const dashboardDataPromise = getDashboardData().then(res => res?.payload);
 
-  console.log(await dashboardDataPromise)
-
   return (
     <div>
       <NavbarTitle title="Dashboard" override />

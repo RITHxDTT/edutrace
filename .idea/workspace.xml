@@ -5,25 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="62495669-76ac-4f43-953c-f5dab3f93f86" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/actions/dashboard.action.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/dashboard.service.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/types/ApiResponse.d.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/ActivityLog/ActivityLogComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/ActivityLog/ActivityLogComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/CurrentTask/CurrentTaskComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/CurrentTask/CurrentTaskComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/PieChartWithCenterLabel/PieChartWithCenterLabelComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/PieChartWithCenterLabel/PieChartWithCenterLabelComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/RecentTask/RecentTaskComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/RecentTask/RecentTaskComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/Reminder/ReminderComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/Reminder/ReminderComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/StudentProgress/StudentProgressComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/StudentProgress/StudentProgressComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/SubmissionTrend/SubmissionTrendComponent.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/WeeklyVsRequiredProgress/WeeklyVsRequiredProgress.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/WeeklyVsRequiredProgress/WeeklyVsRequiredProgress.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/mockupData.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/mockupData.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/KpiCard/KpiCardComponent.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/_components/KpiCard/KpiCardComponent.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/(main)/dashboard/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/dashboard/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/report/allclasses/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/report/allclasses/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/report/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/report/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/report/specificClass/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/report/specificClass/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/report/taskbased/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/report/taskbased/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/dashboard.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/dashboard.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +15,8 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="268" />
+    <option name="cachedIndexableFilesCount" value="271" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -43,60 +28,60 @@
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
       <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0000000000003821" />
-      <entry key="S10" value="1.0000007418613073" />
-      <entry key="S30" value="1.0155158912310143" />
-      <entry key="S60" value="1.2552560078716435" />
-      <entry key="M2" value="2.906221990974072" />
-      <entry key="M5" value="17.864711168606128" />
-      <entry key="M10" value="47.584611003972164" />
-      <entry key="M15" value="72.55744972004521" />
-      <entry key="M30" value="146.84378909568363" />
-      <entry key="H1" value="274.71183264980135" />
-      <entry key="H2" value="412.22798195331717" />
-      <entry key="H4" value="516.1933348941426" />
-      <entry key="D1" value="628.9655789743996" />
-      <entry key="W1" value="651.2025000542737" />
+      <entry key="MS500" value="1.000144364135772" />
+      <entry key="S2" value="1.1096136977950246" />
+      <entry key="S5" value="1.4129960940439157" />
+      <entry key="S10" value="1.6428155433984255" />
+      <entry key="S30" value="1.9862492974510708" />
+      <entry key="S60" value="2.957052737772419" />
+      <entry key="M2" value="6.5605181656887455" />
+      <entry key="M5" value="19.994622514705043" />
+      <entry key="M10" value="46.21947533446795" />
+      <entry key="M15" value="71.17481437677509" />
+      <entry key="M30" value="145.5545132546077" />
+      <entry key="H1" value="275.59730412098475" />
+      <entry key="H2" value="420.5206579956394" />
+      <entry key="H4" value="532.9100940878857" />
+      <entry key="D1" value="657.0504948682941" />
+      <entry key="W1" value="681.7709259799342" />
     </decayedCancelled>
     <decayedSelected>
-      <entry key="MS100" value="4.2565139248029336E-88" />
-      <entry key="MS500" value="3.355913913475926E-18" />
-      <entry key="S2" value="4.28008804517334E-5" />
-      <entry key="S5" value="0.017888794750996948" />
-      <entry key="S10" value="0.13374899906540216" />
-      <entry key="S30" value="0.5114032851619812" />
-      <entry key="S60" value="0.7151246640705345" />
-      <entry key="M2" value="0.8456506531067424" />
-      <entry key="M5" value="0.9408229547402123" />
-      <entry key="M10" value="1.1572754486697165" />
-      <entry key="M15" value="1.6830753513840508" />
-      <entry key="M30" value="4.230550676683257" />
-      <entry key="H1" value="8.852724164258866" />
-      <entry key="H2" value="13.683732850108093" />
-      <entry key="H4" value="17.269769612248286" />
-      <entry key="D1" value="21.116781403512345" />
-      <entry key="W1" value="21.871269704638433" />
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="1.850287485397115E-226" />
+      <entry key="S2" value="3.688160420185098E-57" />
+      <entry key="S5" value="2.671307731677292E-23" />
+      <entry key="S10" value="5.1684710774539245E-12" />
+      <entry key="S30" value="1.7405278006121843E-4" />
+      <entry key="S60" value="0.014224125886031464" />
+      <entry key="M2" value="0.1474579016000613" />
+      <entry key="M5" value="0.6769141638473053" />
+      <entry key="M10" value="1.2526172335389494" />
+      <entry key="M15" value="1.840400692803243" />
+      <entry key="M30" value="4.2719857132694665" />
+      <entry key="H1" value="8.874149117918362" />
+      <entry key="H2" value="13.926790972560758" />
+      <entry key="H4" value="17.79043480615076" />
+      <entry key="D1" value="22.018673338468744" />
+      <entry key="W1" value="22.856741044234788" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.7737824967711949" />
-      <entry key="MS500" value="0.950000382874886" />
-      <entry key="S2" value="0.9872799412303247" />
-      <entry key="S5" value="1.0084147280790268" />
-      <entry key="S10" value="1.1137616687995318" />
-      <entry key="S30" value="1.5024298236590694" />
-      <entry key="S60" value="1.9501687180543041" />
-      <entry key="M2" value="3.734087304928963" />
-      <entry key="M5" value="18.79276963809415" />
-      <entry key="M10" value="48.73247968150639" />
-      <entry key="M15" value="74.23156421015037" />
-      <entry key="M30" value="151.06425862491486" />
-      <entry key="H1" value="283.55449337719585" />
-      <entry key="H2" value="425.9040150049939" />
-      <entry key="H4" value="533.4582512836649" />
-      <entry key="D1" value="650.0813703680163" />
-      <entry key="W1" value="673.0736232265245" />
+      <entry key="MS100" value="0.5069797398950145" />
+      <entry key="MS500" value="0.8730971593965742" />
+      <entry key="S2" value="1.0732963289389748" />
+      <entry key="S5" value="1.3950605693843405" />
+      <entry key="S10" value="1.632579669729594" />
+      <entry key="S30" value="1.9821291184735115" />
+      <entry key="S60" value="2.965838305172625" />
+      <entry key="M2" value="6.698000995196082" />
+      <entry key="M5" value="20.658214953439913" />
+      <entry key="M10" value="47.4601551752048" />
+      <entry key="M15" value="73.00411385480314" />
+      <entry key="M30" value="149.8153884425072" />
+      <entry key="H1" value="284.46083028538135" />
+      <entry key="H2" value="434.43933347674596" />
+      <entry key="H4" value="550.6953880239722" />
+      <entry key="D1" value="679.0681121858207" />
+      <entry key="W1" value="704.6275104965181" />
     </decayedShown>
   </component>
   <component name="ProblemsViewState">
@@ -110,31 +95,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "feature/dashboard",
-    "javascript.preferred.runtime.type.id": "node",
-    "js.debugger.nextJs.config.created.client": "true",
-    "js.debugger.nextJs.config.created.server": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "D:/HRD-Room-Project/GrowthyFlow/HRD-Room-UI",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Run",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "/home/yannvanneth/Documents/KSHRD/HRDRoom/HRD-Room-UI/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature-dashboard&quot;,
+    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
+    &quot;js.debugger.nextJs.config.created.client&quot;: &quot;true&quot;,
+    &quot;js.debugger.nextJs.config.created.server&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/HRD-Room-Project/GrowthyFlow/HRD-Room-UI&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.Next.js: server-side.executor&quot;: &quot;Run&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/home/yannvanneth/Documents/KSHRD/HRDRoom/HRD-Room-UI/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="npm.Next.js: server-side">
     <configuration name="Next.js: debug client-side" type="JavascriptDebugType" uri="http://localhost:3000/">
       <method v="2" />
@@ -153,7 +140,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-WS-253.30387.83" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.24374.125" />
       </set>
     </attachedChunks>
   </component>
@@ -165,10 +152,23 @@
       <option name="presentableId" value="Default" />
       <updated>1779177586697</updated>
       <workItem from="1779177588654" duration="20142000" />
+      <workItem from="1780362854549" duration="1889000" />
+      <workItem from="1780397940230" duration="442000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>
