@@ -1,7 +1,6 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
 import { useWebRTC } from "../hooks/useWebRTC";
@@ -15,13 +14,14 @@ import ParticipantsPanel from "./ParticipantsPanel";
 
 interface CommunicationRoomProps {
   meetingRoomId: string;
+  onLeave?: () => void;
 }
 
 export default function CommunicationRoom({
   meetingRoomId,
+  onLeave,
 }: CommunicationRoomProps) {
   const { data: session } = useSession();
-  const router = useRouter();
 
   const accessToken = (session as { access_token?: string } | null)
     ?.access_token ?? "";
@@ -72,7 +72,7 @@ export default function CommunicationRoom({
 
   function handleLeave() {
     reset();
-    router.push("/assessment");
+    onLeave?.();
   }
 
   function handleSendMessage(content: string) {
@@ -88,7 +88,7 @@ export default function CommunicationRoom({
   }
 
   return (
-    <div className="flex h-[calc(100vh-64px)] flex-col bg-[#1a1a2e] rounded-2xl overflow-hidden">
+    <div className="flex h-[calc(100vh-280px)] flex-col bg-[#1a1a2e] rounded-2xl overflow-hidden">
       <RoomHeader roomName="Communication Room" meetingRoomId={meetingRoomId} />
 
       <div className="flex flex-1 overflow-hidden">
