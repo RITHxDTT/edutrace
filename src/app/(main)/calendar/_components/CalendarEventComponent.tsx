@@ -350,7 +350,9 @@ export default function Home() {
             createSidebarPlugin({
                 createCalendarMode: "modal",
                 showEventDots: true,
+                
             }),
+
         ],
         calendars: calendarsWithGroups,
         events: [

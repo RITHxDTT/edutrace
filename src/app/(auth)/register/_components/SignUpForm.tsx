@@ -23,7 +23,7 @@ import { RegisterFormData } from '@/types/auth';
 
 import ServerError from '../../_components/ServerError';
 
-export default function SignUpForm({ classrooms }: ClassroomProps) {
+export default function SignUpForm() {
 
   const [isVisible, setVisible] = useState(false);
   const [serverError, setServerError] = useState("");

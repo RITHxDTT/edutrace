@@ -1,10 +1,15 @@
+import { getAllAssessmentAction } from "@/actions/assessment.action";
 import { auth } from "@/auth";
-import NavbarTitle from "@/components/Topbar/NavbarTitle";
 import AssessmentPage from "./_components/AssessmentPage";
+import { getAllSubjectAction } from "@/actions/subject.action";
 
 export default async function Page() {
   const session = await auth();
-  const isStudent = session?.user?.role === "student";
+  const role = session?.user?.role;
+  const assessments = await getAllAssessmentAction();
+  const subjects = await getAllSubjectAction();
 
-  return <AssessmentPage isStudent={isStudent} />;
+  return (
+    <AssessmentPage assessments={assessments} subjects={subjects} role={role} />
+  );
 }

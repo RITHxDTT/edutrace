@@ -4,7 +4,7 @@ import ClassSubmissionCard from "./_components/classCardForCompare";
 import AllClassesActions from "./_components/AllClassesAction";
 import BasicBars from "./_components/barChartThreeLine";
 import HorizontalBars from "./_components/barChartAxis";
-import AiChatWrapper from "@/app/(main)/report/AI/AiChatWrapper";
+import AiChatWrapper from "../AI/AiChatWrapper";
 
 const reportPayload = {
   reportName: "All Classes Performance Report",
