@@ -10,7 +10,7 @@ import CreateAssessmentModal from "./CreateAssessmentModal/CreateAssessmentModal
 import { useDisclosure } from "@heroui/modal";
 import { useSession } from "next-auth/react";
 import { ClassroomProps, ClassroomType } from "@/types/classroom";
-import { Pagination } from "@heroui/pagination";
+import {Pagination} from "@heroui/pagination";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AssessmentMetaData } from "@/types/assessment";
 
@@ -59,10 +59,12 @@ export default function AssessmentPage({ assessments, metaData, role, subjects }
   const router = useRouter();
   const searchParams = useSearchParams();
 
+
   const session = useSession();
   const totalPages = Math.max(metaData?.totalPage ?? 1, 1);
   const pageFromUrl = Math.max(Number(searchParams.get("page")) || 1, 1);
   const currentPage = Math.min(pageFromUrl, totalPages);
+  
 
   const classroomsTaught =
     role === "teacher" ? normalizeClassrooms(session?.data?.user?.taughtClassrooms) : [];

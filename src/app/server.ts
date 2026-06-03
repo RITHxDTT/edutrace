@@ -61,6 +61,18 @@ app.prepare().then(() => {
 
         socket.emit("existing-users", existing);
 
+        socket.on(
+          "raise-hand",
+          (payload: { roomId: string; raised: boolean; userName: string }) => {
+            const userData = rooms.get(roomId)?.get(socket.id);
+            socket.to(roomId).emit("raise-hand", {
+              peerId: userData?.peerId,
+              userName: payload.userName,
+              raised: payload.raised,
+            });
+          }
+        );
+
         // Handle disconnect (scoped correctly)
         socket.once("disconnect", () => {
           const room = rooms.get(roomId);

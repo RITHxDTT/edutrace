@@ -37,6 +37,7 @@
     "@mui/material": "^9.0.1",
     "@mui/x-charts": "^9.2.0",
     "@next/mdx": "^16.2.6",
+    "@stomp/stompjs": "^7.3.0",
     "@tiptap/pm": "^3.24.0",
     "@tiptap/react": "^3.24.0",
     "@tiptap/starter-kit": "^3.24.0",
