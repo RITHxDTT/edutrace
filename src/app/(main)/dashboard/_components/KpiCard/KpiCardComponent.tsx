@@ -58,12 +58,9 @@ function KpiCardComponent({
                         {/* Footer */}
                         {(subtitle || subValue) && (
                             <div className="flex items-center gap-2 flex-wrap">
-                                {subValue && (
                                     <div className="rounded-sm border border-green-600 px-2 py-1 text-sm text-green-600">
-                                        {subValue}
+                                        {subValue || "null" }
                                     </div>
-                                )}
-
                                 {subtitle && (
                                     <p className="text-sm text-ai truncate">
                                         {subtitle}

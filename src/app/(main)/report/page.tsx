@@ -8,7 +8,8 @@ import GenerateReportModalComponent from "./_components/GenerateModalComponent";
 import TableDataComponent, { Report } from "./_components/TableDataReport";
 import { PaginationBasic } from "./_components/pagination";
 import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
-import AiChatWrapper from "./AI/AiChatWrapper";
+import AiChatWrapper from "@/app/(main)/report/AI/AiChatWrapper";
+
 const INITIAL_REPORTS: Report[] = [
   {
     reportId: "91000000-0000-4000-8000-000000001602",
