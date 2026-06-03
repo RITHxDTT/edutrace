@@ -100,10 +100,14 @@ export default function PrimarySelect({
   ...props
 }: SelectProps) {
   const slots = selectVariants({ selectType });
+  const accessibleLabel =
+    props["aria-label"] ??
+    (label.trim() ? undefined : props.placeholder?.toString() || "Select option");
 
   return (
     <Select
       label={label}
+      aria-label={accessibleLabel}
       classNames={{
         base: slots.base({ class: className }),
         label: slots.label(),

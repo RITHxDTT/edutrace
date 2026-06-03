@@ -10,7 +10,15 @@ import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
 import Blockquote from '@tiptap/extension-blockquote'
 import Code from '@tiptap/extension-code'
+import { useEffect } from 'react'
 import styles from './style.module.css'
+
+// Define the props for the RichTextEditor
+type RichTextEditorProps = {
+  label?: string; // Optional label prop
+  value?: string;
+  onChange?: (value: string) => void;
+}
 
 const ToolbarButton = ({
   onClick,
@@ -33,7 +41,7 @@ const ToolbarButton = ({
   </button>
 )
 
-export default function RichTextEditor() {
+export default function RichTextEditor({ label, value = '', onChange }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
       Document,
@@ -48,18 +56,30 @@ export default function RichTextEditor() {
       ListItem,
       Blockquote,
     ],
-    content: '<p>Start writing...</p>',
+    content: value,
+    onUpdate: ({ editor }) => {
+      onChange?.(editor.getHTML())
+    },
   })
+
+  useEffect(() => {
+    if (!editor || editor.getHTML() === value) return
+    editor.commands.setContent(value, { emitUpdate: false })
+  }, [editor, value])
 
   if (!editor) return null
 
   return (
     <div className={styles.wrapper}>
-
+      {label && (
+        <label className="font-semibold text-label mb-1 transition-colors duration-150 group-focus-within:text-primary">
+          {label}
+        </label>
+      )}
 
       <EditorContent editor={editor} className={styles.tiptap} />
-      <div className={styles.toolbar}>
 
+      <div className={styles.toolbar}>
         {/* Headings */}
         <ToolbarButton
           title="Heading 1"
@@ -137,7 +157,7 @@ export default function RichTextEditor() {
           isActive={editor.isActive('blockquote')}
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
         >
-          "
+          &quot;
         </ToolbarButton>
       </div>
     </div>

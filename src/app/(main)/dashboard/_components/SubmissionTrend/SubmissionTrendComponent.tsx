@@ -1,53 +1,32 @@
 'use client'
+
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
-export default function SubmissionTrendComponent(
-  { role }: { role: 'student' | 'teacher' }
-) {
+import { SubmissionTrend, ScoreTrend } from '@/types/dashboard';
+import { useTrendData } from './useTrendData';
+import {useState} from "react";
 
-  const xAxisData = {
-    teacher: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    student: ['HW1', 'Prac1', 'HW2', 'Assign1', 'Prac2', 'HW3', 'Assign2'],
-  };
+export default function SubmissionTrendComponent(
+  { role, data }: { role: 'student' | 'teacher', data?: SubmissionTrend | ScoreTrend }
+) {
+  const { xAxisData, series } = useTrendData(role, data);
+
+  const [itemData, setItemData] = useState<LineItemIdentifier>();
+  const [axisData, setAxisData] = useState<ChartsAxisData | null>();
 
   const lineChartsParams = {
-    series: [
-      {
-        id: 'series-1',
-        data: [20, 36, 26, 30, 35, 56, 30],
-        label: 'On time',
-        area: true,
-        stack: 'total',
-        highlightScope: {
-          highlight: 'item',
-        },
-        color: '#E9B8FF',
-      },
-      {
-        id: 'series-2',
-        data: [64, 26, 26, 32, 35, 18, 60],
-        label: 'Late Submission',
-        area: true,
-        stack: 'total',
-        highlightScope: {
-          highlight: 'item',
-        },
-        color: '#8F7CFF',
-      },
-    ],
-
+    series: series,
     xAxis: [
       {
-        data: xAxisData[role] || [],
-        scaleType: 'point',
+        data: xAxisData,
+        scaleType: 'point' as const,
         id: 'axis1',
       },
     ],
-
     yAxis: [
       {
         min: 0,
@@ -55,22 +34,16 @@ export default function SubmissionTrendComponent(
         tickNumber: 6,
       },
     ],
-
     height: 200,
-  } as const;
+  };
 
-  const [itemData, setItemData] = React.useState<LineItemIdentifier>();
-  const [axisData, setAxisData] = React.useState<ChartsAxisData | null>();
-
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
-
+  if (!data || !data.data || data.data.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-50 bg-slate-50/50 rounded-xl border border-dashed border-slate-200">
+        <p className="text-slate-400 text-sm font-medium">No trend data available yet</p>
+      </div>
+    );
+  }
   return (
     <Stack
       direction={{ xs: 'column', md: 'row' }}
@@ -83,10 +56,10 @@ export default function SubmissionTrendComponent(
       <Box sx={{ flexGrow: 1 }}>
         <LineChart
           {...lineChartsParams}
-          onAreaClick={(event, d) => setItemData(d)}
-          onMarkClick={(event, d) => setItemData(d)}
-          onLineClick={(event, d) => setItemData(d)}
-          onAxisClick={(event, d) => setAxisData(d)}
+          onAreaClick={(_event, d) => setItemData(d)}
+          onMarkClick={(_event, d) => setItemData(d)}
+          onLineClick={(_event, d) => setItemData(d)}
+          onAxisClick={(_event, d) => setAxisData(d)}
         />
       </Box>
 
@@ -105,8 +78,7 @@ export default function SubmissionTrendComponent(
               setAxisData(null);
             }}
             aria-label="reset"
-          >
-          </IconButton>
+          />
         </Box>
       </Stack>
     </Stack>

@@ -7,3 +7,5 @@ type ClassroomType = {
 export interface ClassroomProps {
     classrooms: ClassroomType[]
 }
+
+export type { ClassroomType }
