@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import { Send } from "iconsax-react";
+import { SendHorizontal } from "lucide-react";
 
 interface ChatInputProps {
   onSend: (content: string) => void;
@@ -53,7 +53,7 @@ export default function ChatInput({ onSend, disabled = false }: ChatInputProps) 
         disabled={disabled || !value.trim()}
         className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-b from-[#241cab] to-[#5d53f9] text-white transition-opacity hover:opacity-90 disabled:opacity-40"
       >
-        <Send size={18} />
+        <SendHorizontal size={18} />
       </button>
     </div>
   );

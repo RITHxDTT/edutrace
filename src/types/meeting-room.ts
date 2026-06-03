@@ -6,14 +6,32 @@ export interface MeetingRoom {
   createdAt: string;
 }
 
-export interface MeetingParticipant {
+export interface MeetingActiveUser {
   userId: string;
   username: string;
   firstName: string;
   lastName: string;
-  profileImageUrl: string;
-  role: "teacher" | "student";
+  profileImage: string;
+}
+
+export interface MeetingMember {
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  classroomName: string;
+  profileImage: string;
+}
+
+export interface MeetingParticipantSession {
+  meetingParticipantSessionId: string;
+  userId: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  profileImage: string;
   joinedAt: string;
+  leftAt: string | null;
 }
 
 export interface MeetingRoomStats {
@@ -22,18 +40,30 @@ export interface MeetingRoomStats {
 }
 
 export interface PeerInfo {
-  peerId: string;
   userId: string;
+  peerId: string;
   username: string;
   firstName: string;
   lastName: string;
-  profileImageUrl: string;
+  profileImage: string;
   joinedAt: string;
+}
+
+export interface PeerEventResponse {
+  type: "JOINED" | "LEFT" | "SYNC";
+  peer: PeerInfo | null;
+  activeCount: number;
+  peers: PeerInfo[];
 }
 
 export interface PeerPresenceResponse {
   activeCount: number;
   peers: PeerInfo[];
+}
+
+export interface PresenceResponse {
+  activeCount: number;
+  activeUsers: MeetingActiveUser[];
 }
 
 export interface RemoteParticipant {
@@ -44,4 +74,6 @@ export interface RemoteParticipant {
   isMuted?: boolean;
   isCamOff?: boolean;
   isHandRaised?: boolean;
+  isScreenSharing?: boolean;
+  profileImageUrl?: string | undefined;
 }

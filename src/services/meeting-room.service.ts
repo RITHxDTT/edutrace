@@ -1,6 +1,7 @@
 import type {
   MeetingRoom,
-  MeetingParticipant,
+  MeetingActiveUser,
+  MeetingMember,
   MeetingRoomStats,
   PeerPresenceResponse,
 } from "@/types/meeting-room";
@@ -10,6 +11,12 @@ const API = process.env.NEXT_PUBLIC_API_BASE_URL;
 function headers(token: string) {
   return {
     "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+function authOnly(token: string) {
+  return {
     Authorization: `Bearer ${token}`,
   };
 }
@@ -38,7 +45,7 @@ export async function joinMeetingRoom(
 ): Promise<void> {
   const res = await fetch(`${API}/meeting-room/${meetingRoomId}/join`, {
     method: "POST",
-    headers: headers(token),
+    headers: authOnly(token),
   });
   if (!res.ok) throw new Error(`Failed to join room: ${res.status}`);
 }
@@ -49,7 +56,7 @@ export async function leaveMeetingRoom(
 ): Promise<void> {
   const res = await fetch(`${API}/meeting-room/${meetingRoomId}/leave`, {
     method: "POST",
-    headers: headers(token),
+    headers: authOnly(token),
   });
   if (!res.ok) throw new Error(`Failed to leave room: ${res.status}`);
 }
@@ -57,11 +64,21 @@ export async function leaveMeetingRoom(
 export async function getActiveUsers(
   meetingRoomId: string,
   token: string,
-): Promise<MeetingParticipant[]> {
+): Promise<MeetingActiveUser[]> {
   const res = await fetch(`${API}/meeting-room/${meetingRoomId}/active-users`, {
     headers: headers(token),
   });
-  return unwrap<MeetingParticipant[]>(res);
+  return unwrap<MeetingActiveUser[]>(res);
+}
+
+export async function getMembers(
+  meetingRoomId: string,
+  token: string,
+): Promise<MeetingMember[]> {
+  const res = await fetch(`${API}/meeting-room/${meetingRoomId}/members`, {
+    headers: headers(token),
+  });
+  return unwrap<MeetingMember[]>(res);
 }
 
 export async function getMeetingRoomStats(
@@ -78,13 +95,13 @@ export async function registerPeer(
   meetingRoomId: string,
   peerId: string,
   token: string,
-): Promise<void> {
+): Promise<PeerPresenceResponse> {
   const res = await fetch(`${API}/meeting-room/${meetingRoomId}/peers`, {
     method: "POST",
     headers: headers(token),
     body: JSON.stringify({ peerId }),
   });
-  if (!res.ok) throw new Error(`Failed to register peer: ${res.status}`);
+  return unwrap<PeerPresenceResponse>(res);
 }
 
 export async function unregisterPeer(
@@ -93,7 +110,7 @@ export async function unregisterPeer(
 ): Promise<void> {
   const res = await fetch(`${API}/meeting-room/${meetingRoomId}/peers/leave`, {
     method: "POST",
-    headers: headers(token),
+    headers: authOnly(token),
   });
   if (!res.ok) throw new Error(`Failed to unregister peer: ${res.status}`);
 }

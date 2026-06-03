@@ -1,18 +1,16 @@
 "use client";
 
-import { useState } from "react";
 import {
-  Microphone,
-  MicrophoneSlash,
-  Video as VideoIcon,
-  VideoSlash,
-  Monitor,
-  ProfileAdd,
-  Message,
-  People,
-  CallRemove,
-} from "iconsax-react";
-import { Hand } from "lucide-react";
+  Mic,
+  MicOff,
+  Video,
+  VideoOff,
+  ScreenShare,
+  MessageSquare,
+  Users,
+  PhoneOff,
+  Hand,
+} from "lucide-react";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
 
 interface MeetingToolbarProps {
@@ -74,7 +72,6 @@ export default function MeetingToolbar({
   onToggleRaiseHand,
   onLeave,
 }: MeetingToolbarProps) {
-  const [copiedInviteLink, setCopiedInviteLink] = useState(false);
   const {
     micOn,
     camOn,
@@ -88,12 +85,6 @@ export default function MeetingToolbar({
     toggleParticipantsPanel,
   } = useMeetingRoomStore();
 
-  async function handleCopyInviteLink() {
-    await navigator.clipboard.writeText(window.location.href);
-    setCopiedInviteLink(true);
-    setTimeout(() => setCopiedInviteLink(false), 2000);
-  }
-
   return (
     <div className="flex items-center justify-center gap-3 px-6 py-3">
       <ToolBtn
@@ -101,11 +92,7 @@ export default function MeetingToolbar({
         onClick={onToggleMic}
         title={micOn ? "Mute" : "Unmute"}
       >
-        {micOn ? (
-          <Microphone size={20} variant="Bold" />
-        ) : (
-          <MicrophoneSlash size={20} variant="Bold" />
-        )}
+        {micOn ? <Mic size={20} /> : <MicOff size={20} />}
       </ToolBtn>
 
       <ToolBtn
@@ -113,11 +100,7 @@ export default function MeetingToolbar({
         onClick={onToggleCam}
         title={camOn ? "Turn off camera" : "Turn on camera"}
       >
-        {camOn ? (
-          <VideoIcon size={20} variant="Bold" />
-        ) : (
-          <VideoSlash size={20} variant="Bold" />
-        )}
+        {camOn ? <Video size={20} /> : <VideoOff size={20} />}
       </ToolBtn>
 
       <ToolBtn
@@ -125,7 +108,7 @@ export default function MeetingToolbar({
         onClick={onToggleScreen}
         title={screenSharing ? "Stop sharing" : "Share screen"}
       >
-        <Monitor size={20} variant="Bold" />
+        <ScreenShare size={20} />
       </ToolBtn>
 
       <ToolBtn
@@ -136,12 +119,6 @@ export default function MeetingToolbar({
         <Hand size={20} fill={handRaised ? "currentColor" : "none"} />
       </ToolBtn>
 
-      <ToolBtn
-        onClick={handleCopyInviteLink}
-        title={copiedInviteLink ? "Invite link copied" : "Copy invite link"}
-      >
-        <ProfileAdd size={20} variant="Bold" />
-      </ToolBtn>
 
       <div className="mx-1 h-8 w-px bg-gray-300" />
 
@@ -151,7 +128,7 @@ export default function MeetingToolbar({
         title="Chat"
         badge={chatPanelOpen ? undefined : unreadMessageCount}
       >
-        <Message size={20} variant="Bold" />
+        <MessageSquare size={20} />
       </ToolBtn>
 
       <ToolBtn
@@ -160,13 +137,13 @@ export default function MeetingToolbar({
         title="Participants"
         badge={participantCount}
       >
-        <People size={20} variant="Bold" />
+        <Users size={20} />
       </ToolBtn>
 
       <div className="mx-1 h-8 w-px bg-gray-300" />
 
       <ToolBtn danger onClick={onLeave} title="Leave meeting">
-        <CallRemove size={20} variant="Bold" />
+        <PhoneOff size={20} />
       </ToolBtn>
     </div>
   );

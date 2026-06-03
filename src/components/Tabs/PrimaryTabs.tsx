@@ -52,7 +52,6 @@ const tabVariant = tv({
 export default function PrimaryTabs({ tabs, colors = "secondary", variant, selectedKey, onSelectionChange }: tabs) {
 
     const styles = tabVariant({ color: colors });
-    console.log(tabs)
     return (
         <Tabs
             aria-label="Options"

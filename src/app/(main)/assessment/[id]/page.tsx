@@ -3,6 +3,7 @@ import { getMeetingRoomByAssessmentIdAction } from "@/actions/meeting.action";
 import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
 import { AssessmentType } from "@/types/assessment";
 import { BookOpenIcon } from "lucide-react"; // Adjust this import path based on where your tab component is saved
+import CommunicationRoom from '../communication/[id]/_components/CommunicationRoom';
 
 type PageProps = {
   params: Promise<{
@@ -17,6 +18,7 @@ export default async function page({
 
   const result = await getMeetingRoomByAssessmentIdAction(id);
   const meetingRoomId = result?.meetingRoomId || null;
+  
 
   const assessment: AssessmentType = await getAssessmentByIdAction(id);
 
@@ -35,7 +37,11 @@ export default async function page({
       title: "Communication",
       content: (
         <div className="py-4">
-          <p className="text-gray-600">Teacher-student communication and announcements go here.</p>
+          {meetingRoomId ? (
+            <CommunicationRoom meetingRoomId={meetingRoomId} />
+          ) : (
+            <p className="text-gray-600">No communication room available for this assessment.</p>
+          )}
         </div>
       ),
     },
@@ -56,13 +62,13 @@ export default async function page({
       <div className="flex flex-col gap-2">
         <div className="flex items-center">
           <p className="text-[32px] font-medium text-primary">
-            {assessment.title}
+            {assessment.title? assessment.title : "Untitled Assessment"}
           </p>
         </div>
 
         <div className="flex gap-2 items-center">
           <BookOpenIcon size={20} color="black" />
-          <p>Subject: <span className="font-medium">{assessment.subject.subjectName}</span></p>
+          <p>Subject: <span className="font-medium">{assessment.subject.subjectName ? assessment.subject.subjectName : "N/A"}</span></p>
         </div>
       </div>
 

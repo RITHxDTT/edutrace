@@ -7,7 +7,18 @@ import {
   getChatMessages,
   sendChatMessage,
 } from "@/services/chat.service";
+import { getMeetingRoomStompBrokerUrl } from "@/lib/meeting-room-stomp";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
+
+const PAGE_SIZE = 30;
+
+function dedupeMessages(messages: ChatMessageResponse[]) {
+  const byId = new Map<string, ChatMessageResponse>();
+  messages.forEach((message) => {
+    byId.set(message.chatMessageId, message);
+  });
+  return Array.from(byId.values());
+}
 
 interface UseStompChatOptions {
   meetingRoomId: string;
@@ -21,25 +32,25 @@ export function useStompChat({
   const [messages, setMessages] = useState<ChatMessageResponse[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [isConnected, setIsConnected] = useState(false);
-  const pageRef = useRef(0);
+  const pageRef = useRef(1);
   const clientRef = useRef<Client | null>(null);
 
   useEffect(() => {
-    getChatMessages(meetingRoomId, accessToken, 0, 30)
+    if (!accessToken) return;
+    getChatMessages(meetingRoomId, accessToken, 1, PAGE_SIZE)
       .then((data) => {
-        setMessages(data.content.reverse());
-        setHasMore(!data.last);
-        pageRef.current = 1;
+        setMessages(dedupeMessages(data).reverse());
+        setHasMore(data.length >= PAGE_SIZE);
+        pageRef.current = 2;
       })
-      .catch(() => {});
+      .catch((err) => console.warn("[useStompChat] failed to load messages:", err));
   }, [meetingRoomId, accessToken]);
 
   useEffect(() => {
-    const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
-    const wsUrl = apiBase.replace(/^http/, "ws") + "/ws-native";
+    if (!accessToken) return;
 
     const client = new Client({
-      brokerURL: wsUrl,
+      brokerURL: getMeetingRoomStompBrokerUrl(),
       connectHeaders: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -51,7 +62,13 @@ export function useStompChat({
           `/topic/meeting-room/${meetingRoomId}/messages`,
           (frame) => {
             const msg = JSON.parse(frame.body) as ChatMessageResponse;
-            setMessages((prev) => [...prev, msg]);
+            setMessages((prev) => {
+              if (prev.some((m) => m.chatMessageId === msg.chatMessageId)) {
+                return prev;
+              }
+
+              return [...prev, msg];
+            });
 
             const { chatPanelOpen } = useMeetingRoomStore.getState();
             if (!chatPanelOpen) {
@@ -107,10 +124,10 @@ export function useStompChat({
       meetingRoomId,
       accessToken,
       pageRef.current,
-      30,
+      PAGE_SIZE,
     );
-    setMessages((prev) => [...data.content.reverse(), ...prev]);
-    setHasMore(!data.last);
+    setMessages((prev) => dedupeMessages([...data.reverse(), ...prev]));
+    setHasMore(data.length >= PAGE_SIZE);
     pageRef.current += 1;
   }, [meetingRoomId, accessToken, hasMore]);
 

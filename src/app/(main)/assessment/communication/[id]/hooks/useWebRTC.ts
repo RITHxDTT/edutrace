@@ -1,47 +1,396 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
-import type { RemoteParticipant } from "@/types/meeting-room";
+import { Client } from "@stomp/stompjs";
+import type {
+  PeerEventResponse,
+  PeerInfo,
+  RemoteParticipant,
+} from "@/types/meeting-room";
 import {
-  joinMeetingRoom,
-  leaveMeetingRoom,
   registerPeer,
   unregisterPeer,
 } from "@/services/meeting-room.service";
+import { getMeetingRoomStompBrokerUrl } from "@/lib/meeting-room-stomp";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
+
+interface LocalMediaState {
+  micOn: boolean;
+  camOn: boolean;
+  screenSharing: boolean;
+  handRaised: boolean;
+}
+
+interface MediaStateMessage extends LocalMediaState {
+  peerId: string;
+  userId: string;
+  userName: string;
+}
+
+interface PeerDataMessage {
+  type: "media-state";
+  payload: MediaStateMessage;
+}
 
 interface UseWebRTCOptions {
   meetingRoomId: string;
   userName: string;
+  userId: string;
   accessToken: string;
+  profileImageUrl?: string;
+}
+
+function getMediaStateDestination(meetingRoomId: string) {
+  return `/topic/meeting-room/${meetingRoomId}/media-state`;
+}
+
+type CallMetadata = {
+  userId?: string;
+  userName?: string;
+  profileImageUrl?: string;
+  mediaState?: Partial<LocalMediaState>;
+};
+
+type PeerMediaConnection = import("peerjs").MediaConnection & {
+  peerConnection?: RTCPeerConnection;
+};
+
+async function getInitialLocalStream(): Promise<MediaStream> {
+  try {
+    return await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true,
+    });
+  } catch {
+    const stream = new MediaStream();
+
+    try {
+      const videoStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
+      videoStream.getTracks().forEach((track) => stream.addTrack(track));
+    } catch {
+      // Camera is optional; a placeholder video sender is added below.
+    }
+
+    try {
+      const audioStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+      audioStream.getTracks().forEach((track) => stream.addTrack(track));
+    } catch {
+      // Microphone is optional.
+    }
+
+    return stream;
+  }
+}
+
+function createPlaceholderVideoTrack(): MediaStreamTrack | null {
+  const canvas = document.createElement("canvas");
+  canvas.width = 16;
+  canvas.height = 9;
+
+  const context = canvas.getContext("2d");
+  if (context) {
+    context.fillStyle = "#111827";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  const stream = canvas.captureStream(1);
+  return stream.getVideoTracks()[0] ?? null;
+}
+
+function getCallPeerConnection(
+  call: import("peerjs").MediaConnection,
+): RTCPeerConnection | undefined {
+  return (call as PeerMediaConnection).peerConnection;
 }
 
 export function useWebRTC({
   meetingRoomId,
   userName,
+  userId,
   accessToken,
+  profileImageUrl,
 }: UseWebRTCOptions) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
   const [remotes, setRemotes] = useState<RemoteParticipant[]>([]);
 
   const peerRef = useRef<import("peerjs").Peer | null>(null);
-  const socketRef = useRef<Socket | null>(null);
+  const stompRef = useRef<Client | null>(null);
+  const dataConnectionsRef = useRef<
+    Map<string, import("peerjs").DataConnection>
+  >(new Map());
   const callsRef = useRef<Map<string, import("peerjs").MediaConnection>>(
     new Map(),
   );
   const localStreamRef = useRef<MediaStream | null>(null);
   const screenStreamRef = useRef<MediaStream | null>(null);
+  const placeholderVideoTrackRef = useRef<MediaStreamTrack | null>(null);
+  const myPeerIdRef = useRef<string>("");
+  const joinedRef = useRef(false);
+  const mediaStateRef = useRef<LocalMediaState>({
+    micOn: true,
+    camOn: true,
+    screenSharing: false,
+    handRaised: false,
+  });
 
   const store = useMeetingRoomStore;
 
+  const applyRemoteMediaState = useCallback((state: MediaStateMessage) => {
+    setRemotes((prev) => {
+      const idx = prev.findIndex(
+        (r) =>
+          r.peerId === state.peerId ||
+          (state.userId && r.userId === state.userId),
+      );
+
+      if (idx === -1) {
+        return [
+          ...prev,
+          {
+            peerId: state.peerId,
+            userId: state.userId,
+            userName: state.userName,
+            stream: null,
+            isMuted: !state.micOn,
+            isCamOff: !state.camOn,
+            isHandRaised: state.handRaised,
+            isScreenSharing: state.screenSharing,
+          },
+        ];
+      }
+
+      const next = [...prev];
+      next[idx] = {
+        ...next[idx],
+        peerId: state.peerId,
+        userId: state.userId || next[idx].userId,
+        userName: state.userName || next[idx].userName,
+        isMuted: !state.micOn,
+        isCamOff: !state.camOn,
+        isHandRaised: state.handRaised,
+        isScreenSharing: state.screenSharing,
+      };
+      return next;
+    });
+  }, []);
+
+  const buildMediaStateMessage = useCallback((): MediaStateMessage | null => {
+    const peerId = myPeerIdRef.current;
+    if (!peerId) return null;
+
+    return {
+      peerId,
+      userId,
+      userName,
+      ...mediaStateRef.current,
+    };
+  }, [userId, userName]);
+
+  const publishMediaState = useCallback(
+    (payload: MediaStateMessage) => {
+      const stomp = stompRef.current;
+      if (!stomp?.connected) return;
+
+      stomp.publish({
+        destination: getMediaStateDestination(meetingRoomId),
+        body: JSON.stringify(payload),
+      });
+    },
+    [meetingRoomId],
+  );
+
+  const sendMediaState = useCallback(
+    (
+      connection: import("peerjs").DataConnection,
+      payload = buildMediaStateMessage(),
+    ) => {
+      if (!payload || !connection.open) return;
+
+      connection.send({
+        type: "media-state",
+        payload,
+      } satisfies PeerDataMessage);
+    },
+    [buildMediaStateMessage],
+  );
+
+  const broadcastMediaState = useCallback(() => {
+    const payload = buildMediaStateMessage();
+    if (!payload) return;
+
+    dataConnectionsRef.current.forEach((connection) => {
+      sendMediaState(connection, payload);
+    });
+    publishMediaState(payload);
+  }, [buildMediaStateMessage, publishMediaState, sendMediaState]);
+
+  const addDataConnection = useCallback(
+    (connection: import("peerjs").DataConnection) => {
+      const existing = dataConnectionsRef.current.get(connection.peer);
+      if (existing?.open && existing !== connection) {
+        connection.close();
+        sendMediaState(existing);
+        return;
+      }
+
+      if (existing && existing !== connection) {
+        existing.close();
+      }
+
+      dataConnectionsRef.current.set(connection.peer, connection);
+
+      connection.on("open", () => {
+        sendMediaState(connection);
+      });
+
+      connection.on("data", (data) => {
+        if (
+          typeof data === "object" &&
+          data !== null &&
+          "type" in data &&
+          data.type === "media-state" &&
+          "payload" in data
+        ) {
+          applyRemoteMediaState(data.payload as MediaStateMessage);
+        }
+      });
+
+      connection.on("close", () => {
+        if (dataConnectionsRef.current.get(connection.peer) === connection) {
+          dataConnectionsRef.current.delete(connection.peer);
+        }
+      });
+
+      connection.on("error", () => {
+        if (dataConnectionsRef.current.get(connection.peer) === connection) {
+          dataConnectionsRef.current.delete(connection.peer);
+        }
+      });
+
+      if (connection.open) {
+        sendMediaState(connection);
+      }
+    },
+    [applyRemoteMediaState, sendMediaState],
+  );
+
+  const connectDataPeer = useCallback(
+    (peerId: string) => {
+      const peer = peerRef.current;
+      const myPeerId = myPeerIdRef.current;
+      if (!peer || !myPeerId || peerId === myPeerId) return;
+
+      const existing = dataConnectionsRef.current.get(peerId);
+      if (existing) {
+        if (existing.open) {
+          sendMediaState(existing);
+        }
+        return;
+      }
+
+      if (myPeerId > peerId) {
+        return;
+      }
+
+      const connection = peer.connect(peerId, {
+        metadata: { userId, userName },
+      });
+      addDataConnection(connection);
+    },
+    [addDataConnection, sendMediaState, userId, userName],
+  );
+
+  const updateLocalMediaState = useCallback(
+    (state: Partial<LocalMediaState>) => {
+      mediaStateRef.current = { ...mediaStateRef.current, ...state };
+      broadcastMediaState();
+    },
+    [broadcastMediaState],
+  );
+
+  const getLocalVideoTrack = useCallback(() => {
+    const track = localStreamRef.current?.getVideoTracks()[0];
+    return track && track.readyState === "live" ? track : null;
+  }, []);
+
+  const getOutgoingStream = useCallback(() => {
+    const tracks: MediaStreamTrack[] = [];
+    const screenTrack = screenStreamRef.current?.getVideoTracks()[0];
+    const localStream = localStreamRef.current;
+    const localVideoTrack = localStream?.getVideoTracks()[0];
+
+    if (screenTrack && screenTrack.readyState === "live") {
+      tracks.push(screenTrack);
+    } else if (localVideoTrack && localVideoTrack.readyState === "live") {
+      tracks.push(localVideoTrack);
+    }
+
+    localStream?.getAudioTracks().forEach((track) => {
+      if (track.readyState === "live") {
+        tracks.push(track);
+      }
+    });
+
+    return new MediaStream(tracks);
+  }, []);
+
+  const replaceOutgoingVideoTrack = useCallback(
+    (track: MediaStreamTrack | null) => {
+      callsRef.current.forEach((call) => {
+        const sender = getCallPeerConnection(call)
+          ?.getSenders()
+          .find((s) => s.track?.kind === "video");
+
+        if (!sender) return;
+
+        sender.replaceTrack(track).catch((err) => {
+          console.warn("[useWebRTC] failed to replace video track:", err);
+        });
+      });
+    },
+    [],
+  );
+
+  const stopScreenShare = useCallback(() => {
+    const currentScreen = screenStreamRef.current;
+    if (!currentScreen) return;
+
+    currentScreen.getVideoTracks().forEach((track) => {
+      track.onended = null;
+    });
+    currentScreen.getTracks().forEach((track) => track.stop());
+    screenStreamRef.current = null;
+    replaceOutgoingVideoTrack(getLocalVideoTrack());
+    setScreenStream(null);
+    store.getState().setScreenSharing(false);
+    updateLocalMediaState({ screenSharing: false });
+  }, [getLocalVideoTrack, replaceOutgoingVideoTrack, store, updateLocalMediaState]);
+
   const callPeer = useCallback(
-    (peerId: string, peerUserName: string, stream: MediaStream) => {
-      if (!peerRef.current) return;
+    (
+      peerId: string,
+      peerUserName: string,
+      peerUserId?: string,
+      peerProfileImageUrl?: string,
+    ) => {
+      if (!peerRef.current || peerId === myPeerIdRef.current) return;
+      if (callsRef.current.has(peerId)) return;
+
+      const stream = getOutgoingStream();
+      if (stream.getTracks().length === 0) return;
 
       const call = peerRef.current.call(peerId, stream, {
-        metadata: { userName },
+        metadata: {
+          userId,
+          userName,
+          profileImageUrl,
+          mediaState: mediaStateRef.current,
+        },
       });
 
       callsRef.current.set(peerId, call);
@@ -51,41 +400,64 @@ export function useWebRTC({
           const idx = prev.findIndex((r) => r.peerId === peerId);
           if (idx !== -1) {
             const next = [...prev];
-            next[idx] = { ...next[idx], stream: remoteStream };
+            next[idx] = {
+              ...next[idx],
+              userId: peerUserId ?? next[idx].userId,
+              userName: peerUserName || next[idx].userName,
+              profileImageUrl:
+                peerProfileImageUrl ?? next[idx].profileImageUrl,
+              stream: remoteStream,
+            };
             return next;
           }
           return [
             ...prev,
-            { peerId, userName: peerUserName, stream: remoteStream },
+            {
+              peerId,
+              userId: peerUserId,
+              userName: peerUserName,
+              profileImageUrl: peerProfileImageUrl,
+              stream: remoteStream,
+            },
           ];
         });
       });
 
       call.on("close", () => {
+        if (callsRef.current.get(peerId) !== call) return;
         setRemotes((prev) => prev.filter((r) => r.peerId !== peerId));
         callsRef.current.delete(peerId);
       });
+
+      call.on("error", (err) => {
+        console.warn("[useWebRTC] outgoing call error:", err);
+        if (callsRef.current.get(peerId) === call) {
+          callsRef.current.delete(peerId);
+        }
+      });
     },
-    [userName],
+    [getOutgoingStream, profileImageUrl, userId, userName],
   );
 
   useEffect(() => {
     let peer: import("peerjs").Peer;
-    let socket: Socket;
+    let stomp: Client;
     let mounted = true;
+    const calls = callsRef.current;
+    const dataConnections = dataConnectionsRef.current;
+    const pendingFallbacks = new Map<string, ReturnType<typeof setTimeout>>();
 
     async function init() {
-      let stream: MediaStream;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        });
-      } catch {
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        } catch {
-          stream = new MediaStream();
+      if (!accessToken) return;
+
+      const stream = await getInitialLocalStream();
+      const hasCameraVideo = stream.getVideoTracks().length > 0;
+
+      if (!hasCameraVideo) {
+        const placeholderTrack = createPlaceholderVideoTrack();
+        if (placeholderTrack) {
+          placeholderVideoTrackRef.current = placeholderTrack;
+          stream.addTrack(placeholderTrack);
         }
       }
 
@@ -97,116 +469,250 @@ export function useWebRTC({
       localStreamRef.current = stream;
       setLocalStream(stream);
 
-      const hasVideo = stream.getVideoTracks().length > 0;
       const hasAudio = stream.getAudioTracks().length > 0;
-      store.getState().setCamOn(hasVideo);
+      mediaStateRef.current = {
+        ...mediaStateRef.current,
+        micOn: hasAudio,
+        camOn: hasCameraVideo,
+      };
+      store.getState().setCamOn(hasCameraVideo);
       store.getState().setMicOn(hasAudio);
 
       const { Peer } = await import("peerjs");
-      peer = new Peer();
+      peer = new Peer({
+        config: {
+          iceServers: [
+            { urls: "stun:stun.l.google.com:19302" },
+            { urls: "stun:stun1.l.google.com:19302" },
+            {
+              urls: "turn:0.peerjs.com:3478",
+              username: "peerjs",
+              credential: "peerjsp",
+            },
+          ],
+        },
+      });
       peerRef.current = peer;
 
       peer.on("open", async (myPeerId) => {
         if (!mounted) return;
+        myPeerIdRef.current = myPeerId;
 
+        let existingPeers: PeerInfo[] = [];
         try {
-          await registerPeer(meetingRoomId, myPeerId, accessToken);
-          await joinMeetingRoom(meetingRoomId, accessToken);
-        } catch {
-          // Backend may be unreachable — continue with Socket.IO signaling
+          const presence = await registerPeer(meetingRoomId, myPeerId, accessToken);
+          joinedRef.current = true;
+          existingPeers = presence.peers.filter((p) => p.peerId !== myPeerId);
+        } catch (err) {
+          console.warn("[useWebRTC] peer registration failed:", err);
         }
 
-        socket = io();
-        socketRef.current = socket;
-
-        socket.emit("join-room", {
-          roomId: meetingRoomId,
-          peerId: myPeerId,
-          userName,
+        existingPeers.forEach((p) => {
+          callPeer(
+            p.peerId,
+            `${p.firstName} ${p.lastName}`,
+            p.userId,
+            p.profileImage,
+          );
+          connectDataPeer(p.peerId);
         });
 
-        socket.on(
-          "existing-users",
-          (users: { peerId: string; userName: string }[]) => {
-            users.forEach(({ peerId, userName: peerName }) => {
-              const activeStream =
-                screenStreamRef.current ?? localStreamRef.current;
-              if (activeStream) callPeer(peerId, peerName, activeStream);
-            });
-          },
-        );
+        stomp = new Client({
+          brokerURL: getMeetingRoomStompBrokerUrl(),
+          connectHeaders: { Authorization: `Bearer ${accessToken}` },
+          reconnectDelay: 5000,
+          onConnect: () => {
+            stomp.subscribe(
+              getMediaStateDestination(meetingRoomId),
+              (frame) => {
+                if (!mounted) return;
 
-        socket.on(
-          "user-joined",
-          ({
-            peerId,
-            userName: peerName,
-          }: {
-            peerId: string;
-            userName: string;
-          }) => {
-            setRemotes((prev) => {
-              if (prev.find((r) => r.peerId === peerId)) return prev;
-              return [
-                ...prev,
-                { peerId, userName: peerName, stream: null },
-              ];
-            });
-          },
-        );
-
-        socket.on("user-left", ({ peerId }: { peerId: string }) => {
-          callsRef.current.get(peerId)?.close();
-          callsRef.current.delete(peerId);
-          setRemotes((prev) => prev.filter((r) => r.peerId !== peerId));
-        });
-
-        socket.on(
-          "raise-hand",
-          ({
-            peerId,
-            raised,
-          }: {
-            peerId: string;
-            userName: string;
-            raised: boolean;
-          }) => {
-            setRemotes((prev) =>
-              prev.map((r) =>
-                r.peerId === peerId ? { ...r, isHandRaised: raised } : r,
-              ),
+                try {
+                  const state = JSON.parse(frame.body) as MediaStateMessage;
+                  if (state.peerId !== myPeerId) {
+                    applyRemoteMediaState(state);
+                  }
+                } catch (err) {
+                  console.warn("[useWebRTC] media state parse error:", err);
+                }
+              },
             );
+
+            stomp.subscribe(
+              `/topic/meeting-room/${meetingRoomId}/peers`,
+              (frame) => {
+                if (!mounted) return;
+                const event = JSON.parse(frame.body) as PeerEventResponse;
+
+                if (event.type === "JOINED" && event.peer && event.peer.peerId !== myPeerId) {
+                  const newPeerId = event.peer!.peerId;
+                  const newPeerName = `${event.peer!.firstName} ${event.peer!.lastName}`;
+                  const newPeerUserId = event.peer!.userId;
+                  const newPeerProfileImage = event.peer!.profileImage;
+
+                  setRemotes((prev) => {
+                    if (prev.some((r) => r.peerId === newPeerId)) {
+                      return prev;
+                    }
+
+                    return [
+                      ...prev,
+                      {
+                        peerId: newPeerId,
+                        userName: newPeerName,
+                        userId: newPeerUserId,
+                        profileImageUrl: newPeerProfileImage,
+                        stream: null,
+                      },
+                    ];
+                  });
+
+                  connectDataPeer(newPeerId);
+                  broadcastMediaState();
+
+                  // Fallback: if the joining peer's call doesn't arrive
+                  // within 3 seconds, call them from this side instead.
+                  const fallbackTimer = setTimeout(() => {
+                    pendingFallbacks.delete(newPeerId);
+                    if (!mounted) return;
+                    if (callsRef.current.has(newPeerId)) return;
+                    const s = screenStreamRef.current ?? localStreamRef.current;
+                    if (s) {
+                      callPeer(
+                        newPeerId,
+                        newPeerName,
+                        newPeerUserId,
+                        newPeerProfileImage,
+                      );
+                    }
+                  }, 3000);
+                  pendingFallbacks.set(newPeerId, fallbackTimer);
+                } else if (event.type === "LEFT" && event.peer) {
+                  const leftPeerId = event.peer.peerId;
+                  const fb = pendingFallbacks.get(leftPeerId);
+                  if (fb) {
+                    clearTimeout(fb);
+                    pendingFallbacks.delete(leftPeerId);
+                  }
+                  callsRef.current.get(leftPeerId)?.close();
+                  callsRef.current.delete(leftPeerId);
+                  dataConnectionsRef.current.get(leftPeerId)?.close();
+                  dataConnectionsRef.current.delete(leftPeerId);
+                  setRemotes((prev) => prev.filter((r) => r.peerId !== leftPeerId));
+                }
+
+                store.getState().setParticipantCount(event.activeCount);
+              },
+            );
+
+            broadcastMediaState();
           },
-        );
+        });
+
+        stomp.activate();
+        stompRef.current = stomp;
+      });
+
+      peer.on("error", (err) => {
+        console.warn("[useWebRTC] PeerJS error:", err.type, err);
+      });
+
+      peer.on("disconnected", () => {
+        if (mounted && peer && !peer.destroyed) {
+          peer.reconnect();
+        }
+      });
+
+      peer.on("connection", (connection) => {
+        addDataConnection(connection);
       });
 
       peer.on("call", (call) => {
-        const callerName: string = call.metadata?.userName ?? "Unknown";
-        const activeStream =
-          screenStreamRef.current ?? localStreamRef.current ?? new MediaStream();
-        call.answer(activeStream);
+        const metadata = call.metadata as CallMetadata | undefined;
+        const callerName = metadata?.userName ?? "Unknown";
+        const callerUserId = metadata?.userId;
+        const callerProfileImageUrl = metadata?.profileImageUrl;
+        const callerMediaState = metadata?.mediaState;
+        const activeStream = getOutgoingStream();
 
+        const existingCall = callsRef.current.get(call.peer);
+        if (existingCall && existingCall !== call) {
+          existingCall.close();
+        }
+
+        // Cancel the fallback timer since we received the call
+        const fb = pendingFallbacks.get(call.peer);
+        if (fb) {
+          clearTimeout(fb);
+          pendingFallbacks.delete(call.peer);
+        }
+
+        call.answer(activeStream);
         callsRef.current.set(call.peer, call);
 
         call.on("stream", (remoteStream) => {
           if (!mounted) return;
           setRemotes((prev) => {
-            const idx = prev.findIndex((r) => r.peerId === call.peer);
+            const idx = prev.findIndex(
+              (r) => r.peerId === call.peer || (callerUserId && r.userId === callerUserId),
+            );
             if (idx !== -1) {
               const next = [...prev];
-              next[idx] = { ...next[idx], stream: remoteStream };
+              next[idx] = {
+                ...next[idx],
+                peerId: call.peer,
+                userId: callerUserId ?? next[idx].userId,
+                userName: callerName || next[idx].userName,
+                profileImageUrl:
+                  callerProfileImageUrl ?? next[idx].profileImageUrl,
+                stream: remoteStream,
+                isMuted:
+                  callerMediaState?.micOn == null
+                    ? next[idx].isMuted
+                    : !callerMediaState.micOn,
+                isCamOff:
+                  callerMediaState?.camOn == null
+                    ? next[idx].isCamOff
+                    : !callerMediaState.camOn,
+                isScreenSharing:
+                  callerMediaState?.screenSharing ??
+                  next[idx].isScreenSharing,
+              };
               return next;
             }
             return [
               ...prev,
-              { peerId: call.peer, userName: callerName, stream: remoteStream },
+              {
+                peerId: call.peer,
+                userId: callerUserId,
+                userName: callerName,
+                profileImageUrl: callerProfileImageUrl,
+                stream: remoteStream,
+                isMuted:
+                  callerMediaState?.micOn == null
+                    ? undefined
+                    : !callerMediaState.micOn,
+                isCamOff:
+                  callerMediaState?.camOn == null
+                    ? undefined
+                    : !callerMediaState.camOn,
+                isScreenSharing: callerMediaState?.screenSharing,
+              },
             ];
           });
         });
 
         call.on("close", () => {
+          if (callsRef.current.get(call.peer) !== call) return;
           setRemotes((prev) => prev.filter((r) => r.peerId !== call.peer));
           callsRef.current.delete(call.peer);
+        });
+
+        call.on("error", (err) => {
+          console.warn("[useWebRTC] incoming call error:", err);
+          if (callsRef.current.get(call.peer) === call) {
+            callsRef.current.delete(call.peer);
+          }
         });
       });
     }
@@ -215,18 +721,36 @@ export function useWebRTC({
 
     return () => {
       mounted = false;
-      socketRef.current?.disconnect();
-      callsRef.current.forEach((c) => c.close());
-      callsRef.current.clear();
+      pendingFallbacks.forEach((timer) => clearTimeout(timer));
+      pendingFallbacks.clear();
+      stompRef.current?.deactivate();
+      calls.forEach((c) => c.close());
+      calls.clear();
+      dataConnections.forEach((connection) => connection.close());
+      dataConnections.clear();
       peerRef.current?.destroy();
       localStreamRef.current?.getTracks().forEach((t) => t.stop());
       screenStreamRef.current?.getTracks().forEach((t) => t.stop());
+      placeholderVideoTrackRef.current?.stop();
+      placeholderVideoTrackRef.current = null;
 
-      unregisterPeer(meetingRoomId, accessToken).catch(() => {});
-      leaveMeetingRoom(meetingRoomId, accessToken).catch(() => {});
+      if (joinedRef.current) {
+        joinedRef.current = false;
+        unregisterPeer(meetingRoomId, accessToken).catch(() => {});
+      }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [meetingRoomId, userName, accessToken]);
+  }, [
+    meetingRoomId,
+    userName,
+    accessToken,
+    addDataConnection,
+    applyRemoteMediaState,
+    broadcastMediaState,
+    callPeer,
+    connectDataPeer,
+    getOutgoingStream,
+  ]);
 
   function toggleMic() {
     const stream = localStreamRef.current;
@@ -236,59 +760,79 @@ export function useWebRTC({
       t.enabled = enabled;
     });
     store.getState().setMicOn(enabled);
+    updateLocalMediaState({ micOn: enabled });
   }
 
-  function toggleCam() {
+  async function toggleCam() {
     const stream = localStreamRef.current;
-    if (!stream || stream.getVideoTracks().length === 0) return;
-    const enabled = !stream.getVideoTracks()[0].enabled;
-    stream.getVideoTracks().forEach((t) => {
+    if (!stream) return;
+
+    const placeholderTrack = placeholderVideoTrackRef.current;
+    const cameraTracks = stream
+      .getVideoTracks()
+      .filter((track) => track !== placeholderTrack);
+    const cameraTrack = cameraTracks.find(
+      (track) => track.readyState === "live",
+    );
+
+    if (!cameraTrack) {
+      try {
+        const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const videoTrack = videoStream.getVideoTracks()[0];
+        if (!videoTrack) return;
+
+        if (placeholderTrack) {
+          stream.removeTrack(placeholderTrack);
+          placeholderTrack.stop();
+          placeholderVideoTrackRef.current = null;
+        }
+
+        stream.addTrack(videoTrack);
+
+        if (!screenStreamRef.current) {
+          replaceOutgoingVideoTrack(videoTrack);
+        }
+
+        setLocalStream(new MediaStream(stream.getTracks()));
+        store.getState().setCamOn(true);
+        updateLocalMediaState({ camOn: true });
+      } catch {
+        // Camera permission denied
+      }
+      return;
+    }
+
+    const enabled = !cameraTrack.enabled;
+    cameraTracks.forEach((t) => {
       t.enabled = enabled;
     });
     store.getState().setCamOn(enabled);
+    updateLocalMediaState({ camOn: enabled });
   }
 
   async function toggleScreen() {
     if (screenStreamRef.current) {
-      screenStreamRef.current.getTracks().forEach((t) => t.stop());
-      screenStreamRef.current = null;
-      setScreenStream(null);
-      store.getState().setScreenSharing(false);
-
-      const camStream = localStreamRef.current;
-      if (camStream) {
-        callsRef.current.forEach((call) => {
-          const sender = (
-            call as unknown as { peerConnection?: RTCPeerConnection }
-          ).peerConnection
-            ?.getSenders()
-            .find((s) => s.track?.kind === "video");
-          const videoTrack = camStream.getVideoTracks()[0];
-          if (sender && videoTrack) sender.replaceTrack(videoTrack);
-        });
-      }
+      stopScreenShare();
     } else {
       try {
         const display = await navigator.mediaDevices.getDisplayMedia({
           video: true,
           audio: true,
         });
+        const screenTrack = display.getVideoTracks()[0];
+        if (!screenTrack) {
+          display.getTracks().forEach((track) => track.stop());
+          return;
+        }
+
         screenStreamRef.current = display;
         setScreenStream(display);
         store.getState().setScreenSharing(true);
+        replaceOutgoingVideoTrack(screenTrack);
+        updateLocalMediaState({ screenSharing: true });
 
-        callsRef.current.forEach((call) => {
-          const sender = (
-            call as unknown as { peerConnection?: RTCPeerConnection }
-          ).peerConnection
-            ?.getSenders()
-            .find((s) => s.track?.kind === "video");
-          const screenTrack = display.getVideoTracks()[0];
-          if (sender && screenTrack) sender.replaceTrack(screenTrack);
-        });
-
-        display.getVideoTracks()[0].onended = () => {
-          toggleScreen();
+        screenTrack.onended = () => {
+          stopScreenShare();
         };
       } catch {
         // User cancelled
@@ -299,11 +843,7 @@ export function useWebRTC({
   function toggleRaiseHand() {
     const newState = !store.getState().handRaised;
     store.getState().setHandRaised(newState);
-    socketRef.current?.emit("raise-hand", {
-      roomId: meetingRoomId,
-      raised: newState,
-      userName,
-    });
+    updateLocalMediaState({ handRaised: newState });
   }
 
   return {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface VideoTileProps {
   stream: MediaStream | null;
@@ -11,7 +11,15 @@ interface VideoTileProps {
   isCamOff?: boolean;
   isHandRaised?: boolean;
   isScreenShare?: boolean;
-  profileImageUrl?: string;
+  profileImageUrl?: string | undefined;
+}
+
+function hasLiveVideoTrack(stream: MediaStream | null) {
+  return (
+    stream?.getVideoTracks().some((track) => {
+      return track.readyState === "live" && track.enabled;
+    }) ?? false
+  );
 }
 
 export default function VideoTile({
@@ -26,14 +34,56 @@ export default function VideoTile({
   profileImageUrl,
 }: VideoTileProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [, refreshTrackState] = useState(0);
 
   useEffect(() => {
-    if (videoRef.current && stream) {
-      videoRef.current.srcObject = stream;
+    if (!stream) {
+      return;
+    }
+
+    const videoTracks = stream.getVideoTracks();
+    const cleanups: (() => void)[] = [];
+    const refresh = () => refreshTrackState((value) => value + 1);
+
+    videoTracks.forEach((track) => {
+      track.addEventListener("mute", refresh);
+      track.addEventListener("unmute", refresh);
+      track.addEventListener("ended", refresh);
+      cleanups.push(() => {
+        track.removeEventListener("mute", refresh);
+        track.removeEventListener("unmute", refresh);
+        track.removeEventListener("ended", refresh);
+      });
+    });
+
+    stream.addEventListener("addtrack", refresh);
+    stream.addEventListener("removetrack", refresh);
+
+    return () => {
+      cleanups.forEach((fn) => fn());
+      stream.removeEventListener("addtrack", refresh);
+      stream.removeEventListener("removetrack", refresh);
+    };
+  }, [stream]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (stream) {
+      video.srcObject = stream;
+      video.play().catch((err) => {
+        if (err.name === "NotAllowedError") {
+          video.muted = true;
+          video.play().catch(() => {});
+        }
+      });
+    } else {
+      video.srcObject = null;
     }
   }, [stream]);
 
-  const showAvatar = !stream || isCamOff;
+  const showAvatar = !hasLiveVideoTrack(stream) || (!isScreenShare && isCamOff);
 
   return (
     <div
@@ -50,28 +100,37 @@ export default function VideoTile({
         autoPlay
         playsInline
         muted={muted}
-        className={`h-full w-full ${isScreenShare ? "object-contain" : "object-cover"} ${showAvatar ? "hidden" : ""}`}
+        className={`h-full w-full ${isScreenShare ? "object-contain" : "object-cover"} ${showAvatar ? "invisible" : ""}`}
       />
 
       {showAvatar && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-[#241cab] to-[#5d53f9]">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-[#241cab] to-[#5d53f9]">
           {profileImageUrl ? (
             <img
               src={profileImageUrl}
               alt={userName}
-              className="h-16 w-16 rounded-full object-cover border-2 border-white/30"
+              className={`rounded-full object-cover border-2 border-white/30 ${small ? "h-10 w-10" : "h-16 w-16"}`}
             />
           ) : (
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 text-2xl font-semibold text-white">
+            <div
+              className={`flex items-center justify-center rounded-full bg-white/20 font-semibold text-white ${
+                small ? "h-10 w-10 text-lg" : "h-16 w-16 text-2xl"
+              }`}
+            >
               {userName.charAt(0).toUpperCase()}
             </div>
-          )}
+          )}  
+          <span
+            className={`font-medium text-white/80 ${small ? "text-[10px]" : "text-xs"}`}
+          >
+            {userName}
+          </span>
         </div>
       )}
 
       {isHandRaised && (
         <div className="absolute top-2 right-2 flex h-8 w-8 items-center justify-center rounded-full bg-yellow-400 text-lg shadow-lg">
-          ✋
+{"✋"}
         </div>
       )}
 
@@ -90,9 +149,11 @@ export default function VideoTile({
         </div>
       )}
 
-      <div className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
-        {userName}
-      </div>
+      {!showAvatar && (
+        <div className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-xs font-medium text-white">
+          {userName}
+        </div>
+      )}
     </div>
   );
 }

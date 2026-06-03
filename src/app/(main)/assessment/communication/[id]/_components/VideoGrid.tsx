@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo } from "react";
 import type { RemoteParticipant } from "@/types/meeting-room";
 import VideoTile from "./VideoTile";
 
@@ -12,6 +13,7 @@ interface VideoGridProps {
   isMicOn: boolean;
   isCamOn: boolean;
   isHandRaised: boolean;
+  profileImageUrl: string | undefined;
 }
 
 function getGridClass(count: number): string {
@@ -30,16 +32,53 @@ export default function VideoGrid({
   isMicOn,
   isCamOn,
   isHandRaised,
+  profileImageUrl,
 }: VideoGridProps) {
-  const totalParticipants = 1 + remotes.length;
+  const visibleRemotes = useMemo(() => {
+    const byIdentity = new Map<string, RemoteParticipant>();
 
-  if (isScreenSharing && screenStream) {
+    remotes.forEach((remote) => {
+      const key = remote.userId ?? remote.peerId;
+      const existing = byIdentity.get(key);
+
+      if (!existing) {
+        byIdentity.set(key, remote);
+        return;
+      }
+
+      const keepExistingStream = existing.stream && !remote.stream;
+      byIdentity.set(key, {
+        ...existing,
+        ...remote,
+        peerId: keepExistingStream ? existing.peerId : remote.peerId,
+        stream: remote.stream ?? existing.stream,
+      });
+    });
+
+    return Array.from(byIdentity.values());
+  }, [remotes]);
+
+  const remoteScreenShare = visibleRemotes.find(
+    (remote) => remote.isScreenSharing && remote.stream,
+  );
+  const sidebarRemotes = remoteScreenShare
+    ? visibleRemotes.filter((remote) => remote.peerId !== remoteScreenShare.peerId)
+    : visibleRemotes;
+  const totalParticipants = 1 + visibleRemotes.length;
+
+  if ((isScreenSharing && screenStream) || remoteScreenShare) {
+    const mainStream = screenStream ?? remoteScreenShare?.stream ?? null;
+    const mainUserName =
+      isScreenSharing && screenStream
+        ? `${userName}'s screen`
+        : `${remoteScreenShare?.userName ?? "Participant"}'s screen`;
+
     return (
       <div className="flex flex-1 overflow-hidden">
         <div className="flex flex-[3] items-center justify-center p-2">
           <VideoTile
-            stream={screenStream}
-            userName={`${userName}'s screen`}
+            stream={mainStream}
+            userName={mainUserName}
             muted
             isScreenShare
           />
@@ -54,16 +93,18 @@ export default function VideoGrid({
             isMicMuted={!isMicOn}
             isCamOff={!isCamOn}
             isHandRaised={isHandRaised}
+            profileImageUrl={profileImageUrl}
           />
-          {remotes.map((r) => (
+          {sidebarRemotes.map((r) => (
             <VideoTile
               key={r.peerId}
               stream={r.stream}
               userName={r.userName}
               small
               isMicMuted={r.isMuted}
-              isCamOff={r.isCamOff}
+              isCamOff={r.isCamOff && !r.isScreenSharing}
               isHandRaised={r.isHandRaised}
+              profileImageUrl={r.profileImageUrl}
             />
           ))}
         </div>
@@ -85,15 +126,17 @@ export default function VideoGrid({
           isMicMuted={!isMicOn}
           isCamOff={!isCamOn}
           isHandRaised={isHandRaised}
+          profileImageUrl={profileImageUrl}
         />
-        {remotes.map((r) => (
+        {visibleRemotes.map((r) => (
           <VideoTile
             key={r.peerId}
             stream={r.stream}
             userName={r.userName}
             isMicMuted={r.isMuted}
-            isCamOff={r.isCamOff}
+            isCamOff={r.isCamOff && !r.isScreenSharing}
             isHandRaised={r.isHandRaised}
+            profileImageUrl={r.profileImageUrl}
           />
         ))}
       </div>

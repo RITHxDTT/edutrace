@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Copy, TickCircle } from "iconsax-react";
+import { Copy, CheckCircle } from "lucide-react";
 
 interface RoomHeaderProps {
   roomName: string;
@@ -52,7 +52,7 @@ export default function RoomHeader({
       >
         {copied ? (
           <>
-            <TickCircle size={14} />
+            <CheckCircle size={14} />
             <span>Copied!</span>
           </>
         ) : (

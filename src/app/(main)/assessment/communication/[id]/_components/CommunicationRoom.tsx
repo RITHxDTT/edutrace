@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
 import { useWebRTC } from "../hooks/useWebRTC";
@@ -21,6 +22,7 @@ export default function CommunicationRoom({
   meetingRoomId,
   onLeave,
 }: CommunicationRoomProps) {
+  const router = useRouter();
   const { data: session } = useSession();
 
   const accessToken = (session as { access_token?: string } | null)
@@ -31,10 +33,13 @@ export default function CommunicationRoom({
         userId?: string;
         firstName?: string;
         lastName?: string;
+        profileImageUrl?: string;
       }
     | undefined;
   const userName = user?.name ?? user?.firstName ?? "Guest";
   const userId = user?.userId ?? "";
+  const profileImageUrl = user?.profileImageUrl ?? undefined;
+  
 
   const { chatPanelOpen, participantsPanelOpen, micOn, camOn, handRaised, screenSharing, reset } =
     useMeetingRoomStore();
@@ -50,7 +55,9 @@ export default function CommunicationRoom({
   } = useWebRTC({
     meetingRoomId,
     userName,
+    userId,
     accessToken,
+    profileImageUrl,
   });
 
   const { messages, sendMessage, loadMore, hasMore, isConnected } =
@@ -72,7 +79,11 @@ export default function CommunicationRoom({
 
   function handleLeave() {
     reset();
-    onLeave?.();
+    if (onLeave) {
+      onLeave();
+    } else {
+      router.push("/assessment");
+    }
   }
 
   function handleSendMessage(content: string) {
@@ -101,6 +112,8 @@ export default function CommunicationRoom({
           isMicOn={micOn}
           isCamOn={camOn}
           isHandRaised={handRaised}
+          profileImageUrl={profileImageUrl}
+
         />
 
         <div
@@ -113,6 +126,8 @@ export default function CommunicationRoom({
             currentUserId={userId}
             hasMore={hasMore}
             isConnected={isConnected}
+            meetingRoomId={meetingRoomId}
+            accessToken={accessToken}
             onLoadMore={loadMore}
             onSend={handleSendMessage}
           />
@@ -123,10 +138,7 @@ export default function CommunicationRoom({
             participantsPanelOpen ? "w-[360px] opacity-100" : "w-0 opacity-0"
           }`}
         >
-          <ParticipantsPanel
-            participants={participants}
-            remotes={remotes}
-          />
+          <ParticipantsPanel participants={participants} />
         </div>
       </div>
 
