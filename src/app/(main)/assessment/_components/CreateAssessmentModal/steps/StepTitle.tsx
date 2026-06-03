@@ -1,20 +1,22 @@
 import { CreateAssessmentForm } from "@/types/assessment";
 import PrimaryInput from "@/components/Inputs/PrimaryInputField";
-import RichTextEditor from "@/components/RichTextEditor/TipTap";
+import RichTextEditor from "@/components/RIchTextEditor/TipTap";
 import { Switch } from '@heroui/switch';
 import PrimarySelect from "@/components/Selects/PrimarySelect";
 import { ASSESSMENT_TYPE_LABELS, ASSESSMENT_TYPES, AssessmentType } from "@/app/constants/assessments";
 import { SelectItem } from "@heroui/select";
+import { CreateAssessmentFormErrors } from "../useCreateAssessmentForm";
 
 type Props = {
   form: CreateAssessmentForm;
+  errors: CreateAssessmentFormErrors;
   onChange: <K extends keyof CreateAssessmentForm>(
     key: K,
     value: CreateAssessmentForm[K],
   ) => void;
 };
 
-export default function StepTitle({ form, onChange }: Props) {
+export default function StepTitle({ form, errors, onChange }: Props) {
   
   
   return (
@@ -25,6 +27,8 @@ export default function StepTitle({ form, onChange }: Props) {
         inputType="secondary"
         type="text"
         value={form.title}
+        isInvalid={!!errors.title}
+        errorMessage={errors.title}
         onChange={(e) => onChange("title", e.target.value)}
       />
 
@@ -42,6 +46,8 @@ export default function StepTitle({ form, onChange }: Props) {
         label="Assessment Type"
         selectedKeys={[form.assessmentType]}
         selectType="secondary"
+        isInvalid={!!errors.assessmentType}
+        errorMessage={errors.assessmentType}
         onSelectionChange={(keys) =>
           onChange("assessmentType", Array.from(keys)[0] as AssessmentType)
         }

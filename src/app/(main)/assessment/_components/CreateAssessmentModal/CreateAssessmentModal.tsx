@@ -6,7 +6,7 @@ import {
   ModalBody,
   ModalFooter,
 } from "@heroui/modal";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import { SubjectType } from "@/types/subject";
@@ -16,6 +16,7 @@ import { Edit } from "iconsax-react";
 import StepAssessment from "./steps/StepAssessment";
 import { ClassroomType } from "@/types/classroom";
 import { AssessmentType } from "@/types/assessment";
+import { useSession } from "next-auth/react";
 
 type Props = {
   isOpen: boolean;
@@ -29,6 +30,99 @@ type Props = {
 
 const STEPS = ["Basic Info", "Assessment Details"];
 
+type SessionSubject = SubjectType | string;
+
+function getStringValue(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function getRecordValue(value: unknown, key: string) {
+  if (!value || typeof value !== "object") return undefined;
+
+  return (value as Record<string, unknown>)[key];
+}
+
+function normalizeSubjects(
+  taughtSubjects: SessionSubject[] | undefined,
+  fallbackSubjects: SubjectType[],
+) {
+  if (!taughtSubjects?.length) return fallbackSubjects;
+
+  return taughtSubjects.map((subject) => {
+    if (typeof subject !== "string") return subject;
+
+    const matchedSubject = fallbackSubjects.find(
+      (item) => item.subjectId === subject || item.subjectName === subject,
+    );
+
+    return (
+      matchedSubject ?? {
+        subjectId: subject,
+        subjectName: subject,
+      }
+    );
+  });
+}
+
+function getClassroomLabel(value: unknown, fallback: string) {
+  return (
+    getStringValue(getRecordValue(value, "classroomAbbre")) ??
+    getStringValue(getRecordValue(value, "className")) ??
+    getStringValue(getRecordValue(value, "classroomName")) ??
+    getStringValue(getRecordValue(getRecordValue(value, "classroom"), "classroomAbbre")) ??
+    getStringValue(getRecordValue(getRecordValue(value, "classroom"), "className")) ??
+    fallback
+  );
+}
+
+function getAssessmentClassroomOptions(
+  assessment: AssessmentType | undefined,
+  taughtClassrooms: ClassroomType[],
+) {
+  const classroomMap = new Map<string, ClassroomType>();
+
+  taughtClassrooms.forEach((classroom) => {
+    classroomMap.set(classroom.classroomId, classroom);
+  });
+
+  const assessmentClassrooms = assessment?.classrooms ?? assessment?.classroomIds ?? [];
+
+  assessmentClassrooms.forEach((classroom) => {
+    const nestedClassroom = getRecordValue(classroom, "classroom");
+    const candidates = [
+      getStringValue(classroom),
+      getStringValue(getRecordValue(classroom, "classroomId")),
+      getStringValue(getRecordValue(classroom, "id")),
+      getStringValue(getRecordValue(classroom, "classId")),
+      getStringValue(getRecordValue(nestedClassroom, "classroomId")),
+      getStringValue(getRecordValue(nestedClassroom, "id")),
+      getStringValue(getRecordValue(classroom, "classroomAbbre")),
+      getStringValue(getRecordValue(classroom, "className")),
+      getStringValue(getRecordValue(classroom, "classroomName")),
+    ].filter(Boolean);
+
+    const matchedClassroom = taughtClassrooms.find((item) =>
+      candidates.some(
+        (candidate) =>
+          candidate === item.classroomId ||
+          candidate === item.classroomAbbre ||
+          candidate === item.className,
+      ),
+    );
+    const classroomId = matchedClassroom?.classroomId ?? candidates[0];
+
+    if (!classroomId || classroomMap.has(classroomId)) return;
+
+    classroomMap.set(classroomId, {
+      classroomId,
+      className: getClassroomLabel(classroom, classroomId),
+      classroomAbbre: getClassroomLabel(classroom, classroomId),
+    });
+  });
+
+  return Array.from(classroomMap.values());
+}
+
 export default function CreateAssessmentModal({
   isOpen,
   onClose,
@@ -40,13 +134,23 @@ export default function CreateAssessmentModal({
 }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
   const router = useRouter();
-  const { form, handleChange, submit, reset, loading, error } =
+  const { data: session } = useSession();
+  const classroomOptions = useMemo(
+    () => getAssessmentClassroomOptions(assessment, taughtClassrooms),
+    [assessment, taughtClassrooms],
+  );
+  const { form, errors, handleChange, submit, reset, loading, error } =
     useCreateAssessment({
       assessment,
       assessmentId,
+      taughtClassrooms: classroomOptions,
       mode,
       onSuccess: onClose,
     });
+  const taughtSubjects = useMemo(
+    () => normalizeSubjects(session?.user?.taughtSubjects, subjects),
+    [session?.user?.taughtSubjects, subjects],
+  );
 
   const isFirst = currentStep === 0;
   const isLast = currentStep === STEPS.length - 1;
@@ -62,11 +166,7 @@ export default function CreateAssessmentModal({
   const handleBack = () => setCurrentStep((prev) => prev - 1);
 
   const handleSubmit = async () => {
-    const classroomFallback =
-      isEdit && form.classroomIds.length === 0
-        ? { classroomIds: taughtClassrooms.map((classroom) => classroom.classroomId) }
-        : undefined;
-    const success = await submit(classroomFallback);
+    const success = await submit();
     if (!success) return;
 
     setCurrentStep(0);
@@ -102,17 +202,17 @@ export default function CreateAssessmentModal({
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           {currentStep === 0 && (
-            <StepTitle form={form} onChange={handleChange} />
+            <StepTitle form={form} errors={errors} onChange={handleChange} />
           )}
 
           {currentStep === 1 &&
             <StepAssessment
               form={form}
+              errors={errors}
               onChange={handleChange}
-              subjects={subjects}
-              taughtClassrooms={taughtClassrooms}
+              subjects={taughtSubjects}
+              taughtClassrooms={classroomOptions}
               existingResources={assessment?.resources ?? []}
-              mode={mode}
             />
           }
         </ModalBody>

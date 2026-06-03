@@ -174,6 +174,7 @@ export const endWorkSessionService = async (
     },
   );
 
+
   const result = await readAssessmentResponse(res);
 
   if (!res.ok || !result?.success) {
@@ -193,15 +194,10 @@ function createAssessmentFormData(data: CreateAssessmentForm) {
   const formData = new FormData();
   const { files, ...assessmentRequest } = data;
 
-  formData.append(
-    "assessmentRequest",
-    new Blob([JSON.stringify(assessmentRequest)], {
-      type: "application/json",
-    }),
-  );
+  formData.append("assessmentRequest", JSON.stringify(assessmentRequest));
 
   files.forEach((file) => {
-    formData.append("file", file);
+    formData.append("files", file);
   });
 
   return formData;
@@ -220,6 +216,8 @@ async function readAssessmentResponse(res: Response) {
 export const createAssessmentService = async (data: CreateAssessmentForm) => {
   const session = await auth();
   const formData = createAssessmentFormData(data);
+
+  console.log(formData)
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments`,
     {
@@ -230,6 +228,8 @@ export const createAssessmentService = async (data: CreateAssessmentForm) => {
       body: formData,
     },
   );
+  const rawText = await res.clone().text();
+  console.log("Response body:", rawText);
 
 
   const result = await readAssessmentResponse(res);

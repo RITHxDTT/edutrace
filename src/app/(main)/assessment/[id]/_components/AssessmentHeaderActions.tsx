@@ -107,15 +107,18 @@ export default function AssessmentHeaderActions({
         </PopoverContent>
       </Popover>
 
-      <CreateAssessmentModal
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        subjects={subjects}
-        taughtClassrooms={taughtClassrooms}
-        assessment={assessment}
-        assessmentId={assessmentId}
-        mode="edit"
-      />
+      {isEditOpen && (
+        <CreateAssessmentModal
+          key={`${assessmentId}-${taughtClassrooms.map((classroom) => classroom.classroomId).join("-")}`}
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          subjects={subjects}
+          taughtClassrooms={taughtClassrooms}
+          assessment={assessment}
+          assessmentId={assessmentId}
+          mode="edit"
+        />
+      )}
     </>
   );
 }

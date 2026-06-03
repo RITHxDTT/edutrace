@@ -1,6 +1,32 @@
 import { createAssessmentAction, updateAssessmentAction } from "@/actions/assessment.action";
 import { AssessmentType, CreateAssessmentForm } from "@/types/assessment";
+import { ClassroomType } from "@/types/classroom";
 import { useMemo, useState } from "react";
+import { z } from "zod";
+
+type CreateAssessmentFormErrors = Partial<
+  Record<keyof CreateAssessmentForm, string>
+>;
+
+const assessmentFormSchema = z.object({
+  title: z.string().trim().min(4, "Title must be at least 4 characters."),
+  description: z.string(),
+  assessmentType: z.enum(["ASSIGNMENT", "PRACTICE", "HOMEWORK", "MINI_PROJECT"], {
+    message: "Please select an assessment type.",
+  }),
+  subjectId: z.string().trim().min(1, "Please select a topic."),
+  classroomIds: z.array(z.string()).min(1, "Please select at least one classroom."),
+  startAt: z.string().trim().min(1, "Please select an assessment date range."),
+  dueAt: z.string().trim().min(1, "Please select an assessment date range."),
+  maxScore: z.number().min(1, "Set point must be greater than 0."),
+  requiredDailyMinutes: z
+    .number()
+    .min(1, "Daily required minutes must be greater than 0."),
+  allowLateSubmissions: z.boolean(),
+  gradingRubric: z.string(),
+  files: z.array(z.instanceof(File)),
+  createdTimeZone: z.string(),
+});
 
 const defaultForm: CreateAssessmentForm = {
   title: "",
@@ -18,7 +44,63 @@ const defaultForm: CreateAssessmentForm = {
   createdTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 };
 
-function toAssessmentForm(assessment?: AssessmentType): CreateAssessmentForm {
+function getStringValue(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined;
+}
+
+function getRecordValue(value: unknown, key: string) {
+  if (!value || typeof value !== "object") return undefined;
+
+  return (value as Record<string, unknown>)[key];
+}
+
+function resolveClassroomId(value: unknown, taughtClassrooms: ClassroomType[]) {
+  const nestedClassroom = getRecordValue(value, "classroom");
+  const candidates = [
+    getStringValue(value),
+    getStringValue(getRecordValue(value, "classroomId")),
+    getStringValue(getRecordValue(value, "id")),
+    getStringValue(getRecordValue(value, "classId")),
+    getStringValue(getRecordValue(nestedClassroom, "classroomId")),
+    getStringValue(getRecordValue(nestedClassroom, "id")),
+    getStringValue(getRecordValue(value, "classroomAbbre")),
+    getStringValue(getRecordValue(value, "className")),
+    getStringValue(getRecordValue(value, "classroomName")),
+  ].filter(Boolean);
+
+  const matchedClassroom = taughtClassrooms.find((classroom) =>
+    candidates.some(
+      (candidate) =>
+        candidate === classroom.classroomId ||
+        candidate === classroom.classroomAbbre ||
+        candidate === classroom.className,
+    ),
+  );
+
+  return matchedClassroom?.classroomId ?? candidates[0];
+}
+
+function getAssessmentClassroomIds(
+  assessment: AssessmentType,
+  taughtClassrooms: ClassroomType[],
+) {
+  const values = assessment.classroomIds?.length
+    ? assessment.classroomIds
+    : assessment.classrooms ?? [];
+
+  return Array.from(
+    new Set(
+      values
+        .map((classroom) => resolveClassroomId(classroom, taughtClassrooms))
+        .filter((classroomId): classroomId is string => !!classroomId),
+    ),
+  );
+}
+
+function toAssessmentForm(
+  assessment?: AssessmentType,
+  taughtClassrooms: ClassroomType[] = [],
+): CreateAssessmentForm {
   if (!assessment) {
     return {
       ...defaultForm,
@@ -28,17 +110,12 @@ function toAssessmentForm(assessment?: AssessmentType): CreateAssessmentForm {
     };
   }
 
-  const classroomIds =
-    assessment.classroomIds ??
-    assessment.classrooms?.map((classroom) => classroom.classroomId) ??
-    [];
-
   return {
     title: assessment.title ?? "",
     description: assessment.description ?? "",
     assessmentType: assessment.assessmentType ?? "ASSIGNMENT",
     subjectId: assessment.subject.subjectId ?? "",
-    classroomIds,
+    classroomIds: getAssessmentClassroomIds(assessment, taughtClassrooms),
     startAt: assessment.startAt ?? "",
     dueAt: assessment.dueAt ?? "",
     maxScore: assessment.maxScore ?? 10,
@@ -55,6 +132,7 @@ function toAssessmentForm(assessment?: AssessmentType): CreateAssessmentForm {
 type UseCreateAssessmentOptions = {
   assessment?: AssessmentType;
   assessmentId?: string;
+  taughtClassrooms?: ClassroomType[];
   mode?: "create" | "edit";
   onSuccess?: () => void;
 };
@@ -62,11 +140,16 @@ type UseCreateAssessmentOptions = {
 export function useCreateAssessment({
   assessment,
   assessmentId,
+  taughtClassrooms = [],
   mode = "create",
   onSuccess,
 }: UseCreateAssessmentOptions = {}) {
-  const initialForm = useMemo(() => toAssessmentForm(assessment), [assessment]);
+  const initialForm = useMemo(
+    () => toAssessmentForm(assessment, taughtClassrooms),
+    [assessment, taughtClassrooms],
+  );
   const [form, setForm] = useState<CreateAssessmentForm>(initialForm);
+  const [errors, setErrors] = useState<CreateAssessmentFormErrors>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -75,25 +158,35 @@ export function useCreateAssessment({
     value: CreateAssessmentForm[K],
   ) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => {
+      if (!prev[key]) return prev;
+
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
   };
 
-  const reset = () =>
+  const reset = () => {
     setForm(mode === "edit" ? initialForm : toAssessmentForm());
+    setErrors({});
+    setError(null);
+  };
 
   const validate = (nextForm: CreateAssessmentForm) => {
-    if (!nextForm.title.trim()) return "Please enter an assessment title.";
-    if (!nextForm.assessmentType) return "Please select an assessment type.";
-    if (!nextForm.subjectId) return "Please select a topic.";
-    if (!nextForm.startAt || !nextForm.dueAt) return "Please select an assessment date range.";
-    if (mode === "create" && nextForm.classroomIds.length === 0) {
-      return "Please select at least one classroom.";
-    }
-    if (nextForm.maxScore <= 0) return "Set point must be greater than 0.";
-    if (nextForm.requiredDailyMinutes <= 0) {
-      return "Daily required minutes must be greater than 0.";
-    }
+    const result = assessmentFormSchema.safeParse(nextForm);
+    if (result.success) return null;
 
-    return null;
+    const nextErrors: CreateAssessmentFormErrors = {};
+
+    result.error.issues.forEach((issue) => {
+      const field = issue.path[0] as keyof CreateAssessmentForm | undefined;
+      if (field && !nextErrors[field]) {
+        nextErrors[field] = issue.message;
+      }
+    });
+
+    return nextErrors;
   };
 
   const submit = async (overrides?: Partial<CreateAssessmentForm>) => {
@@ -101,11 +194,12 @@ export function useCreateAssessment({
     setError(null);
     try {
       const nextForm = { ...form, ...overrides };
-      const validationError = validate(nextForm);
-      if (validationError) {
-        setError(validationError);
+      const validationErrors = validate(nextForm);
+      if (validationErrors) {
+        setErrors(validationErrors);
         return false;
       }
+      setErrors({});
 
       const result =
         mode === "edit" && assessmentId
@@ -128,5 +222,7 @@ export function useCreateAssessment({
     }
   };
 
-  return { form, handleChange, submit, reset, loading, error };
+  return { form, errors, handleChange, submit, reset, loading, error };
 }
+
+export type { CreateAssessmentFormErrors };

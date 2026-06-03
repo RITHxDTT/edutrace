@@ -13,9 +13,11 @@ import { File, Paperclip } from "lucide-react";
 import AttachmentCard from "./_components/FileCard";
 import { FolderOpen, Gallery } from "iconsax-react";
 import { parseDate } from "@internationalized/date";
+import { CreateAssessmentFormErrors } from "../useCreateAssessmentForm";
 
 type Props = {
     form: CreateAssessmentForm;
+    errors: CreateAssessmentFormErrors;
     onChange: <K extends keyof CreateAssessmentForm>(
         key: K,
         value: CreateAssessmentForm[K],
@@ -23,7 +25,6 @@ type Props = {
     subjects: SubjectType[];
     taughtClassrooms: ClassroomType[];
     existingResources?: AssessmentResource[];
-    mode?: "create" | "edit";
 };
 
 type RubricBadge = {
@@ -99,21 +100,46 @@ function getFileColor(name: string) {
 }
 
 function getDateOnlyValue(value: string) {
-    return parseDate(value.slice(0, 10));
+    return parseDate(getLocalDateValue(value));
+}
+
+function padTimePart(value: number) {
+    return String(value).padStart(2, "0");
+}
+
+function getLocalDateValue(value: string) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+
+    return [
+        date.getFullYear(),
+        padTimePart(date.getMonth() + 1),
+        padTimePart(date.getDate()),
+    ].join("-");
+}
+
+function getLocalTimeValue(value: string, fallback: string) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return fallback;
+
+    return `${padTimePart(date.getHours())}:${padTimePart(date.getMinutes())}`;
+}
+
+function combineDateAndTime(dateValue: string, timeValue: string) {
+    if (!dateValue) return "";
+
+    return new Date(`${dateValue}T${timeValue || "00:00"}:00`).toISOString();
 }
 
 export default function StepAssessment({
     form,
+    errors,
     onChange,
     subjects,
     taughtClassrooms,
     existingResources = [],
-    mode = "create",
 }: Props) {
-    const selectedClassroomIds =
-        mode === "edit" && form.classroomIds.length === 0
-            ? taughtClassrooms.map((classroom) => classroom.classroomId)
-            : form.classroomIds;
+    const selectedClassroomIds = form.classroomIds;
     const allSelected =
         taughtClassrooms.length > 0 && selectedClassroomIds.length === taughtClassrooms.length;
 
@@ -166,7 +192,8 @@ export default function StepAssessment({
         <>
             <div className="w-full grid grid-cols-2 gap-2">
                 <DateRangePicker
-                    className="w-full"
+                    hideTimeZone
+                    className="col-span-2 w-full"
                     label="Assessment Date"
                     labelPlacement="outside-top"
                     value={
@@ -177,9 +204,24 @@ export default function StepAssessment({
                             }
                             : null
                     }
+                    isInvalid={!!errors.startAt || !!errors.dueAt}
+                    errorMessage={errors.startAt ?? errors.dueAt}
                     onChange={(range) => {
-                        onChange("startAt", range?.start ? new Date(`${range.start.toString()}T00:00:00`).toISOString() : "");
-                        onChange("dueAt", range?.end ? new Date(`${range.end.toString()}T23:59:59`).toISOString() : "");
+                        const startTime = getLocalTimeValue(form.startAt, "00:00");
+                        const dueTime = getLocalTimeValue(form.dueAt, "23:59");
+
+                        onChange(
+                            "startAt",
+                            range?.start
+                                ? combineDateAndTime(range.start.toString(), startTime)
+                                : "",
+                        );
+                        onChange(
+                            "dueAt",
+                            range?.end
+                                ? combineDateAndTime(range.end.toString(), dueTime)
+                                : "",
+                        );
                     }}
                     classNames={{
                         base: "font-sans",
@@ -195,12 +237,46 @@ export default function StepAssessment({
                 />
 
                 <PrimaryInput
+                    label="Start Time"
+                    type="time"
+                    inputType="secondary"
+                    value={getLocalTimeValue(form.startAt, "00:00")}
+                    isDisabled={!form.startAt}
+                    isInvalid={!!errors.startAt}
+                    errorMessage={errors.startAt}
+                    onChange={(e) =>
+                        onChange(
+                            "startAt",
+                            combineDateAndTime(getLocalDateValue(form.startAt), e.target.value),
+                        )
+                    }
+                />
+
+                <PrimaryInput
+                    label="Due Time"
+                    type="time"
+                    inputType="secondary"
+                    value={getLocalTimeValue(form.dueAt, "23:59")}
+                    isDisabled={!form.dueAt}
+                    isInvalid={!!errors.dueAt}
+                    errorMessage={errors.dueAt}
+                    onChange={(e) =>
+                        onChange(
+                            "dueAt",
+                            combineDateAndTime(getLocalDateValue(form.dueAt), e.target.value),
+                        )
+                    }
+                />
+
+                <PrimaryInput
                     label="Daily Required (minutes)"
                     type="number"
                     inputType="secondary"
                     placeholder="60"
                     min={0}
                     value={String(form.requiredDailyMinutes)}
+                    isInvalid={!!errors.requiredDailyMinutes}
+                    errorMessage={errors.requiredDailyMinutes}
                     onChange={(e) =>
                         onChange("requiredDailyMinutes", Number(e.target.value) || 0)
                     }
@@ -213,6 +289,8 @@ export default function StepAssessment({
                     placeholder="100"
                     min={0}
                     value={String(form.maxScore)}
+                    isInvalid={!!errors.maxScore}
+                    errorMessage={errors.maxScore}
                     onChange={(e) => onChange("maxScore", Number(e.target.value) || 0)}
                 />
 
@@ -221,6 +299,8 @@ export default function StepAssessment({
                     selectType="secondary"
                     placeholder="Select Topic"
                     selectedKeys={form.subjectId ? [form.subjectId] : []}
+                    isInvalid={!!errors.subjectId}
+                    errorMessage={errors.subjectId}
                     onSelectionChange={(keys) =>
                         onChange("subjectId", Array.from(keys)[0] as string)
                     }
@@ -232,29 +312,37 @@ export default function StepAssessment({
             </div>
 
             {/* Classrooms */}
-            <div className="flex gap-2">
-                <Checkbox
-                    isSelected={allSelected}
-                    onValueChange={(checked) => {
-                        onChange(
-                            "classroomIds",
-                            checked ? taughtClassrooms.map((c) => c.classroomId) : []
-                        );
-                    }}
-                >
-                    All Classrooms
-                </Checkbox>
+            <div className="flex flex-col gap-1">
+                <div className="flex gap-2">
+                    <Checkbox
+                        isSelected={allSelected}
+                        onValueChange={(checked) => {
+                            onChange(
+                                "classroomIds",
+                                checked ? taughtClassrooms.map((c) => c.classroomId) : []
+                            );
+                        }}
+                    >
+                        All Classrooms
+                    </Checkbox>
 
-                <CheckboxGroup
-                    value={selectedClassroomIds}
-                    onValueChange={(value) => onChange("classroomIds", value as string[])}
-                >
-                    {taughtClassrooms.map((classroom) => (
-                        <Checkbox key={classroom.classroomId} value={classroom.classroomId}>
-                            {classroom.classroomAbbre}
-                        </Checkbox>
-                    ))}
-                </CheckboxGroup>
+                    <CheckboxGroup
+                        value={selectedClassroomIds}
+                        onValueChange={(value) => onChange("classroomIds", value as string[])}
+                    >
+                        {taughtClassrooms.map((classroom) => (
+                            <Checkbox key={classroom.classroomId} value={classroom.classroomId}>
+                                {classroom.classroomAbbre}
+                            </Checkbox>
+                        ))}
+                    </CheckboxGroup>
+                </div>
+
+                {errors.classroomIds && (
+                    <p className="px-1 text-[11px] font-medium text-error">
+                        {errors.classroomIds}
+                    </p>
+                )}
             </div>
 
             {/* Grading Rubric */}
