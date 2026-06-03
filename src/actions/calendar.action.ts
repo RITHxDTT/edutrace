@@ -1,33 +1,25 @@
 "use server";
 
 import {
-    CalendarEventPayload,
     createCalendarEvent,
     deleteCalendarEvent,
     getCurrentUsersCalendarEvents,
     updateCalendarEvent
-}
-    from "@/services/calender.service";
+} from "@/services/calender.service";
+import type { CalendarEventPayloadType } from "@/services/calender.service";
 
 export async function getMyCalendar() {
     return await getCurrentUsersCalendarEvents();
 }
 
-export async function createCalendar(
-    payload: CalendarEventPayload,
-) {
+export async function createCalendar(payload: CalendarEventPayloadType) {
     return await createCalendarEvent(payload);
 }
 
-export async function updateCalendar(
-    id: string,
-    payload: Partial<CalendarEventPayload>,
-) {
+export async function updateCalendar(id: string, payload: Partial<CalendarEventPayloadType>) {
     return await updateCalendarEvent(id, payload);
 }
 
-export async function deleteCalendar(
-    id: string,
-) {
+export async function deleteCalendar(id: string) {
     return await deleteCalendarEvent(id);
 }
