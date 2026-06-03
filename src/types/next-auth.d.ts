@@ -1,6 +1,6 @@
 import { DefaultSession } from "next-auth";
 import { DefaultJWT } from "next-auth/jwt";
-import { ClassroomProps } from "./classroom";
+import { ClassroomProps, ClassroomType } from "./classroom";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -20,7 +20,7 @@ declare module "next-auth" {
       address?: string;
       classroomAbbre?: string;
       taughtSubjects?: string[];
-      taughtClassrooms?: ClassroomProps[];
+      taughtClassrooms?: Array<ClassroomType | ClassroomProps | string>;
     } & DefaultSession["user"]
   }
 
@@ -53,6 +53,6 @@ declare module "next-auth/jwt" {
     userId?: string;
     classroomAbbre?: string;
     taughtSubjects?: string[];
-    taughtClassrooms?: string[];
+    taughtClassrooms?: Array<ClassroomType | ClassroomProps | string>;
   }
 }

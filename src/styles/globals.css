@@ -75,6 +75,7 @@
   --text-color-border-default: #E5E7EB;
   --text-color-main-linear: #5d53f9;
   --text-color-error: #ff2056;
+  --text-color-attachment: #5B5EDD;
 }
 
 @theme inline {

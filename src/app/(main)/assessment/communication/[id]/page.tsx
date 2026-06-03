@@ -24,7 +24,7 @@ function CopyIcon() {
 }
 
 export default function RoomPage() {
-  const { roomId } = useParams<{ roomId: string }>();
+  const { id: roomId } = useParams<{ id: string }>();
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -58,7 +58,7 @@ export default function RoomPage() {
   // Copy room link
   // ----------------------------------------------------------------
   async function handleCopyLink() {
-    const link = `${window.location.origin}/meeting/room/${roomId}`;
+    const link = `${window.location.origin}/assessment/communication/${roomId}`;
     await navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -104,6 +104,15 @@ export default function RoomPage() {
     let peer: import("peerjs").Peer;
     let socket: Socket;
     let mounted = true;
+
+    const cleanupRoom = () => {
+      socketRef.current?.disconnect();
+      callsRef.current.forEach((c) => c.close());
+      callsRef.current.clear();
+      peerRef.current?.destroy();
+      localStreamRef.current?.getTracks().forEach((t) => t.stop());
+      screenStreamRef.current?.getTracks().forEach((t) => t.stop());
+    };
 
     async function init() {
       // 1. Get local media
@@ -202,14 +211,14 @@ export default function RoomPage() {
 
     init();
 
+    window.addEventListener("beforeunload", cleanupRoom);
+    window.addEventListener("pagehide", cleanupRoom);
+
     return () => {
       mounted = false;
-      socketRef.current?.disconnect();
-      callsRef.current.forEach((c) => c.close());
-      callsRef.current.clear();
-      peerRef.current?.destroy();
-      localStreamRef.current?.getTracks().forEach((t) => t.stop());
-      screenStreamRef.current?.getTracks().forEach((t) => t.stop());
+      window.removeEventListener("beforeunload", cleanupRoom);
+      window.removeEventListener("pagehide", cleanupRoom);
+      cleanupRoom();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, userName]);
@@ -296,7 +305,7 @@ export default function RoomPage() {
   // Render
   // ----------------------------------------------------------------
   const roomLink = typeof window !== "undefined"
-    ? `${window.location.origin}/meeting/room/${roomId}`
+    ? `${window.location.origin}/assessment/communication/${roomId}`
     : "";
 
   return (

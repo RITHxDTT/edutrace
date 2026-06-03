@@ -70,11 +70,15 @@ export default function PrimaryDateInput({
     ...props
 }: PrimaryDateInputProps) {
     const slots = inputVariants({ inputType });
+    const accessibleLabel =
+        props["aria-label"] ??
+        (label.trim() ? undefined : "Date field");
 
 
     return (
         <DateInput
             label={label}
+            aria-label={accessibleLabel}
             classNames={{
                 base: slots.base({ class: className }),
                 label: slots.label(),

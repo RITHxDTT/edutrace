@@ -7,40 +7,54 @@ import {
   ModalFooter,
 } from "@heroui/modal";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import { SubjectType } from "@/types/subject";
 import { useCreateAssessment } from "./useCreateAssessmentForm";
 import StepTitle from "./steps/StepTitle";
 import { Edit } from "iconsax-react";
 import StepAssessment from "./steps/StepAssessment";
-import { ClassroomProps } from "@/types/classroom";
+import { ClassroomType } from "@/types/classroom";
+import { AssessmentType } from "@/types/assessment";
 
 type Props = {
   isOpen: boolean;
   onClose: () => void;
   subjects: SubjectType[];
-  taughtSubjects?: string[];
-  taughtClassrooms?: ClassroomProps[];
+  taughtClassrooms: ClassroomType[];
+  assessment?: AssessmentType;
+  assessmentId?: string;
+  mode?: "create" | "edit";
 };
 
-const STEPS = ["Basic Info", "Schedule", "Details"];
+const STEPS = ["Basic Info", "Assessment Details"];
 
 export default function CreateAssessmentModal({
   isOpen,
   onClose,
   subjects,
-  taughtSubjects,
   taughtClassrooms,
+  assessment,
+  assessmentId,
+  mode = "create",
 }: Props) {
   const [currentStep, setCurrentStep] = useState(0);
-  const { form, handleChange, submit, loading, error } =
-    useCreateAssessment(onClose);
+  const router = useRouter();
+  const { form, handleChange, submit, reset, loading, error } =
+    useCreateAssessment({
+      assessment,
+      assessmentId,
+      mode,
+      onSuccess: onClose,
+    });
 
   const isFirst = currentStep === 0;
   const isLast = currentStep === STEPS.length - 1;
+  const isEdit = mode === "edit";
 
   const handleClose = () => {
     setCurrentStep(0);
+    reset();
     onClose();
   };
 
@@ -48,8 +62,15 @@ export default function CreateAssessmentModal({
   const handleBack = () => setCurrentStep((prev) => prev - 1);
 
   const handleSubmit = async () => {
-    await submit();
+    const classroomFallback =
+      isEdit && form.classroomIds.length === 0
+        ? { classroomIds: taughtClassrooms.map((classroom) => classroom.classroomId) }
+        : undefined;
+    const success = await submit(classroomFallback);
+    if (!success) return;
+
     setCurrentStep(0);
+    router.refresh();
   };
 
   return (
@@ -66,8 +87,12 @@ export default function CreateAssessmentModal({
               <Edit size={32} color="#20AEE6" />
             </div>
             <div className="flex flex-col">
-              <span>Create Assessment</span>
-              <span className="text-[14px] text-border-focus">Fill in the details to create a new assessment</span>
+              <span>{isEdit ? "Edit Assessment" : "Create Assessment"}</span>
+              <span className="text-[14px] text-border-focus">
+                {isEdit
+                  ? "Update the details for this assessment"
+                  : "Fill in the details to create a new assessment"}
+              </span>
             </div>
           </div>
 
@@ -81,7 +106,14 @@ export default function CreateAssessmentModal({
           )}
 
           {currentStep === 1 &&
-            <StepAssessment form={form} onChange={handleChange} taughtSubjects={taughtSubjects} taughtClassrooms={taughtClassrooms}/>
+            <StepAssessment
+              form={form}
+              onChange={handleChange}
+              subjects={subjects}
+              taughtClassrooms={taughtClassrooms}
+              existingResources={assessment?.resources ?? []}
+              mode={mode}
+            />
           }
         </ModalBody>
 
@@ -93,8 +125,16 @@ export default function CreateAssessmentModal({
           >
             {isFirst ? "Cancel" : "Back"}
           </PrimaryButton>
-          <PrimaryButton size="md" onClick={isLast ? handleSubmit : handleNext}>
-            {isLast ? "Create" : "Next"}
+          <PrimaryButton
+            size="md"
+            onClick={isLast ? handleSubmit : handleNext}
+            disabled={loading}
+          >
+            {isLast
+              ? loading
+                ? isEdit ? "Updating..." : "Creating..."
+                : isEdit ? "Update" : "Create"
+              : "Next"}
           </PrimaryButton>
         </ModalFooter>
       </ModalContent>

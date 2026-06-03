@@ -30,7 +30,7 @@ const tabVariant = tv({
         color: {
             primary: {
                 tabList:
-                    "gap-6 w-full relative rounded-none bg-transparent",
+                    "gap-2 w-full relative rounded-none bg-transparent",
 
                 cursor:
                     "w-full shadow-none w-fit border-menta border-b-[1px] rounded-none",
@@ -54,10 +54,9 @@ const tabVariant = tv({
     },
 });
 
-export default function PrimaryTabs({ tabs, colors = "secondary", variant, selectedKey, onSelectionChange }: tabs) {
+export default function PrimaryTabs({ tabs, colors = "secondary", selectedKey, onSelectionChange }: tabs) {
 
     const styles = tabVariant({ color: colors });
-    console.log(tabs)
     return (
         <Tabs
             aria-label="Options"

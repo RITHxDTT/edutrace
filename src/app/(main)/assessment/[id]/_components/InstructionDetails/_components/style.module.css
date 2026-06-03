@@ -5,82 +5,47 @@
   font-family: var(--font-sans);
 }
 
+/* TOP TOOLBAR */
 .toolbar {
   display: flex;
   align-items: center;
   gap: 2px;
   padding: 6px 10px;
-  background-color: transparent;
-  border: 1px solid lab(90.952% -.0000596046 0);
-  border-top: none;
-  border-radius: 0 0 8px 8px;
-}
 
-
-
-.divider {
-  width: 1px;
-  height: 18px;
-  background-color: currentColor;
-  opacity: 0.15;
-  margin: 0 4px;
-}
-
-.toolbarBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 28px;
-  height: 28px;
-  padding: 0 6px;
+  background-color: #ffffff;
   border: none;
-  border-radius: 6px;
-  background: transparent;
-  font-size: 0.8rem;
-  font-family: var(--font-sans);
-  color: inherit;
-  cursor: pointer;
-  transition: background 150ms ease;
-}
-
-.toolbarBtn:hover {
-  background-color: color-mix(in srgb, currentColor 10%, transparent);
-}
-
-.toolbarBtnActive {
-  background-color: color-mix(in srgb, currentColor 15%, transparent);
-  font-weight: 600;
-}
-
-.tiptap {
-  background-color: transparent;
-  border: 1px solid lab(90.952% -.0000596046 0);
-  border-bottom: none;
   border-radius: 8px 8px 0 0;
+}
+
+/* EDITOR */
+.tiptap {
+  background-color: #ffffff;
+  border: 1px solid lab(90.952% -.0000596046 0);
+  border-radius: 0 0 8px 8px;
+  border-top: 0px;
+
   padding: 12px 18px;
   min-height: 160px;
+
   font-size: 0.875rem;
   font-weight: 400;
   color: inherit;
+
   transition: all 150ms ease;
-  cursor: text;
+  cursor: default;
+  height: 410px;
+  overflow-y: auto;
 }
 
-.tiptap:hover {
-  background-color: transparent;
+/* focus effect instead of border */
+.tiptap:focus-within {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.35);
 }
 
+/* ProseMirror */
 .tiptap :global(.ProseMirror) {
   outline: none;
   min-height: 120px;
-}
-
-.tiptap :global(.ProseMirror p.is-editor-empty:first-child::before) {
-  content: attr(data-placeholder);
-  color: color-mix(in srgb, currentColor 40%, transparent);
-  float: left;
-  height: 0;
-  pointer-events: none;
 }
 
 .tiptap :global(h1) {
@@ -107,8 +72,8 @@
 
 .tiptap :global(ul),
 .tiptap :global(ol) {
-  padding-left: 1.25rem;
   margin: 0.25rem 0;
+  padding-left: 1.25rem;
 }
 
 .tiptap :global(ul) {
@@ -130,8 +95,8 @@
 }
 
 .tiptap :global(blockquote) {
-  border-left: 3px solid;
-  opacity: 0.7;
+  border-left: 3px solid #5B5EDD;
+  opacity: 0.85;
   padding-left: 1rem;
   margin: 0.5rem 0;
 }
@@ -143,7 +108,6 @@
   font-size: 0.85rem;
   padding: 0.25em 0.3em;
 }
-
 
 .tiptap :global(pre) {
   background-color: #F2F6FC;
@@ -158,6 +122,15 @@
   background-color: transparent;
   color: #2E25C9;
   padding: 0;
+}
+
+/* placeholder */
+.tiptap :global(.ProseMirror p.is-editor-empty:first-child::before) {
+  content: attr(data-placeholder);
+  color: color-mix(in srgb, currentColor 40%, transparent);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }
 
 .tiptap :global(.ProseMirror ol li::marker),

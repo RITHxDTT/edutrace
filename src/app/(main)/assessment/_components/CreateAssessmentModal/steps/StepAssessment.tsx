@@ -2,14 +2,17 @@
 
 import PrimaryInput from "@/components/Inputs/PrimaryInputField";
 import PrimarySelect from "@/components/Selects/PrimarySelect";
-import { CreateAssessmentForm } from "@/types/assessment";
+import { AssessmentResource, CreateAssessmentForm } from "@/types/assessment";
 import { ClassroomType } from "@/types/classroom";
+import { SubjectType } from "@/types/subject";
 import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { DateRangePicker } from "@heroui/date-picker";
 import { SelectItem } from "@heroui/select";
 import { useState, KeyboardEvent, useRef } from "react";
-import { X, Paperclip, FileText, Image, File } from "lucide-react";
+import { File, Paperclip } from "lucide-react";
 import AttachmentCard from "./_components/FileCard";
+import { FolderOpen, Gallery } from "iconsax-react";
+import { parseDate } from "@internationalized/date";
 
 type Props = {
     form: CreateAssessmentForm;
@@ -17,8 +20,10 @@ type Props = {
         key: K,
         value: CreateAssessmentForm[K],
     ) => void;
-    taughtSubjects: string[];
+    subjects: SubjectType[];
     taughtClassrooms: ClassroomType[];
+    existingResources?: AssessmentResource[];
+    mode?: "create" | "edit";
 };
 
 type RubricBadge = {
@@ -51,20 +56,71 @@ function formatFileSize(bytes: number): string {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function getFileIcon(name: string) {
-    const ext = name.split(".").pop()?.toLowerCase();
-    if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext ?? ""))
-        return <Image size={14} />;
-    if (["pdf", "doc", "docx", "txt"].includes(ext ?? ""))
-        return <FileText size={14} />;
-    return <File size={14} />;
+function formatResourceSize(bytes?: number): string {
+    if (!bytes) return "Existing file";
+    return formatFileSize(bytes);
 }
 
-export default function StepAssessment({ form, onChange, taughtSubjects, taughtClassrooms }: Props) {
-    const allSelected = form.classroomIds.length === taughtClassrooms.length;
+function getFileNameFromResource(resource: AssessmentResource) {
+    if (resource.fileName) return resource.fileName;
 
-    const [rubricInput, setRubricInput] = useState("");
-    const [rubricBadges, setRubricBadges] = useState<RubricBadge[]>([]);
+    try {
+        const url = new URL(resource.resourceUrl);
+        return url.pathname.split("/").filter(Boolean).at(-1) ?? resource.resourceUrl;
+    } catch {
+        return resource.resourceUrl;
+    }
+}
+
+function getFileIcon(name: string, color?: string) {
+    const ext = name.split(".").pop()?.toLowerCase();
+    if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext ?? "")) {
+        return <Gallery size={14} color={color} />;
+    }
+    if (["pdf", "zip", "doc", "docx", "txt"].includes(ext ?? "")) {
+        return <FolderOpen size={14} color={color} />;
+    }
+    return <File size={14} color={color} />;
+}
+
+function getFileColor(name: string) {
+    const ext = name.split(".").pop()?.toLowerCase();
+    if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext ?? "")) {
+        return { bgColor: "bg-light-green", iconColor: "#009F15" };
+    }
+    if (["doc", "docx", "txt", "pdf"].includes(ext ?? "")) {
+        return { bgColor: "bg-light-lavendar", iconColor: "#2E25C9" };
+    }
+    if (["zip"].includes(ext ?? "")) {
+        return { bgColor: "bg-lighter-orange", iconColor: "#DEA20A" };
+    }
+
+    return { bgColor: "bg-input-field", iconColor: "#111827" };
+}
+
+function getDateOnlyValue(value: string) {
+    return parseDate(value.slice(0, 10));
+}
+
+export default function StepAssessment({
+    form,
+    onChange,
+    subjects,
+    taughtClassrooms,
+    existingResources = [],
+    mode = "create",
+}: Props) {
+    const selectedClassroomIds =
+        mode === "edit" && form.classroomIds.length === 0
+            ? taughtClassrooms.map((classroom) => classroom.classroomId)
+            : form.classroomIds;
+    const allSelected =
+        taughtClassrooms.length > 0 && selectedClassroomIds.length === taughtClassrooms.length;
+
+    const [rubricInput, setRubricInput] = useState(form.gradingRubric);
+    const [rubricBadges, setRubricBadges] = useState<RubricBadge[]>(
+        () => parseRubricInput(form.gradingRubric),
+    );
     const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,7 +130,7 @@ export default function StepAssessment({ form, onChange, taughtSubjects, taughtC
             const parsed = parseRubricInput(rubricInput);
             if (parsed.length > 0) {
                 setRubricBadges(parsed);
-                onChange("gradingRubric" as keyof CreateAssessmentForm, rubricInput as any);
+                onChange("gradingRubric", rubricInput);
             }
         }
     };
@@ -88,11 +144,22 @@ export default function StepAssessment({ form, onChange, taughtSubjects, taughtC
             size: formatFileSize(file.size),
         }));
         setAttachments((prev) => [...prev, ...newAttachments]);
+        onChange("files", [...form.files, ...files]);
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
     const removeAttachment = (id: string) => {
-        setAttachments((prev) => prev.filter((a) => a.id !== id));
+        setAttachments((prev) => {
+            const removed = prev.find((attachment) => attachment.id === id);
+            if (removed) {
+                onChange(
+                    "files",
+                    form.files.filter((file) => file !== removed.file),
+                );
+            }
+
+            return prev.filter((a) => a.id !== id);
+        });
     };
 
     return (
@@ -102,6 +169,18 @@ export default function StepAssessment({ form, onChange, taughtSubjects, taughtC
                     className="w-full"
                     label="Assessment Date"
                     labelPlacement="outside-top"
+                    value={
+                        form.startAt && form.dueAt
+                            ? {
+                                start: getDateOnlyValue(form.startAt),
+                                end: getDateOnlyValue(form.dueAt),
+                            }
+                            : null
+                    }
+                    onChange={(range) => {
+                        onChange("startAt", range?.start ? new Date(`${range.start.toString()}T00:00:00`).toISOString() : "");
+                        onChange("dueAt", range?.end ? new Date(`${range.end.toString()}T23:59:59`).toISOString() : "");
+                    }}
                     classNames={{
                         base: "font-sans",
                         label: "font-semibold text-label mb-1.5 transition-colors duration-150 group-focus-within:text-primary",
@@ -117,21 +196,37 @@ export default function StepAssessment({ form, onChange, taughtSubjects, taughtC
 
                 <PrimaryInput
                     label="Daily Required (minutes)"
-                    type="text"
+                    type="number"
                     inputType="secondary"
                     placeholder="60"
+                    min={0}
+                    value={String(form.requiredDailyMinutes)}
+                    onChange={(e) =>
+                        onChange("requiredDailyMinutes", Number(e.target.value) || 0)
+                    }
                 />
 
                 <PrimaryInput
                     label="Set Point"
-                    type="text"
+                    type="number"
                     inputType="secondary"
                     placeholder="100"
+                    min={0}
+                    value={String(form.maxScore)}
+                    onChange={(e) => onChange("maxScore", Number(e.target.value) || 0)}
                 />
 
-                <PrimarySelect label="Select Topic" selectType="secondary" placeholder="Select Topic">
-                    {taughtSubjects.map((subject, index) => (
-                        <SelectItem key={index}>{subject}</SelectItem>
+                <PrimarySelect
+                    label="Select Topic"
+                    selectType="secondary"
+                    placeholder="Select Topic"
+                    selectedKeys={form.subjectId ? [form.subjectId] : []}
+                    onSelectionChange={(keys) =>
+                        onChange("subjectId", Array.from(keys)[0] as string)
+                    }
+                >
+                    {subjects.map((subject) => (
+                        <SelectItem key={subject.subjectId}>{subject.subjectName}</SelectItem>
                     ))}
                 </PrimarySelect>
             </div>
@@ -151,7 +246,7 @@ export default function StepAssessment({ form, onChange, taughtSubjects, taughtC
                 </Checkbox>
 
                 <CheckboxGroup
-                    value={form.classroomIds}
+                    value={selectedClassroomIds}
                     onValueChange={(value) => onChange("classroomIds", value as string[])}
                 >
                     {taughtClassrooms.map((classroom) => (
@@ -215,6 +310,36 @@ export default function StepAssessment({ form, onChange, taughtSubjects, taughtC
                 </div>
 
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
+                    {existingResources.map((resource) => {
+                        const name = getFileNameFromResource(resource);
+                        const colors = getFileColor(name);
+
+                        return (
+                            <a
+                                key={resource.assessmentResourceId ?? resource.resourceUrl}
+                                href={resource.resourceUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex w-[190px] shrink-0 items-center gap-3 rounded-[8px] border px-3 py-2"
+                            >
+                                <div className={`${colors.bgColor} rounded-full p-2`}>
+                                    <span className="shrink-0 text-primary">
+                                        {getFileIcon(name, colors.iconColor)}
+                                    </span>
+                                </div>
+
+                                <div className="flex min-w-0 flex-1 flex-col">
+                                    <span className="truncate text-xs font-medium leading-tight text-primary">
+                                        {name}
+                                    </span>
+                                    <span className="text-[10px] leading-tight text-tertiary">
+                                        {formatResourceSize(resource.fileSize)}
+                                    </span>
+                                </div>
+                            </a>
+                        );
+                    })}
+
                     {attachments.map((att) => (
                         <AttachmentCard
                             key={att.id}

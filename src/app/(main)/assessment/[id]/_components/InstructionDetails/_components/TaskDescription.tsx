@@ -7,8 +7,6 @@ export default function TaskDescription() {
             <div className='flex'>
                 <Note size={20} color=''/>
                 Task Description
-
-                
             </div>
         </div>
     )
