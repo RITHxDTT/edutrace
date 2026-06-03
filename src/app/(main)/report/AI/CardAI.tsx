@@ -69,7 +69,7 @@ function CardAI({ onClose }: CardAIProps) {
               : msg
           )
         );
-        revealTimeoutRef.current = setTimeout(revealNextCharacter, 20);
+        revealTimeoutRef.current = setTimeout(revealNextCharacter, 25);
       }
     };
 
@@ -149,7 +149,7 @@ function CardAI({ onClose }: CardAIProps) {
           </div>
           <div className="flex items-center justify-between w-full pr-2">
             <div>
-              <h4>HRD ROOM AI Assistant</h4>
+              <h4>EduTrace AI Assistant</h4>
               <p className="font-light text-[14px] text-gray-600">
                 Ask any question about your student or any report
               </p>
