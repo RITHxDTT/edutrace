@@ -79,10 +79,14 @@ export default function PrimaryInput({
     ...props
 }: InputProps) {
     const slots = inputVariants({ inputType });
+    const accessibleLabel =
+        props["aria-label"] ??
+        (label.trim() ? undefined : props.placeholder?.toString() || "Input field");
 
     return (
         <Input
             label={label}
+            aria-label={accessibleLabel}
             classNames={{
                 base: slots.base({ class: className }),
                 label: slots.label(),

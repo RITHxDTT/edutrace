@@ -1,5 +1,9 @@
 import { DefaultSession } from "next-auth";
 import { DefaultJWT } from "next-auth/jwt";
+import { ClassroomProps, ClassroomType } from "./classroom";
+import { SubjectType } from "./subject";
+
+type SessionSubject = SubjectType | string;
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -12,13 +16,27 @@ declare module "next-auth" {
       username?: string;
       fullName?: string;
       gender?: "MALE" | "FEMALE";
-      birthdate: CalendarDate | null;
+      birthdate?: string | null;
       address?: string;
       profileImageUrl?: string;
       userId?: string;
-      address?: string;
+      isVerified?: boolean;
       classroomAbbre?: string;
-    } & DefaultSession["user"]
+      classroomId?: string;
+      className?: string;
+      activeAcademicYearId?: {
+        academicYearId: string;
+        name: string;
+        generation: number;
+      } | null;
+      taughtSubjects?: { subjectId: string; subjectName: string }[];
+      generation?: number;
+      taughtClassrooms?: {
+        classroomId: string;
+        className: string;
+        classroomAbbre: string;
+      }[];
+    } & DefaultSession["user"];
   }
 
   interface User {
@@ -26,7 +44,7 @@ declare module "next-auth" {
       accessToken: string;
       expiresIn: number;
       refreshToken: string;
-    }
+    };
   }
 }
 
@@ -36,18 +54,33 @@ declare module "next-auth/jwt" {
     expires_at: number;
     refresh_token?: string;
     error?: string;
-
     role?: string;
     email: string;
     firstName?: string;
     lastName?: string;
     fullName?: string;
     username?: string;
-    gender: "MALE" | "FEMALE";
-    birthdate: CalendarDate | null;
-    address?: string; a
+    gender?: "MALE" | "FEMALE";
+    birthdate?: string | null;
+    address?: string;
     profileImageUrl?: string;
     userId?: string;
+    isVerified?: boolean;
     classroomAbbre?: string;
+    classroomId?: string;
+    className?: string;
+    activeAcademicYearId?: {
+      academicYearId: string;
+      name: string;
+      generation: number;
+    } | null;
+    taughtSubjects?: { subjectId: string; subjectName: string }[];
+    generation?: number;
+    taughtClassrooms?: {
+      classroomId: string;
+      className: string;
+      classroomAbbre: string;
+    }[];
   }
 }
+

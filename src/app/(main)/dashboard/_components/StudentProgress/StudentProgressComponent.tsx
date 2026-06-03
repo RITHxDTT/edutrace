@@ -11,8 +11,8 @@ import {
 } from '@heroui/table';
 
 import Image from 'next/image';
-import { studentProgress } from "../../mockupData";
-export default function StudentProgressComponent() {
+
+export default function StudentProgressComponent({ progress }: { progress: any[] }) {
     return (
         <div className="bg-white text-black rounded-3xl p-6 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] max-w-4xl mx-auto w-full border border-gray-100/50">
 
@@ -46,17 +46,17 @@ export default function StudentProgressComponent() {
                     </TableColumn>
                 </TableHeader>
 
-                <TableBody>
-                    {studentProgress.map((student) => (
+                <TableBody emptyContent={"No student progress data available."}>
+                    {(progress || []).map((student) => (
                         <TableRow
-                            key={student.id}
+                            key={student.studentId}
                             className="border-b border-slate-100/60 last:border-0 hover:bg-slate-50/30 transition-colors"
                         >
                             <TableCell className="py-4 pl-6">
                                 <div className="flex items-center gap-3">
                                     <Image
-                                        src={student.image}
-                                        alt={student.name}
+                                        src={student.profileImage || "/images/profile/fallback.webp"}
+                                        alt={student.studentName}
                                         width={40}
                                         height={40}
                                         className="size-10 rounded-full object-cover border border-slate-200"
@@ -64,7 +64,7 @@ export default function StudentProgressComponent() {
 
                                     <div>
                                         <p className="text-slate-700 text-sm leading-tight">
-                                            {student.name}
+                                            {student.studentName}
                                         </p>
 
                                         <p className="text-slate-400 text-xs mt-0.5">
@@ -75,16 +75,16 @@ export default function StudentProgressComponent() {
                             </TableCell>
 
                             <TableCell className="text-slate-700 text-sm text-center py-4">
-                                {student.completion}
+                                {student.completionRate}%
                             </TableCell>
 
                             <TableCell className="text-slate-700 text-sm text-center py-4">
-                                {student.late}
+                                {student.lateRate}%
                             </TableCell>
 
                             <TableCell className="text-center py-4">
                                 <span
-                                    className={`${student.statusColor} px-5 py-1.5 rounded-full text-xs font-bold inline-block min-w-[85px]`}
+                                    className={`${student.status === "AT_RISK" ? "bg-[#FBE7E8] text-[#B91C1C]" : "bg-[#EBF9F1] text-[#1F9254]"} px-5 py-1.5 rounded-full text-xs font-bold inline-block min-w-[85px]`}
                                 >
                                     {student.status}
                                 </span>

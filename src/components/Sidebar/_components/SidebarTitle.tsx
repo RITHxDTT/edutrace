@@ -1,44 +1,57 @@
 "use client"
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import {
     Calendar,
     Element2,
     Stickynote,
     TaskSquare,
-} from "iconsax-react";
-import { SidebarMenuItem } from "@/components/ui/sidebar";
+} from "iconsax-react"
+import { SidebarMenuItem } from "@/components/ui/sidebar"
+import { useSession } from "next-auth/react"
 
 const menuItems = [
     {
         title: "Dashboard",
         href: "/dashboard",
         icon: Element2,
+        roles: ["teacher", "student"],
     },
     {
         title: "Assessment",
         href: "/assessment",
         icon: TaskSquare,
+        roles: ["teacher", "student"],
     },
     {
         title: "Calendar",
         href: "/calendar",
         icon: Calendar,
+        roles: ["teacher", "student"],
     },
     {
         title: "Report",
         href: "/report",
         icon: Stickynote,
+        roles: ["teacher"],
     },
-];
+]
 
 export default function SidebarTitle() {
-    const pathname = usePathname();
+    const pathname = usePathname()
+    const session = useSession()
+
+    const role = session?.data?.user?.role
+
+    const filteredMenu = menuItems.filter((item) =>
+        role ? item.roles.includes(role) : false
+    )
+
     return (
         <>
-            {menuItems.map((menuItem) => {
-                const isActive = pathname.startsWith(menuItem.href);
+            {filteredMenu.map((menuItem) => {
+                const isActive = pathname.startsWith(menuItem.href)
                 const Icon = menuItem.icon
 
                 return (
@@ -46,18 +59,17 @@ export default function SidebarTitle() {
                         <Link
                             href={menuItem.href}
                             className={`flex items-center gap-5 px-4 py-2 text-primary 
-                        ${isActive ? "bg-linear-purple rounded-[10px] text-white" : "hover:bg-gray rounded-[10px]"}`}
+              ${isActive
+                                    ? "bg-linear-purple rounded-[10px] text-white"
+                                    : "hover:bg-gray rounded-[10px]"
+                                }`}
                         >
-                            <div>
-                                <Icon color={isActive ? "white" : "black"} size={20} />
-                            </div>
+                            <Icon color={isActive ? "white" : "black"} size={20} />
                             <span>{menuItem.title}</span>
                         </Link>
                     </SidebarMenuItem>
-                );
+                )
             })}
         </>
-    );
+    )
 }
-
-

@@ -31,6 +31,9 @@
   --color-red: #e62020;
   --color-light-lavendar: #EEEFFF;
   --color-menta: #2E25C9;
+  --color-lighter-red: #FCE7E9;
+  --color-lighter-orange: #FCF2E1;
+  --color-light-green: #E9F5E9;
 
   /* LINEAR VARIABLE */
   --background-image-linear-purple: linear-gradient(to bottom,
@@ -71,7 +74,8 @@
   --text-color-disabled: #BABABA;
   --text-color-border-default: #E5E7EB;
   --text-color-main-linear: #5d53f9;
-  --text-color-error: #ff2056
+  --text-color-error: #ff2056;
+  --text-color-attachment: #5B5EDD;
 }
 
 @theme inline {
@@ -227,4 +231,14 @@
 
 .df-event-time {
   font-size: 12px !important;
+}
+@layer utilities {
+  .scrollbar-hidden {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* old Edge */
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
 }
