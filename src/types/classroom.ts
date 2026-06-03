@@ -2,6 +2,7 @@ type ClassroomType = {
     classroomId: string;
     className: string;
     classroomAbbre: string;
+    lateSubmission: number;
 }
 
 export interface ClassroomProps {

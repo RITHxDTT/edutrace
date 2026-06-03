@@ -1,4 +1,4 @@
-import { getReportSummaryById, reportMetadata } from "@/services/reportService";
+import { getReportSummaryById, reportMetadata } from "@/services/report.service";
 
 
 import TaskBasedView from "./_components/TaskBasedView"; 

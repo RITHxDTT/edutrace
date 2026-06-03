@@ -1,8 +1,8 @@
-
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
+
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import KpiCard from "./KpiCardComponent";
 import GenerateReportModalComponent from "./GenerateModalComponent";
@@ -10,7 +10,9 @@ import TableDataComponent from "./TableDataReport";
 import { PaginationBasic } from "./pagination";
 import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
 import AiChatWrapper from "../AI/AiChatWrapper";
-import { Report } from "../../../../types/report";
+
+import { Report, ReportSummary } from "../../../../types/report";
+import { deleteReportAction } from "@/actions/report.action";
 
 interface Classroom {
   classroomId: string;
@@ -19,12 +21,7 @@ interface Classroom {
 
 interface ReportClientPageProps {
   initialReports: Report[];
-  summary: {
-    totalReports: number;
-    taskBasedReports: number;
-    classBasedReports: number;
-    lastGenerated: string;
-  };
+  summary: ReportSummary;
   totalPages: number;
   currentPage: number;
   activeTab: string;
@@ -33,7 +30,7 @@ interface ReportClientPageProps {
 
 export default function ReportClientPage({
   initialReports,
-  summary,
+  summary: initialSummary,
   totalPages,
   currentPage,
   activeTab,
@@ -42,12 +39,22 @@ export default function ReportClientPage({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+
   const [reports, setReports] = useState<Report[]>(initialReports);
 
-  if (initialReports !== reports && initialReports.length > 0) {
+  const [summary, setSummary] =
+    useState<ReportSummary>(initialSummary);
+
+  
+  useEffect(() => {
     setReports(initialReports);
-  }
+  }, [initialReports]);
+
+  useEffect(() => {
+    setSummary(initialSummary);
+  }, [initialSummary]);
 
   function handleParamChange(tabName: string, pageNum: number) {
     const params = new URLSearchParams(searchParams.toString());
@@ -56,28 +63,30 @@ export default function ReportClientPage({
     router.push(`${pathname}?${params.toString()}`);
   }
 
-  function handleDelete(reportId: string) {
-    setReports((prev) => prev.filter((r) => r.reportId !== reportId));
+  async function handleDelete(reportId: string) {
+    console.log("Client delete:", reportId);
+
+    const result = await deleteReportAction(reportId);
+
+    if (!result.success) {
+      console.error(result.message);
+      return;
+    }
+
+    
+    setReports((prev) =>
+      prev.filter((r) => r.reportId !== reportId)
+    );
+
+    setSummary((prev) => ({
+      ...prev,
+      totalReports: prev.totalReports - 1,
+    }));
   }
 
   function handleView(report: Report) {
-    const params = new URLSearchParams({
-      reportId: report.reportId,
-      reportName: report.reportName,
-      period: report.period,
-    });
-    let route = "allclasses";
-    if (report.reportType === "ASSESSMENT") {
-      route = "taskbased";
-    } else if (report.classScope && report.classScope !== "ALL") {
-      route = "specificClass";
-    }
-   router.push(`/report/${report.reportId}`);
+    router.push(`/report/${report.reportId}`);
   }
-
-  // function handleView(report: Report) {
-  //   router.push(`/report/${report.reportId}`);
-  // }
 
   const kpiCards = [
     { title: "Total Reports", value: summary.totalReports },
@@ -90,28 +99,35 @@ export default function ReportClientPage({
 
   return (
     <div>
+      
       <div className="flex justify-between">
         <div>
           <p className="text-[32px] font-medium">Report</p>
           <p className="text-foreground/50">
-            Generate and review performance reports for your classes and tasks.
+            Generate and review performance reports.
           </p>
         </div>
-        <div>
-          <PrimaryButton onClick={() => setIsModalOpen(true)}>
-            Generate Report
-          </PrimaryButton>
-        </div>
+
+        <PrimaryButton onClick={() => setIsModalOpen(true)}>
+          Generate Report
+        </PrimaryButton>
       </div>
 
+      
       <div className="mt-5 grid grid-cols-4 gap-4">
         {kpiCards.map((card) => (
-          <KpiCard key={card.title} title={card.title} value={card.value} />
+          <KpiCard
+            key={card.title}
+            title={card.title}
+            value={card.value}
+          />
         ))}
       </div>
 
+      
       <div className="mt-6 flex items-center justify-between">
         <p className="text-lg font-semibold">Your reports</p>
+
         <PrimaryTabs
           tabs={[
             { key: "All Reports", title: "All Reports" },
@@ -119,10 +135,13 @@ export default function ReportClientPage({
             { key: "Task Based", title: "Task Based" },
           ]}
           selectedKey={activeTab}
-          onSelectionChange={(tab) => handleParamChange(tab, 1)}
+          onSelectionChange={(tab) =>
+            handleParamChange(tab, 1)
+          }
         />
       </div>
 
+      
       <div className="mt-4">
         <TableDataComponent
           reports={reports}
@@ -132,16 +151,18 @@ export default function ReportClientPage({
         />
       </div>
 
-      <div>
-        <PaginationBasic
-          page={currentPage}
-          totalPages={totalPages}
-          onPageChange={(p) => handleParamChange(activeTab, p)}
-        />
-      </div>
+      
+      <PaginationBasic
+        page={currentPage}
+        totalPages={totalPages}
+        onPageChange={(p) =>
+          handleParamChange(activeTab, p)
+        }
+      />
 
       <AiChatWrapper />
 
+      
       <GenerateReportModalComponent
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

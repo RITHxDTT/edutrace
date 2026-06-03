@@ -16,9 +16,15 @@ export interface Report {
 
 interface TableDataComponentProps {
   reports: Report[];
-  onDelete: (reportId: string) => void;
+  onDelete: (reportId: string) => Promise<void>; 
   onView: (report: Report) => void;
-  startIndex?: number; // Should be passed as: (currentPage - 1) * pageSize
+  startIndex?: number;
+}
+interface TableDataComponentProps {
+  reports: Report[];
+  onDelete: (reportId: string) => Promise<void>;
+  onView: (report: Report) => void;
+  startIndex?: number;
 }
 
 function formatDate(iso: string) {
@@ -38,11 +44,18 @@ export default function TableDataComponent({
 }: TableDataComponentProps) {
   const [pendingDelete, setPendingDelete] = useState<Report | null>(null);
 
-  function handleConfirmDelete() {
-    if (pendingDelete) {
-      onDelete(pendingDelete.reportId);
-      setPendingDelete(null);
+  async function handleConfirmDelete() {
+    if (!pendingDelete) return;
+
+    console.log("Table: confirm delete", pendingDelete.reportId);
+
+    try {
+      await onDelete(pendingDelete.reportId);
+    } catch (err) {
+      console.error("Delete failed:", err);
     }
+
+    setPendingDelete(null);
   }
 
   if (!reports || reports.length === 0) {
@@ -62,7 +75,7 @@ export default function TableDataComponent({
   return (
     <>
       <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-        {/* Table Header */}
+        
         <div className="grid grid-cols-[60px_1fr_150px_250px_180px_100px] px-6 py-3 bg-gray-50 border-b border-gray-100">
           {["#", "Report Name", "Type", "Period", "Generated", "Action"].map(
             (col) => (
@@ -76,7 +89,7 @@ export default function TableDataComponent({
           )}
         </div>
 
-        {/* Table Rows */}
+        
         {reports.map((report, index) => {
           const rowNumber = startIndex + index + 1;
           const displayId = `RTP-${String(rowNumber).padStart(3, "0")}`;
@@ -89,8 +102,10 @@ export default function TableDataComponent({
                 index !== reports.length - 1 ? "border-b border-gray-100" : ""
               }`}
             >
-              <span className="text-sm font-medium text-gray-400">{rowNumber}</span>
-              
+              <span className="text-sm font-medium text-gray-400">
+                {rowNumber}
+              </span>
+
               <div className="flex items-center gap-3 min-w-0">
                 <div className="text-gray-400 shrink-0">
                   <FileText size={22} />
@@ -104,16 +119,22 @@ export default function TableDataComponent({
               </div>
 
               <div>
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
-                  isClass ? "bg-blue-50 text-blue-600" : "bg-indigo-50 text-indigo-600"
-                }`}>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                    isClass
+                      ? "bg-blue-50 text-blue-600"
+                      : "bg-indigo-50 text-indigo-600"
+                  }`}
+                >
                   <LayoutGrid size={12} />
                   {isClass ? "Class" : "Subject"}
                 </span>
               </div>
 
-              <span className="text-sm text-gray-600 truncate">{report.period}</span>
-              
+              <span className="text-sm text-gray-600 truncate">
+                {report.period}
+              </span>
+
               <span className="text-sm text-gray-600">
                 {formatDate(report.generatedAt)}
               </span>

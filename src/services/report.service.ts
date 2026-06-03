@@ -46,7 +46,7 @@ export async function getMyReports({
   return data.payload;
 }
 
-//  get the my-reports list panel 
+//  get the my-reports list panel
 export async function getMyListReport(payload: {
   type: string;
   page: number;
@@ -136,7 +136,7 @@ export async function createClassReport(payload: CreateClassReportDto) {
   return data.payload;
 }
 
-// get report at-risk students panel 
+// get report at-risk students panel
 export async function getAtRiskStudents(reportId: string) {
   const session = await auth();
   if (!session?.access_token) throw new Error("Unauthorized");
@@ -157,7 +157,7 @@ export async function getAtRiskStudents(reportId: string) {
   return data.payload;
 }
 
-// get report submission 
+// get report submission
 export async function subMissionBreakdown(reportId: string) {
   const session = await auth();
   if (!session?.access_token) throw new Error("Unauthorized");
@@ -265,7 +265,6 @@ export async function classComparasion(reportId: string) {
   return data.payload;
 }
 
-
 // get single report summary panel details
 export async function getReportSummaryById(reportId: string) {
   const session = await auth();
@@ -282,7 +281,63 @@ export async function getReportSummaryById(reportId: string) {
 
   const data = await res.json();
   if (!res.ok || !data.success) {
-    throw new Error(data?.message || "Failed to fetch individual report summary");
+    throw new Error(
+      data?.message || "Failed to fetch individual report summary",
+    );
   }
   return data.payload;
+}
+
+export async function deleteReport(reportId: string) {
+  const session = await auth();
+
+  if (!session?.access_token) {
+    throw new Error("Unauthorized");
+  }
+
+  const res = await fetch(`${API_URL}/reports/${reportId}`, {
+    method: "DELETE",
+
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${session.access_token}`,
+    },
+
+    cache: "no-store",
+  });
+
+  const data = await res.json();
+
+  console.log("Delete Response:", data);
+
+  if (!res.ok || !data.success) {
+    throw new Error(data?.message || "Failed deleting report");
+  }
+
+  return data.payload;
+}
+
+export async function getTeacherSubjects() {
+  const session = await auth();
+
+  if (!session?.access_token) {
+    throw new Error("Unauthorized");
+  }
+
+  const res = await fetch(`${API_URL}/subjects/teacher?page=1&size=50`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    cache: "no-store",
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw new Error(data?.message || "Failed to fetch subjects");
+  }
+
+  return data.payload.content;
 }

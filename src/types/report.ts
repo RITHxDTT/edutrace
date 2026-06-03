@@ -12,6 +12,7 @@ export interface Report {
   generatedAt: string;
 
   classScope?: string;
+  
 }
 
 export interface ReportSummary {

@@ -1,5 +1,5 @@
-import { getMyReports } from "@/services/reportService";
-import { getClassRoom } from "../../../services/classroom";
+import { getMyReports } from "@/services/report.service";
+import { getClassRoom } from "../../../services/classroom.service";
 import ReportClientPage from "./_components/ReportClient";
 import { Report } from "../../../types/report";
 

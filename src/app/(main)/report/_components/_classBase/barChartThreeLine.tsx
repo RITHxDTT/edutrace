@@ -12,6 +12,7 @@ type BreakdownItem = {
 
 type BasicBarsProps = {
   data: BreakdownItem[];
+  latesubmissionRate?: number;
 };
 
 export default function BasicBars({ data }: BasicBarsProps) {

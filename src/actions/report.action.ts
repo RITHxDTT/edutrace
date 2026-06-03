@@ -2,6 +2,9 @@
 
 import { auth } from "@/auth";
 import { taskBaseReport as taskBaseReportDto } from "@/types/report";
+import { deleteReport } from "@/services/report.service";
+import { revalidatePath } from "next/cache";
+import { getTeacherAssessments } from "@/services/assessment.service";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -26,9 +29,8 @@ export async function taskBaseReport(payload: taskBaseReportDto) {
     throw new Error(data?.message || "Failed to generate task base report");
   }
 
-  return data.payload; 
+  return data.payload;
 }
-
 
 export async function createClassReport(payload: {
   title: string;
@@ -53,4 +55,53 @@ export async function createClassReport(payload: {
     throw new Error(result?.message || "Failed to generate class report");
   }
   return result.payload;
+}
+
+export async function deleteReportAction(reportId: string) {
+  try {
+    await deleteReport(reportId);
+
+    revalidatePath("/report");
+
+    return {
+      success: true,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Delete failed",
+    };
+  }
+}
+
+export async function getTeacherAssessmentsAction() {
+  const session = await auth();
+
+  const token = session?.access_token;
+
+  if (!token) {
+    throw new Error("Unauthorized");
+  }
+
+  const BASE_URL =
+    process.env.NEXT_PUBLIC_API_URL || "https://api.yannvanneth.dev";
+
+  const res = await fetch(`${BASE_URL}/api/v1/assessments?page=1&size=100`, {
+    method: "GET",
+
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "*/*",
+    },
+
+    cache: "no-store",
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw new Error(data?.message || "Failed to fetch assessments");
+  }
+
+  return data.payload.content;
 }

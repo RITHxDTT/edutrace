@@ -4,11 +4,8 @@ import dynamic from "next/dynamic";
 
 import KpiCardTaskBased from "../../_components/_taskBase/KpiCardTaskBased";
 import KpiCardComponent from "../../_components/KpiCardComponent";
-
 import TopPerformersCard from "../../_components/_taskBase/TopPerformersCard";
-
 import AtRiskStudentsCard from "../../_components/_taskBase/AtRiskStudentsCard";
-
 import TaskBasedActions from "../../_components/_taskBase/TaskBasedAction";
 import AiChatWrapper from "../../AI/AiChatWrapper";
 
@@ -17,9 +14,26 @@ const SubmissionDonutChart = dynamic(() =>
   import("../../_components/_taskBase/SubmissionDonutChart").then((m) => m.SubmissionDonutChart),
 );
 
+
+interface TaskSummary {
+  totalStudents?: number;
+  onTime?: number;
+  late?: number;
+  missing?: number;
+  totalSubmitted?: number;
+  totalSubmissionRate?: number;
+  averageScore?: number | string;
+}
+
+
+interface ReportMetadata {
+  reportName?: string;
+  generatedAt?: string | Date;
+}
+
 interface TaskBasedViewProps {
-  summary: any;
-  metadata: any;
+  summary: TaskSummary;
+  metadata: ReportMetadata;
 }
 
 const scoreDistributionMock = [
