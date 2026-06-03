@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import headerToken from "@/lib/headerToken";
 import {
   CreateAssessmentForm,
+  GradeSubmissionForm,
   GetAssessmentParams,
   SubmitAssignmentForm,
 } from "@/types/assessment";
@@ -79,6 +80,54 @@ export const getAssessmentSubmissionsService = async (
   return result;
 };
 
+export const getSubmissionByIdService = async (submissionId: string) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/submissions/${submissionId}`,
+    {
+      headers: await headerToken(),
+    },
+  );
+
+  const result = await res.json();
+
+  if (!res.ok || !result?.success) {
+    return {
+      success: false,
+      error: result?.message || "Failed to get submission details",
+    };
+  }
+
+  return {
+    success: true,
+    data: result.payload,
+  };
+};
+
+export const gradeSubmissionService = async (data: GradeSubmissionForm) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/submissions/grade`,
+    {
+      method: "POST",
+      headers: await headerToken(),
+      body: JSON.stringify(data),
+    },
+  );
+
+  const result = await readAssessmentResponse(res);
+
+  if (!res.ok || !result?.success) {
+    return {
+      success: false,
+      error: result?.message || "Failed to grade submission",
+    };
+  }
+
+  return {
+    success: true,
+    data: result.payload,
+  };
+};
+
 export const submitAssignmentService = async (
   assessmentId: string,
   data: SubmitAssignmentForm,
@@ -134,6 +183,37 @@ export const getMyWorkSessionsService = async (assessmentId: string) => {
 
   const result = await res.json();
   return result;
+};
+
+export const getAssessmentWorkSessionsService = async (
+  assessmentId: string,
+  page = 1,
+  size = 10,
+) => {
+  const searchParams = new URLSearchParams();
+  searchParams.set("page", String(page));
+  searchParams.set("size", String(size));
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/work-sessions/assessment/${assessmentId}?${searchParams.toString()}`,
+    {
+      headers: await headerToken(),
+    },
+  );
+  
+  const result = await res.json();
+
+  if (!res.ok || !result?.success) {
+    return {
+      success: false,
+      error: result?.message || "Failed to get assessment work sessions",
+    };
+  }
+
+  return {
+    success: true,
+    data: result.payload,
+  };
 };
 
 export const startWorkSessionService = async (assessmentId: string) => {

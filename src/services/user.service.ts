@@ -1,4 +1,25 @@
 import { auth } from "@/auth";
+import headerToken from "@/lib/headerToken";
+
+export const getUserByIdService = async (userId: string) => {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${userId}`, {
+    headers: await headerToken(),
+  });
+
+  const result = await res.json();
+
+  if (!res.ok || !result?.success) {
+    return {
+      success: false,
+      error: result?.message || "Failed to get user profile",
+    };
+  }
+
+  return {
+    success: true,
+    data: result.payload,
+  };
+};
 
 export const changeProfileImageService = async (file: File) => {
   const session = await auth();

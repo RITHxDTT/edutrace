@@ -109,6 +109,12 @@ type SubmitAssignmentForm = {
   studentNotes?: string | null;
 };
 
+type GradeSubmissionForm = {
+  submissionId: string;
+  score: number;
+  feedback: string;
+};
+
 interface AssessmentType {
   assessmentId: string;
   title: string;
@@ -171,6 +177,7 @@ export type {
   AssessmentSubmissionPayload,
   AssessmentType,
   CreateAssessmentForm,
+  GradeSubmissionForm,
   SubmissionResource,
   SubmitAssignmentForm,
   WorkSession,

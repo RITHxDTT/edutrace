@@ -67,8 +67,6 @@ export default async function page({
     </div>
   );
 
-  console.log(session?.access_token)
-
   const assessmentTabs = [
     {
       key: "instruction",
