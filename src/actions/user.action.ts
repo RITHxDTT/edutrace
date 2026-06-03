@@ -1,59 +1,121 @@
 "use server";
 
-import { changePasswordService, changeProfileImageService } from "@/services/user.service";
+import {
+  changePasswordService,
+  changeProfileImageService,
+  UpdateUserPayload,
+  updateUserService,
+  verifyPasswordService,
+} from "@/services/user.service";
 
-export const changeProfileImageAction = async (
-    file: File
-) => {
-    try {
-        const result = await changeProfileImageService(file);
+export const updateUserAction = async (payload: UpdateUserPayload) => {
+  try {
+    const result = await updateUserService(payload);
 
-        if (!result.success) {
-            return {
-                success: false,
-                error: result.error,
-            };
-        }
-
-        return {
-            success: true,
-            data: result.data,
-        };
-    } catch (error) {
-        console.error("Change profile image error:", error);
-
-        return {
-            success: false,
-            error: "Something went wrong while uploading image.",
-        };
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error,
+      };
     }
+
+    return {
+      success: true,
+      data: result.data,
+    };
+  } catch (error) {
+    console.error("Update user error:", error);
+
+    return {
+      success: false,
+      error: "Something went wrong while updating profile.",
+    };
+  }
+};
+
+export const changeProfileImageAction = async (file: File) => {
+  try {
+    const result = await changeProfileImageService(file);
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: result.data,
+    };
+  } catch (error) {
+    console.error("Change profile image error:", error);
+
+    return {
+      success: false,
+      error: "Something went wrong while uploading image.",
+    };
+  }
+};
+
+// checking the current password
+export const verifyPasswordAction = async (currentPassword: string) => {
+  try {
+    const result = await verifyPasswordService(currentPassword);
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error,
+      };
+    }
+
+    return {
+      success: true,
+      token: result.data.payload.token,
+    };
+  } catch (error) {
+    console.error("Verify password error:", error);
+
+    return {
+      success: false,
+      error: "Something went wrong while verifying password.",
+    };
+  }
 };
 
 export const changePasswordAction = async (
-    oldPassword: string,
-    newPassword: string,
-    confirmNewPassword: string
+  token: string,
+  newPassword: string,
+  confirmNewPassword: string,
 ) => {
-    try {
-        const result = await changePasswordService(oldPassword, newPassword, confirmNewPassword);
-
-        if (!result.success) {
-            return {
-                success: false,
-                error: result.error,
-            };
-        }
-
-        return {
-            success: true,
-            data: result.data,
-        };
-    } catch (error) {
-        console.error("Change password error:", error);
-
-        return {
-            success: false,
-            error: "Something went wrong while changing password.",
-        };
+  try {
+    if (newPassword !== confirmNewPassword) {
+      return {
+        success: false,
+        error: "Passwords do not match",
+      };
     }
+
+    const result = await changePasswordService(token, newPassword);
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: result.data,
+    };
+  } catch (error) {
+    console.error("Change password error:", error);
+
+    return {
+      success: false,
+      error: "Something went wrong while changing password.",
+    };
+  }
 };

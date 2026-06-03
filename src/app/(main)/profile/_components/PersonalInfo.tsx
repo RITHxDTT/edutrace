@@ -10,13 +10,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { profileFormScehma } from "@/schemas/ProfileFormSchema";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import { useEffect, useState } from "react";
-import { parseDate } from '@internationalized/date'
+import { parseDate } from "@internationalized/date";
+import { updateUserAction } from "@/actions/user.action";
 
 export default function PersonalInfo() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const user = session?.user;
 
   const [isEditing, setIsEditing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -29,7 +31,6 @@ export default function PersonalInfo() {
     defaultValues: {
       firstName: user?.firstName,
       lastName: user?.lastName,
-      username: user?.username,
       gender: (user?.gender as "MALE" | "FEMALE" | undefined) ?? undefined,
       birthdate: user?.birthdate ? parseDate(user.birthdate) : undefined,
       address: user?.address,
@@ -37,19 +38,47 @@ export default function PersonalInfo() {
   });
 
   const onSubmit = async (data: any) => {
+    setError(null);
 
-    setIsEditing(false);
+    const birthdateStr = data.birthdate
+      ? `${data.birthdate.year}-${String(data.birthdate.month).padStart(2, "0")}-${String(data.birthdate.day).padStart(2, "0")}`
+      : "";
+
+    const result = await updateUserAction({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      gender: data.gender || undefined,
+      address: data.address || undefined,
+      profileImageUrl: user?.profileImageUrl,
+      birthdate: birthdateStr,
+    });
+
+    if (result.success) {
+      await update({
+        user: {
+          firstName: data.firstName,
+          lastName: data.lastName,
+          fullName: `${data.firstName} ${data.lastName}`,
+          gender: data.gender || undefined,
+          address: data.address || undefined,
+          birthdate: birthdateStr,
+        },
+      });
+      setIsEditing(false);
+    } else {
+      setError(result.error ?? "Failed to update profile.");
+    }
   };
 
   const handleCancel = () => {
     reset({
       firstName: user?.firstName,
       lastName: user?.lastName,
-      username: user?.username,
       gender: (user?.gender as "MALE" | "FEMALE" | undefined) ?? undefined,
       birthdate: user?.birthdate ? parseDate(user.birthdate) : undefined,
       address: user?.address,
     });
+    setError(null);
     setIsEditing(false);
   };
 
@@ -59,7 +88,6 @@ export default function PersonalInfo() {
     reset({
       firstName: user.firstName,
       lastName: user.lastName,
-      username: user.username,
       gender: (user.gender as "MALE" | "FEMALE" | undefined) ?? undefined,
       birthdate: user.birthdate ? parseDate(user.birthdate) : undefined,
       address: user.address,
@@ -72,7 +100,6 @@ export default function PersonalInfo() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row gap-6">
-
           {/* Left */}
           <div className="flex-1 space-y-4">
             <Controller
@@ -111,22 +138,13 @@ export default function PersonalInfo() {
               )}
             />
 
-            <Controller
-              name="username"
-              control={control}
-              render={({ field }) => (
-                <PrimaryInput
-                  label="Username"
-                  type="text"
-                  placeholder="username"
-                  isDisabled={!isEditing}
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  isInvalid={!!errors.username}
-                  errorMessage={errors.username?.message}
-                />
-              )}
+            {/* cannot update cus backend response has no username field */}
+            <PrimaryInput
+              label="Username"
+              type="text"
+              placeholder="username"
+              isDisabled={true}
+              value={user?.username ?? ""}
             />
           </div>
 
@@ -180,6 +198,8 @@ export default function PersonalInfo() {
           </div>
         </div>
 
+        {error && <p className="text-sm text-red-500">{error}</p>}
+
         {/* Profile Edit Buttons */}
         <div className="flex justify-end gap-3 pt-2">
           {isEditing && (
@@ -191,28 +211,22 @@ export default function PersonalInfo() {
               Cancel
             </PrimaryButton>
           )}
-          {
-            isEditing ? (
-              <PrimaryButton
-                type="submit"
-                className="px-6 py-2"
-              >
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </PrimaryButton>
-            ) : (
-              <PrimaryButton
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setIsEditing(true);
-                }}
-                className="px-6 py-2"
-              >
-                Edit Profile
-              </PrimaryButton>
-            )
-          }
-
+          {isEditing ? (
+            <PrimaryButton type="submit" className="px-6 py-2">
+              {isSubmitting ? "Saving..." : "Save Changes"}
+            </PrimaryButton>
+          ) : (
+            <PrimaryButton
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsEditing(true);
+              }}
+              className="px-6 py-2"
+            >
+              Edit Profile
+            </PrimaryButton>
+          )}
         </div>
       </form>
     </div>
