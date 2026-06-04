@@ -4,28 +4,17 @@ import { useState } from "react";
 import { Eye, Trash2, FileText, LayoutGrid } from "lucide-react";
 import ActionModal from "../modal/_components/action";
 
-export interface Report {
-  reportId: string;
-  reportName: string;
-  reportType: string;
-  displayType: string;
-  period: string;
-  generatedAt: string;
-  classScope?: string;
-}
+import { Report } from "../../../../types/report";
+
+
 
 interface TableDataComponentProps {
   reports: Report[];
-  onDelete: (reportId: string) => Promise<void>; 
+  onDelete: (reportId: string) => void; 
   onView: (report: Report) => void;
   startIndex?: number;
 }
-interface TableDataComponentProps {
-  reports: Report[];
-  onDelete: (reportId: string) => Promise<void>;
-  onView: (report: Report) => void;
-  startIndex?: number;
-}
+
 
 function formatDate(iso: string) {
   if (!iso) return "—";

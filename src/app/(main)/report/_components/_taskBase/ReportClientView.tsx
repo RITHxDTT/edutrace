@@ -6,12 +6,11 @@ import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import KpiCard from "../KpiCardComponent";
 import GenerateReportModalComponent from "../GenerateModalComponent";
-import TableDataComponent, {
-  Report,
-} from "../TableDataReport";
+import TableDataComponent from "../TableDataReport";
 import { PaginationBasic } from "../pagination";
 import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
 import AiChatWrapper from "../../AI/AiChatWrapper";
+import {Report} from "../../../../../types/report";
 
 interface ReportSummary {
   totalReports: number;
@@ -24,16 +23,14 @@ interface ReportClientViewProps {
   initialReports: Report[];
   initialSummary: ReportSummary;
   totalPages: number;
-  classrooms: { id: string; name: string }[];
-  taskOptions: string[];
 }
 
 export default function ReportClientView({
   initialReports,
   initialSummary,
   totalPages,
-  classrooms, 
-  taskOptions,  
+  // classrooms,
+  // taskOptions,
 }: ReportClientViewProps) {
   const router = useRouter();
   const [reports, setReports] = useState<Report[]>(initialReports);
@@ -141,9 +138,9 @@ export default function ReportClientView({
       <GenerateReportModalComponent
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onGenerate={handleGenerate}
-        classrooms={classrooms}
-        taskOptions={taskOptions}
+        onGenerateSuccess={() => {
+          router.refresh();
+        }}
       />
     </div>
   );

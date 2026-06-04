@@ -9,7 +9,7 @@ import AtRiskStudentsCard from "../../_components/_taskBase/AtRiskStudentsCard";
 import TaskBasedActions from "../../_components/_taskBase/TaskBasedAction";
 import AiChatWrapper from "../../AI/AiChatWrapper";
 
-const TickPlacementBars = dynamic(() => import("../../_components/_taskBase/TaskBasedAction"));
+const TickPlacementBars = dynamic(() => import("../../_components/_taskBase/BarChart"));
 const SubmissionDonutChart = dynamic(() =>
   import("../../_components/_taskBase/SubmissionDonutChart").then((m) => m.SubmissionDonutChart),
 );

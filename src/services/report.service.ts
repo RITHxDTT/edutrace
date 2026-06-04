@@ -317,14 +317,40 @@ export async function deleteReport(reportId: string) {
   return data.payload;
 }
 
-export async function getTeacherSubjects() {
+// export async function getTeacherSubjects() {
+//   const session = await auth();
+
+//   if (!session?.access_token) {
+//     throw new Error("Unauthorized");
+//   }
+
+//   const res = await fetch(`${API_URL}/subjects/teacher?page=1&size=50`, {
+//     method: "GET",
+//     headers: {
+//       Accept: "application/json",
+//       Authorization: `Bearer ${session.access_token}`,
+//     },
+//     cache: "no-store",
+//   });
+
+//   const data = await res.json();
+
+//   if (!res.ok || !data.success) {
+//     throw new Error(data?.message || "Failed to fetch subjects");
+//   }
+
+//   return data.payload.content;
+// }
+
+export async function getUserProfile() {
   const session = await auth();
 
   if (!session?.access_token) {
     throw new Error("Unauthorized");
   }
 
-  const res = await fetch(`${API_URL}/subjects/teacher?page=1&size=50`, {
+  
+  const res = await fetch(`${API_URL}/users/me`, {
     method: "GET",
     headers: {
       Accept: "application/json",
@@ -336,8 +362,9 @@ export async function getTeacherSubjects() {
   const data = await res.json();
 
   if (!res.ok || !data.success) {
-    throw new Error(data?.message || "Failed to fetch subjects");
+    throw new Error(data?.message || "Failed to fetch user profile");
   }
 
-  return data.payload.content;
+  return data.payload;
 }
+

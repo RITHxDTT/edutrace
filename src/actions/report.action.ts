@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { taskBaseReport as taskBaseReportDto } from "@/types/report";
-import { deleteReport } from "@/services/report.service";
+import { deleteReport, getUserProfile } from "@/services/report.service";
 import { revalidatePath } from "next/cache";
 import { getTeacherAssessments } from "@/services/assessment.service";
 
@@ -104,4 +104,17 @@ export async function getTeacherAssessmentsAction() {
   }
 
   return data.payload.content;
+}
+
+
+export async function getTeacherClassesAction() {
+  try {
+    const userProfile = await getUserProfile();
+    
+    console.log("Fetched User Profile:", userProfile.taughtClassrooms);
+    return userProfile.taughtClassrooms || [];
+  } catch (error) {
+    console.error("Failed to fetch teacher classes:", error);
+    throw new Error("Failed to load classes");
+  }
 }

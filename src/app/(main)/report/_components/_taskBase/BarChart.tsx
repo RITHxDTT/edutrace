@@ -7,6 +7,10 @@ type Props = {
   data: ScoreRange[];
 };
 
+
+
+
+
 export default function TickPlacementBars({ data }: Props) {
   const dataset = data.map((d) => ({
     range: d.range,

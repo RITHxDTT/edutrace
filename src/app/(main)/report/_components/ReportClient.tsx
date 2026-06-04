@@ -166,7 +166,7 @@ export default function ReportClientPage({
       <GenerateReportModalComponent
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        classrooms={classrooms}
+        // classrooms={classrooms}
         onGenerateSuccess={() => router.refresh()}
       />
     </div>

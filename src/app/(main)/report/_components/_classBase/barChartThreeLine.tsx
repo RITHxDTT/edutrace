@@ -2,7 +2,7 @@
 
 import { BarChart } from "@mui/x-charts/BarChart";
 
-type BreakdownItem = {
+export type BreakdownItem = {
   late: number;
   onTime: number;
   missing: number;
@@ -12,23 +12,34 @@ type BreakdownItem = {
 
 type BasicBarsProps = {
   data: BreakdownItem[];
-  latesubmissionRate?: number;
 };
 
 export default function BasicBars({ data }: BasicBarsProps) {
   const labels = data.map((d) => d.classroomAbbre);
-  const onTimeSeries = data.map((d) => d.onTime);
-  const lateSeries = data.map((d) => d.late);
-  const missingSeries = data.map((d) => d.missing);
 
   return (
     <BarChart
       colors={["#241CAB", "#5D53F9", "#93AAFD"]}
-      xAxis={[{ data: labels, categoryGapRatio: 0.2 }]}
+      xAxis={[
+        {
+          data: labels,
+          categoryGapRatio: 0.2,
+          scaleType: "band",
+        },
+      ]}
       series={[
-        { data: onTimeSeries },
-        { data: lateSeries },
-        { data: missingSeries },
+        {
+          data: data.map((d) => d.onTime),
+          label: "On Time",
+        },
+        {
+          data: data.map((d) => d.late),
+          label: "Late",
+        },
+        {
+          data: data.map((d) => d.missing),
+          label: "Missing",
+        },
       ]}
       height={300}
       borderRadius={16}

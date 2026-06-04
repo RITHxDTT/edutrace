@@ -1,10 +1,10 @@
 "use client";
 
 import KpiCardComponent from "../../_components/KpiCardComponent";
-import KpiCardTaskBased from "../../_components/_taskBase/KpiCardTaskBased"; 
-import ClassSubmissionCard from "../../_components/_classBase/barChartThreeLine";
+import KpiCardTaskBased from "../../_components/_taskBase/KpiCardTaskBased";
+import ClassSubmissionCard from "../../../../../types/ClassSubmissionCard";
 import AllClassesActions from "../../_components/_classBase/AllClassesAction";
-import BasicBars from "../../_components/_taskBase/BarChart";
+import BasicBars from "../../_components/_classBase/barChartThreeLine";
 import HorizontalBars from "../../_components/_classBase/barChartAxis";
 import AiChatWrapper from "../../AI/AiChatWrapper";
 
@@ -13,43 +13,84 @@ interface ClassBasedViewProps {
   metadata: any;
 }
 
-export default function ClassBasedView({ summary, metadata }: ClassBasedViewProps) {
+export default function ClassBasedView({
+  summary,
+  metadata,
+}: ClassBasedViewProps) {
   const reportName = metadata?.reportName || "All Classes Performance Report";
   const viewingLabel = "All Classes Overview";
   const displayPeriod = metadata?.generatedAt
-    ? new Date(metadata.generatedAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+    ? new Date(metadata.generatedAt).toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      })
     : "Active Analysis";
 
-  
   const kpiCards = [
     { title: "Total Submitted", value: summary?.totalSubmitted ?? 0 },
-    { title: "Submission Rate", value: `${summary?.totalSubmissionRate ?? 0}%` },
+    {
+      title: "Submission Rate",
+      value: `${summary?.totalSubmissionRate ?? 0}%`,
+    },
     { title: "Avg. Score", value: `${summary?.averageScore ?? 0}%` },
     { title: "On-Time", value: summary?.onTime ?? 0 },
     { title: "Late", value: summary?.late ?? 0 },
     { title: "Missing", value: summary?.missing ?? 0 },
   ];
 
-  
   const chartsMock = {
     submissionBreakdownByClass: {
       data: [
-        { late: 14, onTime: 73, missing: 13, className: "Siem Reap Class", classroomAbbre: "SR" },
-        { late: 7, onTime: 75, missing: 18, className: "Phnom Penh Class", classroomAbbre: "PP" },
-      ]
+        {
+          late: 14,
+          onTime: 73,
+          missing: 13,
+          className: "Siem Reap Class",
+          classroomAbbre: "SR",
+        },
+        {
+          late: 7,
+          onTime: 75,
+          missing: 18,
+          className: "Phnom Penh Class",
+          classroomAbbre: "PP",
+        },
+      ],
     },
     scoreAnalysis: {
       data: [
-        { className: "Siem Reap Class", averageScore: 78, classroomAbbre: "SR", secondAverageScore: 81 },
-        { className: "Phnom Penh Class", averageScore: 83, classroomAbbre: "PP", secondAverageScore: 85 },
-      ]
+        {
+          className: "Siem Reap Class",
+          averageScore: 78,
+          classroomAbbre: "SR",
+          secondAverageScore: 81,
+        },
+        {
+          className: "Phnom Penh Class",
+          averageScore: 83,
+          classroomAbbre: "PP",
+          secondAverageScore: 85,
+        },
+      ],
     },
     classComparison: {
       data: [
-        { late: 3, className: "Siem Reap Class", submitted: 19, classroomId: "1", totalStudents: 22 },
-        { late: 2, className: "Phnom Penh Class", submitted: 23, classroomId: "2", totalStudents: 28 },
-      ]
-    }
+        {
+          late: 3,
+          className: "Siem Reap Class",
+          submitted: 19,
+          classroomId: "1",
+          totalStudents: 22,
+        },
+        {
+          late: 2,
+          className: "Phnom Penh Class",
+          submitted: 23,
+          classroomId: "2",
+          totalStudents: 28,
+        },
+      ],
+    },
   };
 
   return (
@@ -58,7 +99,8 @@ export default function ClassBasedView({ summary, metadata }: ClassBasedViewProp
         <div>
           <p className="text-[24px] font-medium">{reportName}</p>
           <p className="text-sm text-gray-500">
-            {displayPeriod} - Viewing: <span className="text-blue-600">{viewingLabel}</span>
+            {displayPeriod} - Viewing:{" "}
+            <span className="text-blue-600">{viewingLabel}</span>
           </p>
         </div>
         <AllClassesActions />
@@ -74,7 +116,11 @@ export default function ClassBasedView({ summary, metadata }: ClassBasedViewProp
 
         <div className="flex-1 grid grid-cols-3 gap-4 ml-4">
           {kpiCards.map((card) => (
-            <KpiCardComponent key={card.title} title={card.title} value={card.value} />
+            <KpiCardComponent
+              key={card.title}
+              title={card.title}
+              value={card.value}
+            />
           ))}
         </div>
       </div>
@@ -98,10 +144,10 @@ export default function ClassBasedView({ summary, metadata }: ClassBasedViewProp
           {chartsMock.classComparison.data.map((cls) => (
             <ClassSubmissionCard
               key={cls.classroomId}
-              lateSubmission={cls.late}
-              className={cls.className}
+              late={cls.late}
               submitted={cls.submitted}
               total={cls.totalStudents}
+              className={cls.className}
             />
           ))}
         </div>

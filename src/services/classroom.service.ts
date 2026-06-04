@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { ClassroomProps } from "../types/classroom";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-export async function getClassRoom(payload: ClassroomProps) {
+export async function getClassRoom() {
   const session = await auth();
 
   if(!session?.access_token) {
