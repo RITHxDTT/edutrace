@@ -1,18 +1,15 @@
 "use client";
 
-import { useNotificationStore } from "@/components/notifications/useNotificationStore";
+import { useAppNotifications } from "@/components/notifications/useAppNotifications";
 import NotificationDropdown from "@/components/notifications/NotificationDropdown";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Notification } from "iconsax-react";
 
 export default function NotificationBell() {
-  const unreadCount = useNotificationStore((state) =>
-    state.notifications.filter((n) => !n.isRead).length
-  );
+  const { unreadCount } = useAppNotifications();
 
   return (
     <Popover>
-      {/* We removed asChild and turned PopoverTrigger into your button */}
       <PopoverTrigger className="relative cursor-pointer focus:outline-none bg-transparent border-none p-0 flex items-center justify-center">
         <Notification className="w-8 h-8" size={32} color="black" />
         {unreadCount > 0 && (

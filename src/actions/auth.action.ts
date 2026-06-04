@@ -1,6 +1,6 @@
 "use server";
 
-import { ForgotPasswordFormData, LoginFormData, OtpFormData, RegisterFormData, ResetPasswordFormData } from "@/types/auth";
+import { ForgotPasswordFormData, LoginFormData, OtpFormData, RegisterFormData } from "@/types/auth";
 import { signIn } from "@/auth";
 import { forgotPasswordService, registerService, resendOtpCodeService, resetPasswordService, verifyOtpService } from "@/services/auth.service";
 

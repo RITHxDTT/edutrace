@@ -5,6 +5,7 @@ import { NextAuthRequest } from "next-auth";
 export default async function proxy(req: NextAuthRequest) {
   const session = await auth();
   const { nextUrl } = req;
+  const role = session?.user?.role;
 
   const isAuthenticated = !!session;
   const isAuthPage =
@@ -36,4 +37,3 @@ export const config = {
 };
 
 
- 

@@ -1,10 +1,32 @@
+import { getAllAssessmentAction } from "@/actions/assessment.action";
 import { auth } from "@/auth";
-import NavbarTitle from "@/components/Topbar/NavbarTitle";
 import AssessmentPage from "./_components/AssessmentPage";
+import { getAllSubjectAction } from "@/actions/subject.action";
 
-export default async function Page() {
+type PageProps = {
+  searchParams: Promise<{
+    page?: string;
+  }>;
+};
+
+export default async function Page({ searchParams }: PageProps) {
   const session = await auth();
-  const isStudent = session?.user?.role === "student";
+  const { page } = await searchParams;
+  const currentPage = Math.max(Number(page) || 1, 1);
 
-  return <AssessmentPage isStudent={isStudent} />;
+  const role = session?.user?.role;
+  const assessmentResult = await getAllAssessmentAction({ page: currentPage });
+  const subjects = await getAllSubjectAction();
+
+  const assessments = "content" in assessmentResult ? assessmentResult.content : [];
+  const metaData = "metaData" in assessmentResult ? assessmentResult.metaData : undefined;
+
+  return (
+    <AssessmentPage
+      assessments={assessments}
+      metaData={metaData}
+      subjects={subjects}
+      role={role}
+    />
+  );
 }

@@ -1,30 +1,26 @@
-"use server";
+import {
+  getAllSubjectService,
+  getSubjectByIdService,
+} from "@/services/subject.service";
 
-import { auth } from "@/auth";
+export const getSubjectByIdAction = async (subjectId?: string) => {
+  if (!subjectId) return;
 
-const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const result = await getSubjectByIdService(subjectId);
 
-export async function getTeacherSubjectsAction() {
-  const session = await auth();
-
-  if (!session?.access_token) {
-    throw new Error("Unauthorized");
+  if (!result.sucess) {
+    return { error: result.message };
   }
 
-  const res = await fetch(`${API_URL}/subjects`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${session.access_token}`,
-    },
-    cache: "no-store",
-  });
+  return result.payload.conten;
+};
 
-  const data = await res.json();
+export const getAllSubjectAction = async () => {
+  const result = await getAllSubjectService();
 
-  if (!res.ok || !data.success) {
-    throw new Error(data?.message || "Failed to fetch subjects");
+  if (!result.success) {
+    return { error: result.message };
   }
 
-  return data.payload.content;
-}
+  return result.payload.content;
+};
