@@ -4,7 +4,7 @@ import Image from "next/image"
 
 export default function RightSideCover() {
   return (
-    <div className="absolute right-0 w-1/2 h-screen overflow-hidden">
+    <div className="absolute right-0 w-1/2 h-screen overflow-hidden hidden lg:block">
       
       {/* Background */}
       <div className="relative w-full h-full">

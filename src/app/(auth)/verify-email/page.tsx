@@ -7,8 +7,8 @@ export default function page() {
 
                   <div className="w-full max-w-xl mx-auto my-auto py-8 flex flex-col items-cente gap-8">
                         <div>
-                              <h1 className="text-[40px] font-medium bg-linear-purple bg-clip-text text-transparent mb-2">Verify Email</h1>
-                              <p className="text-border-focus">Enter your email and the 6 digits code that you received from your email to verify.</p>
+                              <h1 className="text-[40px] font-medium bg-linear-purple bg-clip-text text-transparent mb-2">Enter OTP Code</h1>
+                              <p className="text-border-focus">Enter the otp code to verify your email..</p>
                         </div>
 
                         <div>
