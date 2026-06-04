@@ -71,6 +71,7 @@ export default function StudentAssessmentTabs({
   workSessions,
   mySubmissions,
 }: Props) {
+  
   const initialSessions = useMemo(
     () => normalizeWorkSessions(workSessions),
     [workSessions],
@@ -81,6 +82,7 @@ export default function StudentAssessmentTabs({
   );
   const [now, setNow] = useState(0);
   const [message, setMessage] = useState("");
+  const [selectedTab, setSelectedTab] = useState("instruction");
   const [isPending, startTransition] = useTransition();
   const activeSessionRef = useRef<WorkSession | null>(activeSession);
   const hasPostedEndOnPageExitRef = useRef(false);
@@ -211,7 +213,13 @@ export default function StudentAssessmentTabs({
     {
       key: "submit-assignment",
       title: "Submit Assignment",
-      content: <SubmitAssignmentPage assessment={assessment} mySubmissions={mySubmissions} />,
+      content: (
+        <SubmitAssignmentPage
+          assessment={assessment}
+          mySubmissions={mySubmissions}
+          onGoToStudentWork={() => setSelectedTab("student-work")}
+        />
+      ),
     },
     {
       key: "student-work",
@@ -230,5 +238,12 @@ export default function StudentAssessmentTabs({
     },
   ];
 
-  return <PrimaryTabs tabs={tabs} colors="primary" />;
+  return (
+    <PrimaryTabs
+      tabs={tabs}
+      colors="primary"
+      selectedKey={selectedTab}
+      onSelectionChange={setSelectedTab}
+    />
+  );
 }

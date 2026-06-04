@@ -4,8 +4,6 @@ import { AssessmentSubmission } from "@/types/assessment";
 import { Clock, DocumentText } from "iconsax-react";
 import Image from "next/image";
 import { getStudentInitials, getSubmittedLabel } from "./studentWorkUtils";
-import { getUserByIdAction } from "@/actions/user.action";
-
 type Props = {
   submission: AssessmentSubmission;
   profileImageUrl?: string;

@@ -159,8 +159,7 @@ export default function MyStudentWorkPage({
     (currentSessionPage - 1) * WORK_SESSIONS_PER_PAGE,
     currentSessionPage * WORK_SESSIONS_PER_PAGE,
   );
-
-  console.log(assessment)
+  
   const submissionStatus = assessment.currentSubmissionStatus?.toUpperCase();
 
   const statusLabel = {
@@ -194,9 +193,9 @@ export default function MyStudentWorkPage({
     </div>
   );
 
-  // Graded view — show score + feedback from instructor
-  if (submissionStatus === "GRADED") {
-    const grade = getLatestGrade(mySubmissions);
+  // Graded view — any submission in history with grade data
+  const grade = getLatestGrade(mySubmissions);
+  if (grade) {
 
     return (
       <div className="py-4">

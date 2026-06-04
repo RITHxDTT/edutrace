@@ -49,9 +49,12 @@ type MyAssessmentData =
   | { content?: AssessmentType[] }
   | undefined;
 
-type MeetingRoomResult = {
-  meetingRoomId?: string;
-} | null | undefined;
+type MeetingRoomResult =
+  | {
+      meetingRoomId?: string;
+    }
+  | null
+  | undefined;
 
 function normalizeMyAssessments(assessments: MyAssessmentData) {
   if (Array.isArray(assessments)) return assessments;
@@ -65,36 +68,41 @@ export default async function page({ params }: PageProps) {
   const isTeacher = role === "teacher";
   const isStudent = role === "student";
 
-
   const meetingRoomResult = (await getMeetingRoomByAssessmentIdAction(
     id,
   )) as MeetingRoomResult;
 
   const meetingRoomId = meetingRoomResult?.meetingRoomId;
 
-  const [assessmentResult, subjects, submissions, workSessions, myAssessments, mySubmissions] =
-    (await Promise.all([
-      getAssessmentByIdAction(id),
-      isTeacher ? getAllSubjectAction() : Promise.resolve([]),
-      isTeacher ? getAssessmentSubmissionsAction(id) : Promise.resolve(undefined),
-      isStudent ? getMyWorkSessionsAction(id) : Promise.resolve(undefined),
-      isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
-      isStudent ? getMySubmissionsAction(id) : Promise.resolve(undefined),
-    ])) as [
-      AssessmentType,
-      SubjectType[],
-      SubmissionData,
-      WorkSessionData,
-      MyAssessmentData,
-      AssessmentSubmission[] | undefined,
-    ];
+  const [
+    assessmentResult,
+    subjects,
+    submissions,
+    workSessions,
+    myAssessments,
+    mySubmissions,
+  ] = (await Promise.all([
+    getAssessmentByIdAction(id),
+    isTeacher ? getAllSubjectAction() : Promise.resolve([]),
+    isTeacher ? getAssessmentSubmissionsAction(id) : Promise.resolve(undefined),
+    isStudent ? getMyWorkSessionsAction(id) : Promise.resolve(undefined),
+    isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
+    isStudent ? getMySubmissionsAction(id) : Promise.resolve(undefined),
+  ])) as [
+    AssessmentType,
+    SubjectType[],
+    SubmissionData,
+    WorkSessionData,
+    MyAssessmentData,
+    AssessmentSubmission[] | undefined,
+  ];
 
   const myAssessment = normalizeMyAssessments(myAssessments).find(
     (item) => item.assessmentId === id,
   );
 
   const assessment = myAssessment ?? assessmentResult;
-  
+
   const classrooms = await getAllClassroomsAction();
 
   const instructionContent = <InstructionDetailPage assessment={assessment} />;
@@ -234,7 +242,9 @@ export default async function page({ params }: PageProps) {
             instruction={instructionContent}
             communication={communicationContent}
             workSessions={workSessions}
-            mySubmissions={Array.isArray(mySubmissions) ? mySubmissions : undefined}
+            mySubmissions={
+              Array.isArray(mySubmissions) ? mySubmissions : undefined
+            }
           />
         ) : (
           <PrimaryTabs tabs={assessmentTabs} colors="primary" />

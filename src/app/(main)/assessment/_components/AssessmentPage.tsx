@@ -50,7 +50,7 @@ function normalizeClassrooms(classrooms: SessionClassrooms): ClassroomType[] {
 const STUDENT_PAGE_SIZE = 6;
 
 export default function AssessmentPage({ assessments, metaData, role, subjects }: Props) {
-  const [filters, setFilters] = useState<FilterState>({
+  const [studentFilters, setStudentFilters] = useState<FilterState>({
     subject: "",
     status: "",
     sortBy: "",
@@ -64,31 +64,54 @@ export default function AssessmentPage({ assessments, metaData, role, subjects }
   const session = useSession();
   const pageFromUrl = Math.max(Number(searchParams.get("page")) || 1, 1);
 
+  // Teachers: filters live in the URL so server-side pagination stays in sync.
+  // Students: filters are local state (all data fetched at once).
+  const filters: FilterState =
+    role === "teacher"
+      ? {
+          status: searchParams.get("status") ?? "",
+          sortBy: searchParams.get("sortBy") ?? "",
+          subject: "",
+        }
+      : studentFilters;
+
   const classroomsTaught =
     role === "teacher" ? normalizeClassrooms(session?.data?.user?.taughtClassrooms) : [];
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-    // Reset to first page when filters change
-    if (role === "student") setStudentPage(1);
+    if (role === "teacher") {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+      params.delete("page"); // reset to page 1 whenever a filter changes
+      router.push(`${pathname}?${params.toString()}`);
+      return;
+    }
+    setStudentFilters((prev) => ({ ...prev, [key]: value }));
+    setStudentPage(1);
   };
 
-  const filtered = assessments
-    .filter((a) => {
-      if (role !== "student") return true;
-      // Students never see scheduled (not-yet-started) assessments
-      if (a.status === "SCHEDULED") return false;
-      if (a.startAt && new Date(a.startAt) > new Date()) return false;
-      return true;
-    })
-    .filter((a) => (filters.status ? a.status === filters.status : true))
-    .filter((a) =>
-      filters.subject ? a.subject.subjectId === filters.subject : true,
-    )
-    .sort((a, b) => {
-      if (filters.sortBy === "STATUS") return a.status.localeCompare(b.status);
-      return 0;
-    });
+  const filtered =
+    role === "teacher"
+      ? assessments // server already applied filters and pagination
+      : assessments
+          .filter((a) => {
+            // Students never see scheduled (not-yet-started) assessments
+            if (a.status === "SCHEDULED") return false;
+            if (a.startAt && new Date(a.startAt) > new Date()) return false;
+            return true;
+          })
+          .filter((a) => (filters.status ? a.status === filters.status : true))
+          .filter((a) =>
+            filters.subject ? a.subject.subjectId === filters.subject : true,
+          )
+          .sort((a, b) => {
+            if (filters.sortBy === "STATUS") return a.status.localeCompare(b.status);
+            return 0;
+          });
 
   // Students: client-side pagination over the filtered list
   // Teachers: server-side pagination (filtered list is already one server page)

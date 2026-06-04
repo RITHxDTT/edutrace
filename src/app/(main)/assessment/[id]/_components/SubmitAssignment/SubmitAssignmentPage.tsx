@@ -3,7 +3,7 @@
 import { submitAssignmentAction } from "@/actions/assessment.action";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import { AssessmentSubmission, AssessmentType } from "@/types/assessment";
-import { Paperclip2, Trash, Link as LinkIcon, TickCircle } from "iconsax-react";
+import { Award, Paperclip2, Trash, Link as LinkIcon, TickCircle } from "iconsax-react";
 import { useRef, useState, useTransition } from "react";
 import { PrimaryInput } from "@/components/Inputs/PrimaryInputField";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,7 @@ import {
 type Props = {
   assessment: AssessmentType;
   mySubmissions?: AssessmentSubmission[];
+  onGoToStudentWork?: () => void;
 };
 
 type SelectedFile = {
@@ -26,7 +27,7 @@ type SelectedFile = {
 
 function hasSubmittedWork(status?: string) {
   const s = status?.toUpperCase();
-  return s === "SUBMITTED" || s === "RESUBMITTED";
+  return s === "SUBMITTED" || s === "RESUBMITTED" || s === "GRADED";
 }
 
 function getLatestSubmission(submissions: AssessmentSubmission[]): AssessmentSubmission | null {
@@ -41,6 +42,18 @@ function getLatestSubmission(submissions: AssessmentSubmission[]): AssessmentSub
   );
 }
 
+function getGradedSubmission(submissions: AssessmentSubmission[]): AssessmentSubmission | null {
+  return (
+    [...submissions]
+      .sort(
+        (a, b) =>
+          new Date(b.submittedAt ?? 0).getTime() -
+          new Date(a.submittedAt ?? 0).getTime(),
+      )
+      .find((s) => s.grade?.score != null) ?? null
+  );
+}
+
 function formatSubmittedAt(dateStr?: string) {
   if (!dateStr) return "";
   return new Date(dateStr).toLocaleString(undefined, {
@@ -52,7 +65,7 @@ function formatSubmittedAt(dateStr?: string) {
   });
 }
 
-export default function SubmitAssignmentPage({ assessment, mySubmissions = [] }: Props) {
+export default function SubmitAssignmentPage({ assessment, mySubmissions = [], onGoToStudentWork }: Props) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<SelectedFile | null>(null);
@@ -60,6 +73,7 @@ export default function SubmitAssignmentPage({ assessment, mySubmissions = [] }:
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
 
+  const gradedSubmission = getGradedSubmission(mySubmissions);
   const initialSubmission = getLatestSubmission(mySubmissions);
   const [currentSubmission, setCurrentSubmission] = useState<AssessmentSubmission | null>(
     initialSubmission,
@@ -126,6 +140,75 @@ export default function SubmitAssignmentPage({ assessment, mySubmissions = [] }:
       router.refresh();
     });
   };
+
+  // Graded state — any submission in history with grade data, regardless of latest status
+  if (gradedSubmission) {
+    const grade = gradedSubmission.grade;
+    const graderName = grade?.grader?.fullName || grade?.graderName;
+
+    return (
+      <div className="py-4">
+        <div className="rounded-[20px] bg-white p-7.5">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between mb-6">
+            <div className="flex items-start gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent-sand">
+                <Award size={30} color="#DEA20A" />
+              </div>
+              <div>
+                <p className="text-[24px] font-semibold text-primary">
+                  Your work has been evaluated!
+                </p>
+                <p className="mt-1 text-sm text-tertiary">
+                  Your instructor has reviewed and graded your submission. Check the Student Work tab for your detailed feedback.
+                </p>
+              </div>
+            </div>
+            <div className="rounded-[10px] bg-accent-sand px-4 py-2 text-sm font-semibold uppercase text-[#DEA20A] whitespace-nowrap">
+              GRADED
+            </div>
+          </div>
+
+          {grade?.score != null && (
+            <div className="flex items-center gap-5 rounded-[14px] bg-accent-sand/50 p-5 mb-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent-sand">
+                <Award size={28} color="#DEA20A" variant="Bold" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-tertiary">
+                  Your Score
+                </p>
+                <p className="text-[38px] font-bold leading-none text-[#DEA20A]">
+                  {grade.score}
+                  {assessment.maxScore != null && (
+                    <span className="text-[20px] font-medium text-tertiary">
+                      {" "}/ {assessment.maxScore}
+                    </span>
+                  )}
+                </p>
+                {(graderName || grade.gradedAt) && (
+                  <p className="mt-1 text-sm text-tertiary">
+                    {graderName && (
+                      <>
+                        Graded by{" "}
+                        <span className="font-medium text-primary">{graderName}</span>
+                      </>
+                    )}
+                    {grade.gradedAt && <> · {formatSubmittedAt(grade.gradedAt)}</>}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {onGoToStudentWork && (
+            <PrimaryButton size="md" onClick={onGoToStudentWork}>
+              View Feedback in Student Work Tab
+            </PrimaryButton>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // Submitted state
   if (!isFormMode && currentSubmission) {
