@@ -19,6 +19,8 @@ npm run lint     # ESLint
 
 No test runner is configured. Docker: `docker compose up` (exposes port 3000).
 
+**Custom server**: `src/app/server.ts` implements a Socket.IO server layered on top of Next.js. Run it with `npx ts-node src/app/server.ts` (or compiled) instead of `npm run start` when Socket.IO room signaling is needed. `npm run dev` uses the standard Next.js dev server without Socket.IO.
+
 ## Environment Variables
 
 Required in `.env`:
@@ -52,7 +54,9 @@ Required in `.env`:
 
 ### State Management
 
-- **Zustand** for client-side stores (e.g. `useNotificationStore`)
+- **Zustand** stores:
+  - `useNotificationStore` — notification badge/list state
+  - `useMeetingRoomStore` (`src/stores/useMeetingRoomStore.ts`) — communication room UI state (panels open/closed, mic/cam/screen/hand state, participant count, unread message count)
 - **React Context** for navbar state (`NavbarContext`)
 - **react-hook-form** + **Zod** for form validation (schemas in `src/schemas/`)
 
@@ -69,6 +73,17 @@ Three UI layers coexist — use the right one:
 - **iconsax-react** — primary icon library, used as `Icon` type in component props
 - **lucide-react** — secondary, used in shadcn/ui components
 
+<<<<<<< HEAD
+=======
+### Notable Third-Party Libraries
+
+- **@dayflow/react** — calendar UI on the `/calendar` page
+- **@mui/x-charts** — charts in reports (BarChart, DonutChart)
+- **@tiptap/react** — rich text editor
+- **framer-motion** — animations
+- **sileo** — toast notifications in auth flows
+
+>>>>>>> 8754187f4b9b9fdb36aa531e95d35c8e6a46ec81
 ## Design Tokens & Styling
 
 **Tailwind CSS v4** with PostCSS (`@tailwindcss/postcss`). All custom tokens defined in `src/styles/globals.css` under `@theme`:
