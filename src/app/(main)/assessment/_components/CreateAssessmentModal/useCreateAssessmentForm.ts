@@ -8,6 +8,11 @@ type CreateAssessmentFormErrors = Partial<
   Record<keyof CreateAssessmentForm, string>
 >;
 
+const STEP_FIELDS: Record<number, (keyof CreateAssessmentForm)[]> = {
+  0: ["title", "assessmentType"],
+  1: ["subjectId", "classroomIds", "startAt", "dueAt", "maxScore", "requiredDailyMinutes"],
+};
+
 const assessmentFormSchema = z.object({
   title: z.string().trim().min(4, "Title must be at least 4 characters."),
   description: z.string(),
@@ -167,6 +172,27 @@ export function useCreateAssessment({
     });
   };
 
+  const validateStep = (step: number) => {
+    const fields = STEP_FIELDS[step] ?? [];
+    const result = assessmentFormSchema.safeParse(form);
+    const stepErrors: CreateAssessmentFormErrors = {};
+
+    if (!result.success) {
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof CreateAssessmentForm | undefined;
+        if (field && fields.includes(field) && !stepErrors[field]) {
+          stepErrors[field] = issue.message;
+        }
+      });
+    }
+
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors((prev) => ({ ...prev, ...stepErrors }));
+      return stepErrors;
+    }
+    return null;
+  };
+
   const reset = () => {
     setForm(mode === "edit" ? initialForm : toAssessmentForm());
     setErrors({});
@@ -222,7 +248,7 @@ export function useCreateAssessment({
     }
   };
 
-  return { form, errors, handleChange, submit, reset, loading, error };
+  return { form, errors, handleChange, submit, reset, loading, error, validateStep };
 }
 
 export type { CreateAssessmentFormErrors };

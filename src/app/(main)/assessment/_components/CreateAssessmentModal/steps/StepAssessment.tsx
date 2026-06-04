@@ -147,8 +147,27 @@ export default function StepAssessment({
     const [rubricBadges, setRubricBadges] = useState<RubricBadge[]>(
         () => parseRubricInput(form.gradingRubric),
     );
+    const [rubricError, setRubricError] = useState("");
     const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleRubricChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRubricInput(e.target.value);
+        if (rubricError) setRubricError("");
+    };
+
+    const handleRubricBlur = () => {
+        const value = rubricInput.trim();
+        if (!value) { setRubricError(""); return; }
+        const parsed = parseRubricInput(value);
+        if (parsed.length === 0) {
+            setRubricError("Invalid format. Use Label:Score;Label:Score (e.g. Web:30;Java:30)");
+        } else if (value !== form.gradingRubric.trim()) {
+            setRubricError("Press Enter to confirm your rubric entries");
+        } else {
+            setRubricError("");
+        }
+    };
 
     const handleRubricKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
@@ -157,6 +176,9 @@ export default function StepAssessment({
             if (parsed.length > 0) {
                 setRubricBadges(parsed);
                 onChange("gradingRubric", rubricInput);
+                setRubricError("");
+            } else if (rubricInput.trim()) {
+                setRubricError("Invalid format. Use Label:Score;Label:Score (e.g. Web:30;Java:30)");
             }
         }
     };
@@ -353,8 +375,11 @@ export default function StepAssessment({
                     inputType="secondary"
                     placeholder="Web:30;Java:30"
                     value={rubricInput}
-                    onChange={(e) => setRubricInput(e.target.value)}
+                    onChange={handleRubricChange}
+                    onBlur={handleRubricBlur}
                     onKeyDown={handleRubricKeyDown}
+                    isInvalid={!!rubricError}
+                    errorMessage={rubricError}
                     description="Format: Label:Score;Label:Score — press Enter to add"
                 />
 
