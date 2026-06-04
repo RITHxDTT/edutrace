@@ -26,7 +26,6 @@ export default function SubmissionDetailDrawer({
   onClose,
 }: Props) {
   if (!submission) return null;
-
   const tabs = [
     {
       key: "overview",
@@ -61,21 +60,21 @@ export default function SubmissionDetailDrawer({
               {profileImageUrl ? (
                 <Image
                   src={profileImageUrl}
-                  alt={submission.studentName ?? "Student profile"}
+                  alt={submission.student?.profileImageUrl ?? "Student profile"}
                   width={52}
                   height={52}
                   className="h-full w-full rounded-full object-cover"
                 />
               ) : (
-                getStudentInitials(submission.studentName)
+                getStudentInitials(submission.student?.fullName)
               )}
             </div>
             <div className="min-w-0">
               <p className="truncate text-[22px] font-semibold text-primary">
-                {submission.studentName ?? "Unnamed Student"}
+                {submission.student?.fullName ?? "Unnamed Student"}
               </p>
               <p className="truncate text-sm text-tertiary">
-                {submission.classroomName ?? submission.classroomAbbre ?? "No class"}
+                {submission.student?.classroom?.classroomAbbre ? submission.student?.classroom?.classroomAbbre : "No Class"}
               </p>
             </div>
           </div>

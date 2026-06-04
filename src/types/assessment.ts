@@ -69,11 +69,7 @@ type SubmissionStudent = {
   userId?: string;
   fullName?: string;
   profileImageUrl?: string;
-  classroom?: {
-    classroomId?: string;
-    className?: string;
-    classroomAbbre?: string;
-  };
+  classroom: AssessmentClassroom
 };
 
 type WorkSession = {
@@ -92,16 +88,9 @@ type AssessmentSubmission = {
   submissionId: string;
   status?: "PENDING" | "SUBMITTED" | "RESUBMITTED" | "GRADED" | "RETURNED" | string;
   submittedAt?: string;
-  // flat fields populated by the teacher endpoint or normalised from the student endpoint
-  studentId?: string;
-  studentName?: string;
   studentProfileImageUrl?: string;
   assessmentTitle?: string;
   isResubmission?: boolean;
-  classroomId?: string;
-  classroomName?: string;
-  classroomAbbre?: string;
-  // nested student object returned by /submissions/my
   student?: SubmissionStudent;
   submissionResources?: SubmissionResource[];
   grade?: SubmissionGrade;
@@ -119,6 +108,12 @@ type AssessmentSubmissionPayload = {
   handedIn?: number;
   assigned?: number;
 };
+
+type SubmissionClassroom = {
+  classroomId?: string;
+  classroomName?: string;
+  classroomAbbre?: string;
+}
 
 type WorkSessionPayload = {
   content: WorkSession[];
@@ -201,9 +196,7 @@ export type {
   CreateAssessmentForm,
   GradeSubmissionForm,
   SubmissionGrade,
-  SubmissionGrader,
   SubmissionResource,
-  SubmissionStudent,
   SubmitAssignmentForm,
   WorkSession,
   WorkSessionPayload,

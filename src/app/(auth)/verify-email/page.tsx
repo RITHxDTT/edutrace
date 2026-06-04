@@ -3,7 +3,7 @@ import VerifyEmailForm from './_components/VerifyEmailForm'
 
 export default function page() {
       return (
-            <div className="flex flex-col justify-center h-screen w-full lg:w-[45%] p-8 sm:p-12 md:p-16 bg-white">
+            <div className="flex flex-col justify-center h-screen w-full xl:w-[45%] p-8 sm:p-12 md:p-16 bg-white">
 
                   <div className="w-full max-w-xl mx-auto my-auto py-8 flex flex-col items-cente gap-8">
                         <div>

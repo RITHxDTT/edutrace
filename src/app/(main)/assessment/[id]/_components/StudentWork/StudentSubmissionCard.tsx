@@ -1,7 +1,10 @@
+"use client"
+
 import { AssessmentSubmission } from "@/types/assessment";
 import { Clock, DocumentText } from "iconsax-react";
 import Image from "next/image";
 import { getStudentInitials, getSubmittedLabel } from "./studentWorkUtils";
+import { getUserByIdAction } from "@/actions/user.action";
 
 type Props = {
   submission: AssessmentSubmission;
@@ -17,13 +20,14 @@ export default function StudentSubmissionCard({
   onClick,
 }: Props) {
   const resourceCount = submission.submissionResources?.length ?? 0;
+
   return (
     <button
       type="button"
       onClick={onClick}
       className={`flex h-full min-h-[158px] flex-col rounded-[15px] border bg-white p-5 text-left transition ${isSelected
-          ? "border-menta shadow-[0_10px_28px_rgba(91,94,221,0.14)]"
-          : "border-[lab(90.952% -.0000596046 0)] hover:border-menta/60"
+        ? "border-menta shadow-[0_10px_28px_rgba(91,94,221,0.14)]"
+        : "border-[lab(90.952% -.0000596046 0)] hover:border-menta/60"
         }`}
     >
       <div className="flex items-start gap-3">
@@ -31,22 +35,22 @@ export default function StudentSubmissionCard({
           {profileImageUrl ? (
             <Image
               src={profileImageUrl}
-              alt={submission.studentName ?? "Student profile"}
+              alt={submission.student?.fullName ?? "Student profile"}
               width={48}
               height={48}
               className="h-full w-full rounded-full object-cover"
             />
           ) : (
-            getStudentInitials(submission.studentName)
+            getStudentInitials(submission.student?.fullName)
           )}
         </div>
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-[18px] font-medium text-primary">
-            {submission.studentName ?? "Unnamed Student"}
+            {submission.student?.fullName ?? "Unnamed Student"}
           </p>
           <p className="truncate text-sm text-tertiary">
-            {submission.classroomName ?? submission.classroomAbbre ?? "No class"}
+            {submission.student?.classroom.className ?? submission.student?.classroom.classroomAbbre ?? "No class"}
           </p>
         </div>
 

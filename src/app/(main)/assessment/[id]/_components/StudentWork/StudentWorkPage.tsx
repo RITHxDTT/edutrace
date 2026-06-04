@@ -13,7 +13,7 @@ import {
   WorkSession,
   WorkSessionPayload,
 } from "@/types/assessment";
-import { ClassroomType } from "@/types/classroom";
+import { ClassroomProps, ClassroomType } from "@/types/classroom";
 import { UserProfile } from "@/types/user";
 import StudentSubmissionCard from "./StudentSubmissionCard";
 import StudentWorkStats from "./StudentWorkStats";
@@ -24,6 +24,7 @@ type SubmissionData = AssessmentSubmissionPayload | AssessmentSubmission[] | und
 type Props = {
   assessment: AssessmentType;
   submissions?: SubmissionData;
+  classrooms: ClassroomType[];
 };
 
 function normalizeSubmissions(
@@ -34,29 +35,6 @@ function normalizeSubmissions(
   return submissions?.content ?? assessment.studentWorks ?? [];
 }
 
-function normalizeClassrooms(assessment: AssessmentType, submissions: AssessmentSubmission[]) {
-  const classroomMap = new Map<string, ClassroomType>();
-
-  assessment.classrooms?.forEach((classroom) => {
-    classroomMap.set(classroom.classroomId, {
-      classroomId: classroom.classroomId,
-      className: classroom.className ?? classroom.classroomAbbre ?? "Classroom",
-      classroomAbbre: classroom.classroomAbbre ?? classroom.className ?? "Class",
-    });
-  });
-
-  submissions.forEach((submission) => {
-    if (!submission.classroomId) return;
-
-    classroomMap.set(submission.classroomId, {
-      classroomId: submission.classroomId,
-      className: submission.classroomName ?? submission.classroomAbbre ?? "Classroom",
-      classroomAbbre: submission.classroomAbbre ?? submission.classroomName ?? "Class",
-    });
-  });
-
-  return Array.from(classroomMap.values());
-}
 
 function getBackendCount(
   submissions: SubmissionData,
@@ -80,7 +58,7 @@ function deduplicateByStudent(submissions: AssessmentSubmission[]): AssessmentSu
   const latestByStudent = new Map<string, AssessmentSubmission>();
 
   for (const submission of submissions) {
-    const key = submission.studentId ?? submission.studentName ?? submission.submissionId;
+    const key = submission.student?.userId ?? submission.student?.fullName ?? submission.submissionId;
     const existing = latestByStudent.get(key);
 
     if (
@@ -90,7 +68,6 @@ function deduplicateByStudent(submissions: AssessmentSubmission[]): AssessmentSu
       latestByStudent.set(key, submission);
     }
   }
-
   return Array.from(latestByStudent.values());
 }
 
@@ -99,16 +76,25 @@ function normalizeWorkSessions(data: WorkSessionPayload | WorkSession[] | undefi
   return data?.content ?? [];
 }
 
+function normalizedClassroom(submissions: AssessmentSubmission[]): ClassroomType[] {
+  const classroomMap = new Map<string, ClassroomType>();
+  for (const submission of submissions) {
+    const key = submission.student?.userId ?? submission.student?.fullName ?? submission.submissionId;
+    classroomMap.set(key, submission?.student?.classroom as ClassroomType);
+  }
+  return Array.from(classroomMap.values());
+}
+
 function getStudentWorkSessions(
   sessions: WorkSession[],
   submission: AssessmentSubmission,
 ) {
   return sessions.filter((session) => {
-    if (submission.studentId && session.userId === submission.studentId) {
+    if (submission.student?.userId && session.userId === submission.student?.userId) {
       return true;
     }
 
-    if (submission.studentName && session.studentName === submission.studentName) {
+    if (submission.student?.fullName && session.studentName === submission.student.fullName) {
       return true;
     }
 
@@ -138,15 +124,12 @@ export default function StudentWorkPage({ assessment, submissions }: Props) {
     [assessment, submissions],
   );
 
-  const classrooms = useMemo(
-    () => normalizeClassrooms(assessment, submissionList),
-    [assessment, submissionList],
-  );
-
   const filteredSubmissions = useMemo(() => {
     if (!selectedClassroomId) return submissionList;
     return submissionList;
   }, [selectedClassroomId, submissionList]);
+
+  const classrooms = useMemo(() => normalizedClassroom(submissionList), [submissionList])
 
   const backendHandedIn = getBackendCount(submissions, "handedIn");
   const backendAssigned = getBackendCount(submissions, "assigned") ?? assessment.totalAssigned;
@@ -172,9 +155,9 @@ export default function StudentWorkPage({ assessment, submissions }: Props) {
     const missingUserIds = Array.from(
       new Set(
         submissionList
-          .map((submission) => submission.studentId)
+          .map((submission) => submission.student?.userId)
           .filter((studentId): studentId is string => !!studentId && !(studentId in profileByUserId)),
-      ),
+      )
     );
 
     if (missingUserIds.length === 0) return;
@@ -270,6 +253,7 @@ export default function StudentWorkPage({ assessment, submissions }: Props) {
     setLoadingSubmissionId(null);
   };
 
+
   const handleSubmissionChange = (submission: AssessmentSubmission) => {
     setSelectedSubmission(submission);
     setSubmissionDetailById((prev) => ({
@@ -277,6 +261,7 @@ export default function StudentWorkPage({ assessment, submissions }: Props) {
       [submission.submissionId]: submission,
     }));
   };
+
 
   return (
     <div className="flex flex-col gap-5 py-4">
@@ -305,30 +290,28 @@ export default function StudentWorkPage({ assessment, submissions }: Props) {
             );
           }
 
-          return submitted.map((submission) => (
-            <StudentSubmissionCard
-              key={submission.submissionId}
-              submission={submission}
-              profileImageUrl={
-                submission.studentId
-                  ? profileByUserId[submission.studentId]?.profileImageUrl
-                  : undefined
-              }
-              isSelected={selectedSubmission?.submissionId === submission.submissionId}
-              onClick={() => {
-                void handleSelectSubmission(submission);
-              }}
-            />
-          ));
+          return submitted.map((submission) => {
+            return (
+              <StudentSubmissionCard
+                key={submission.submissionId}
+                submission={submission}
+                profileImageUrl={
+                  submission.student?.profileImageUrl
+                }
+                isSelected={selectedSubmission?.submissionId === submission.submissionId}
+                onClick={() => {
+                  void handleSelectSubmission(submission);
+                }}
+              />
+            )
+          });
         })()}
       </div>
 
       <SubmissionDetailDrawer
         submission={selectedSubmissionWithSessions}
         profileImageUrl={
-          selectedSubmissionWithSessions?.studentId
-            ? profileByUserId[selectedSubmissionWithSessions.studentId]?.profileImageUrl
-            : undefined
+          selectedSubmissionWithSessions?.student?.profileImageUrl
         }
         isLoading={
           !!selectedSubmission &&

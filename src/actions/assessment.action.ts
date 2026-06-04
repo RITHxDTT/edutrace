@@ -74,19 +74,17 @@ export const getAssessmentByIdAction = async (assessmentId: string) => {
   if (!result.success) {
     return { error: result.message };
   }
-
+  console.log(result)
   return result.payload;
 }
 
 export const getAssessmentSubmissionsAction = async (
   assessmentId: string,
-  classroomId?: string,
 ) => {
-  const result = await getAssessmentSubmissionsService(assessmentId, classroomId);
+  const result = await getAssessmentSubmissionsService(assessmentId);
   if (!result.success) {
     return { error: result.message };
   }
-
   return result.payload;
 };
 

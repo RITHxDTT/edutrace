@@ -86,28 +86,28 @@ export const getAssessmentByIdService = async (assessmentId: string) => {
     }
   )
   const result = await res.json();
-
+  
   return result;
 
 }
 
 export const getAssessmentSubmissionsService = async (
   assessmentId: string,
-  classroomId?: string,
 ) => {
   const searchParams = new URLSearchParams();
 
-  if (classroomId) searchParams.set("classroomId", classroomId);
+  if (assessmentId) searchParams.set("assessmentId", assessmentId);
 
   const query = searchParams.toString();
+  console.log(query)
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessment/${assessmentId}/submissions${query ? `?${query}` : ""}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments/${assessmentId}/submissions?${query}`,
     {
       headers: await headerToken(),
     },
   );
-
   const result = await res.json();
+  
   return result;
 };
 

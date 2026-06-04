@@ -20,7 +20,6 @@ type Props = {
 
 function getLatestGrade(submissions?: AssessmentSubmission[]): SubmissionGrade | null {
   if (!submissions?.length) return null;
-  // Find most-recent submission that carries a grade (score present), regardless of status label
   return (
     [...submissions]
       .sort(
@@ -34,6 +33,7 @@ function getLatestGrade(submissions?: AssessmentSubmission[]): SubmissionGrade |
 }
 
 export function isActiveWorkSession(session?: WorkSession | null) {
+
   if (!session) return false;
   const status = session.status?.toUpperCase();
   return !session.endedAt || status === "ACTIVE" || status === "IN_PROGRESS" || status === "STARTED";
@@ -171,7 +171,6 @@ export default function MyStudentWorkPage({
     ARCHIVED: "Archived",
   };
 
-  // Shared time stats block used by both graded and submitted views
   const timeStats = (
     <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
       <div className="rounded-[12px] bg-input-field p-4">
@@ -275,7 +274,6 @@ export default function MyStudentWorkPage({
     );
   }
 
-  // Submitted (not yet graded) view
   if (hasSubmittedWork(submissionStatus)) {
     return (
       <div className="py-4">

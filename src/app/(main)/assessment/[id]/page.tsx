@@ -29,6 +29,7 @@ import AssessmentHeaderActions from "./_components/AssessmentHeaderActions";
 import StudentWorkPage from "./_components/StudentWork/StudentWorkPage";
 import StudentAssessmentTabs from "./_components/StudentAssessmentTabs";
 import { getMeetingRoomByAssessmentIdAction } from "@/actions/meeting.action";
+import { getAllClassroomsAction } from "@/actions/classroom.action";
 
 type PageProps = {
   params: Promise<{
@@ -64,6 +65,7 @@ export default async function page({ params }: PageProps) {
   const isTeacher = role === "teacher";
   const isStudent = role === "student";
 
+
   const meetingRoomResult = (await getMeetingRoomByAssessmentIdAction(
     id,
   )) as MeetingRoomResult;
@@ -92,6 +94,8 @@ export default async function page({ params }: PageProps) {
   );
 
   const assessment = myAssessment ?? assessmentResult;
+  
+  const classrooms = await getAllClassroomsAction();
 
   const instructionContent = <InstructionDetailPage assessment={assessment} />;
 
@@ -134,6 +138,7 @@ export default async function page({ params }: PageProps) {
       content: (
         <StudentWorkPage
           assessment={assessment}
+          classrooms={classrooms}
           submissions={submissions}
         />
       ),
