@@ -50,12 +50,30 @@ type SubmissionResource = {
   submissionId?: string;
 };
 
+type SubmissionGrader = {
+  userId?: string;
+  fullName?: string;
+  profileImageUrl?: string;
+};
+
 type SubmissionGrade = {
   gradeId?: string;
   score?: number;
   feedback?: string;
   gradedAt?: string;
-  graderName?: string;
+  graderName?: string;   // flat alias kept for backwards compat
+  grader?: SubmissionGrader;
+};
+
+type SubmissionStudent = {
+  userId?: string;
+  fullName?: string;
+  profileImageUrl?: string;
+  classroom?: {
+    classroomId?: string;
+    className?: string;
+    classroomAbbre?: string;
+  };
 };
 
 type WorkSession = {
@@ -72,15 +90,19 @@ type WorkSession = {
 
 type AssessmentSubmission = {
   submissionId: string;
-  status?: "PENDING" | "SUBMITTED" | "GRADED" | "RETURNED" | string;
+  status?: "PENDING" | "SUBMITTED" | "RESUBMITTED" | "GRADED" | "RETURNED" | string;
   submittedAt?: string;
+  // flat fields populated by the teacher endpoint or normalised from the student endpoint
   studentId?: string;
   studentName?: string;
+  studentProfileImageUrl?: string;
   assessmentTitle?: string;
   isResubmission?: boolean;
   classroomId?: string;
   classroomName?: string;
   classroomAbbre?: string;
+  // nested student object returned by /submissions/my
+  student?: SubmissionStudent;
   submissionResources?: SubmissionResource[];
   grade?: SubmissionGrade;
   totalTimeSpentMinutes?: number;
@@ -178,7 +200,10 @@ export type {
   AssessmentType,
   CreateAssessmentForm,
   GradeSubmissionForm,
+  SubmissionGrade,
+  SubmissionGrader,
   SubmissionResource,
+  SubmissionStudent,
   SubmitAssignmentForm,
   WorkSession,
   WorkSessionPayload,

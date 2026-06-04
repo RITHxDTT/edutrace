@@ -2,14 +2,21 @@
 
 import { submitAssignmentAction } from "@/actions/assessment.action";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
-import { AssessmentType } from "@/types/assessment";
-import { FolderOpen, Gallery, Paperclip2, Trash, Link as LinkIcon } from "iconsax-react";
-import { File as FileIcon } from "lucide-react";
+import { AssessmentSubmission, AssessmentType } from "@/types/assessment";
+import { Paperclip2, Trash, Link as LinkIcon, TickCircle } from "iconsax-react";
 import { useRef, useState, useTransition } from "react";
 import { PrimaryInput } from "@/components/Inputs/PrimaryInputField";
+import { useRouter } from "next/navigation";
+import StudentWorkFileCard from "../StudentWork/StudentWorkFileCard";
+import {
+  formatFileSize,
+  getFileColor,
+  getFileIcon,
+} from "../StudentWork/studentWorkUtils";
 
 type Props = {
   assessment: AssessmentType;
+  mySubmissions?: AssessmentSubmission[];
 };
 
 type SelectedFile = {
@@ -17,61 +24,64 @@ type SelectedFile = {
   file: File;
 };
 
-function formatFileSize(bytes: number) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+function hasSubmittedWork(status?: string) {
+  const s = status?.toUpperCase();
+  return s === "SUBMITTED" || s === "RESUBMITTED";
 }
 
-function getFileIcon(name: string, color?: string) {
-  const ext = name.split(".").pop()?.toLowerCase();
-
-  if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext ?? "")) {
-    return <Gallery size={14} color={color} />;
-  }
-
-  if (["pdf", "zip", "doc", "docx", "txt"].includes(ext ?? "")) {
-    return <FolderOpen size={14} color={color} />;
-  }
-
-  return <FileIcon size={14} color={color} />;
+function getLatestSubmission(submissions: AssessmentSubmission[]): AssessmentSubmission | null {
+  return (
+    [...submissions]
+      .sort(
+        (a, b) =>
+          new Date(b.submittedAt ?? 0).getTime() -
+          new Date(a.submittedAt ?? 0).getTime(),
+      )
+      .find((s) => hasSubmittedWork(s.status)) ?? null
+  );
 }
 
-function getFileColor(name: string) {
-  const ext = name.split(".").pop()?.toLowerCase();
-
-  if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext ?? "")) {
-    return { bgColor: "bg-light-green", iconColor: "#009F15" };
-  }
-
-  if (["doc", "docx", "txt", "pdf"].includes(ext ?? "")) {
-    return { bgColor: "bg-light-lavendar", iconColor: "#2E25C9" };
-  }
-
-  if (["zip"].includes(ext ?? "")) {
-    return { bgColor: "bg-lighter-orange", iconColor: "#DEA20A" };
-  }
-
-  return { bgColor: "bg-input-field", iconColor: "#111827" };
+function formatSubmittedAt(dateStr?: string) {
+  if (!dateStr) return "";
+  return new Date(dateStr).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-export default function SubmitAssignmentPage({ assessment }: Props) {
+export default function SubmitAssignmentPage({ assessment, mySubmissions = [] }: Props) {
+  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<SelectedFile | null>(null);
   const [link, setLink] = useState("");
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
 
+  const initialSubmission = getLatestSubmission(mySubmissions);
+  const [currentSubmission, setCurrentSubmission] = useState<AssessmentSubmission | null>(
+    initialSubmission,
+  );
+  const [isFormMode, setIsFormMode] = useState(!initialSubmission);
+
   const handleFiles = (selectedFiles: FileList | null) => {
     const selectedFile = selectedFiles?.[0];
     if (!selectedFile) return;
-
     setFile({
       id: `${selectedFile.name}-${selectedFile.lastModified}-${crypto.randomUUID()}`,
       file: selectedFile,
     });
     setMessage("");
     if (inputRef.current) inputRef.current.value = "";
+  };
+
+  const handleCancelResubmit = () => {
+    setIsFormMode(false);
+    setFile(null);
+    setLink("");
+    setMessage("");
   };
 
   const handleSubmit = () => {
@@ -85,40 +95,141 @@ export default function SubmitAssignmentPage({ assessment }: Props) {
       formData.set("file", file.file);
       formData.set("link", link.trim());
 
-      const result = await submitAssignmentAction(
-        assessment.assessmentId,
-        formData,
-      );
+      const result = await submitAssignmentAction(assessment.assessmentId, formData);
 
       if (!result.success) {
         setMessage(result.error ?? "Unable to submit assignment.");
         return;
       }
 
+      // Optimistically show submitted state using the API response or local file info
+      const newSubmission: AssessmentSubmission = {
+        submissionId: result.data?.submissionId ?? crypto.randomUUID(),
+        status: currentSubmission ? "RESUBMITTED" : "SUBMITTED",
+        submittedAt: result.data?.submittedAt ?? new Date().toISOString(),
+        submissionResources: result.data?.submissionResources ?? [
+          {
+            fileName: file.file.name,
+            fileSize: file.file.size,
+            mimeType: file.file.type,
+            resourceType: "FILE",
+            resourceUrl: "",
+          },
+        ],
+      };
+
+      setCurrentSubmission(newSubmission);
+      setIsFormMode(false);
       setFile(null);
       setLink("");
-      setMessage("Assignment submitted successfully.");
+      setMessage("");
+      router.refresh();
     });
   };
+
+  // Submitted state
+  if (!isFormMode && currentSubmission) {
+    const resources = currentSubmission.submissionResources ?? [];
+    const isResubmitted = currentSubmission.status?.toUpperCase() === "RESUBMITTED";
+
+    return (
+      <div className="grid grid-cols-[1fr_360px] gap-5 py-4">
+        <div className="rounded-[20px] bg-white p-7.5">
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[24px] font-semibold text-primary">Submit Assignment</p>
+              <p className="text-sm text-tertiary">{assessment.title}</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsFormMode(true)}
+              className="rounded-[10px] border border-red/30 bg-[#FCD3D3]/50 px-5 py-2 text-sm font-semibold text-red transition-colors hover:bg-[#FCD3D3]"
+            >
+              Unsubmit
+            </button>
+          </div>
+
+          <div className="flex items-center gap-4 rounded-[14px] bg-light-green p-5">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white">
+              <TickCircle size={28} color="#009F15" variant="Bold" />
+            </div>
+            <div>
+              <p className="text-[18px] font-semibold text-[#009F15]">
+                {isResubmitted ? "Resubmitted" : "Submitted"}
+              </p>
+              {currentSubmission.submittedAt && (
+                <p className="text-sm text-[#009F15]/80">
+                  Turned in: {formatSubmittedAt(currentSubmission.submittedAt)}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-[20px] bg-white p-7.5">
+          <p className="mb-4 text-[18px] font-medium text-primary">Your Submission</p>
+
+          <div className="flex flex-col gap-3">
+            {resources.length > 0 ? (
+              resources.map((resource) => (
+                <StudentWorkFileCard
+                  key={resource.submissionResourceId ?? resource.resourceUrl}
+                  resource={resource}
+                />
+              ))
+            ) : (
+              <p className="rounded-[10px] bg-input-field px-4 py-3 text-sm text-tertiary">
+                No files attached.
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Form state (initial submit or resubmit)
+  const isResubmitMode = !!currentSubmission;
 
   return (
     <div className="grid grid-cols-[1fr_360px] gap-5 py-4">
       <div className="rounded-[20px] bg-white p-7.5">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>
-            <p className="text-[24px] font-semibold text-primary">Submit Assignment</p>
+            <p className="text-[24px] font-semibold text-primary">
+              {isResubmitMode ? "Resubmit Assignment" : "Submit Assignment"}
+            </p>
             <p className="text-sm text-tertiary">{assessment.title}</p>
           </div>
 
-          <PrimaryButton
-            size="md"
-            onClick={handleSubmit}
-            disabled={isPending}
-            className="disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isPending ? "Submitting..." : "Submit Work"}
-          </PrimaryButton>
+          <div className="flex items-center gap-3">
+            {isResubmitMode && (
+              <button
+                type="button"
+                onClick={handleCancelResubmit}
+                className="text-sm font-medium text-tertiary transition-colors hover:text-primary"
+              >
+                Cancel
+              </button>
+            )}
+
+            <PrimaryButton
+              size="md"
+              onClick={handleSubmit}
+              disabled={isPending}
+              className="disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isPending ? "Submitting..." : "Submit Work"}
+            </PrimaryButton>
+          </div>
         </div>
+
+        {isResubmitMode && (
+          <div className="mb-4 rounded-[10px] bg-accent-sand px-4 py-3 text-sm font-medium text-[#DEA20A]">
+            You are resubmitting your work. A new submission will be created.
+          </div>
+        )}
 
         <button
           type="button"
@@ -171,16 +282,14 @@ export default function SubmitAssignmentPage({ assessment }: Props) {
               className="flex items-center justify-between gap-3 rounded-[8px] border border-[lab(90.952% -.0000596046 0)] px-4 py-3"
             >
               <div className="flex min-w-0 items-center gap-3">
-                <div className={`${getFileColor(file.file.name).bgColor} shrink-0 rounded-full p-2`}>
+                <div
+                  className={`${getFileColor(file.file.name).bgColor} shrink-0 rounded-full p-2`}
+                >
                   {getFileIcon(file.file.name, getFileColor(file.file.name).iconColor)}
                 </div>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-primary">
-                    {file.file.name}
-                  </p>
-                  <p className="text-xs text-tertiary">
-                    {formatFileSize(file.file.size)}
-                  </p>
+                  <p className="truncate text-sm font-medium text-primary">{file.file.name}</p>
+                  <p className="text-xs text-tertiary">{formatFileSize(file.file.size)}</p>
                 </div>
               </div>
 

@@ -2,6 +2,7 @@ import {
   getAssessmentByIdAction,
   getAssessmentSubmissionsAction,
   getMyAssessmentsAction,
+  getMySubmissionsAction,
   getMyWorkSessionsAction,
 } from "@/actions/assessment.action";
 import { getAllSubjectAction } from "@/actions/subject.action";
@@ -69,19 +70,21 @@ export default async function page({ params }: PageProps) {
 
   const meetingRoomId = meetingRoomResult?.meetingRoomId;
 
-  const [assessmentResult, subjects, submissions, workSessions, myAssessments] =
+  const [assessmentResult, subjects, submissions, workSessions, myAssessments, mySubmissions] =
     (await Promise.all([
       getAssessmentByIdAction(id),
       isTeacher ? getAllSubjectAction() : Promise.resolve([]),
       isTeacher ? getAssessmentSubmissionsAction(id) : Promise.resolve(undefined),
       isStudent ? getMyWorkSessionsAction(id) : Promise.resolve(undefined),
       isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
+      isStudent ? getMySubmissionsAction(id) : Promise.resolve(undefined),
     ])) as [
       AssessmentType,
       SubjectType[],
       SubmissionData,
       WorkSessionData,
       MyAssessmentData,
+      AssessmentSubmission[] | undefined,
     ];
 
   const myAssessment = normalizeMyAssessments(myAssessments).find(
@@ -226,6 +229,7 @@ export default async function page({ params }: PageProps) {
             instruction={instructionContent}
             communication={communicationContent}
             workSessions={workSessions}
+            mySubmissions={Array.isArray(mySubmissions) ? mySubmissions : undefined}
           />
         ) : (
           <PrimaryTabs tabs={assessmentTabs} colors="primary" />

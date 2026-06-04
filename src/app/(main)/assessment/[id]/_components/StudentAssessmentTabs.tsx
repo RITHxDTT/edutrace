@@ -7,6 +7,7 @@ import {
 } from "@/actions/assessment.action";
 import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
 import {
+  AssessmentSubmission,
   AssessmentType,
   WorkSession,
   WorkSessionPayload,
@@ -46,6 +47,7 @@ type Props = {
   instruction: ReactNode;
   communication: ReactNode;
   workSessions?: WorkSessionPayload | WorkSession[];
+  mySubmissions?: AssessmentSubmission[];
 };
 
 function normalizeWorkSessions(workSessions?: WorkSessionPayload | WorkSession[]) {
@@ -55,7 +57,11 @@ function normalizeWorkSessions(workSessions?: WorkSessionPayload | WorkSession[]
 
 function hasSubmittedWork(status?: string) {
   const normalizedStatus = status?.toUpperCase();
-  return normalizedStatus === "SUBMITTED" || normalizedStatus === "RESUBMITTED";
+  return (
+    normalizedStatus === "SUBMITTED" ||
+    normalizedStatus === "RESUBMITTED" ||
+    normalizedStatus === "GRADED"
+  );
 }
 
 export default function StudentAssessmentTabs({
@@ -63,6 +69,7 @@ export default function StudentAssessmentTabs({
   instruction,
   communication,
   workSessions,
+  mySubmissions,
 }: Props) {
   const initialSessions = useMemo(
     () => normalizeWorkSessions(workSessions),
@@ -204,7 +211,7 @@ export default function StudentAssessmentTabs({
     {
       key: "submit-assignment",
       title: "Submit Assignment",
-      content: <SubmitAssignmentPage assessment={assessment} />,
+      content: <SubmitAssignmentPage assessment={assessment} mySubmissions={mySubmissions} />,
     },
     {
       key: "student-work",
@@ -217,6 +224,7 @@ export default function StudentAssessmentTabs({
           now={now}
           message={message}
           isPending={isPending}
+          mySubmissions={mySubmissions}
         />
       ),
     },

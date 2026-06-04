@@ -12,7 +12,7 @@ import { useState, KeyboardEvent, useRef } from "react";
 import { File, Paperclip } from "lucide-react";
 import AttachmentCard from "./_components/FileCard";
 import { FolderOpen, Gallery } from "iconsax-react";
-import { parseDate } from "@internationalized/date";
+import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 import { CreateAssessmentFormErrors } from "../useCreateAssessmentForm";
 
 type Props = {
@@ -210,14 +210,23 @@ export default function StepAssessment({
         });
     };
 
+    const isScheduled = !!form.startAt && new Date(form.startAt) > new Date();
+
     return (
         <>
+            {isScheduled && (
+                <div className="rounded-[10px] bg-accent-sand px-4 py-3 text-sm font-medium text-[#DEA20A]">
+                    This assessment is scheduled for a future date. Students will not see it or receive notifications until the start date.
+                </div>
+            )}
+
             <div className="w-full grid grid-cols-2 gap-2">
                 <DateRangePicker
                     hideTimeZone
                     className="col-span-2 w-full"
                     label="Assessment Date"
                     labelPlacement="outside-top"
+                    minValue={today(getLocalTimeZone())}
                     value={
                         form.startAt && form.dueAt
                             ? {

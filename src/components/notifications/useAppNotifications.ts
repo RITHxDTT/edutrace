@@ -2,10 +2,17 @@
 
 import { useEffect } from "react";
 import { useKnockFeed } from "@knocklabs/react";
-import { mapKnockItemToNotification, MappedNotification } from "./notification.utils";
+import { useSession } from "next-auth/react";
+import {
+  isScheduledAssessmentNotification,
+  mapKnockItemToNotification,
+  MappedNotification,
+} from "./notification.utils";
 
 export function useAppNotifications() {
   const { feedClient, useFeedStore } = useKnockFeed();
+  const { data: session } = useSession();
+  const isStudent = session?.user?.role === "student";
 
   // Select from Knock store
   const knockItems = useFeedStore((state) => state.items);
@@ -19,9 +26,14 @@ export function useAppNotifications() {
     }
   }, [feedClient]);
 
-  // Map to local UI schema
-  const notifications: MappedNotification[] = knockItems.map(mapKnockItemToNotification);
-  const unreadCount = knockMetadata.unread_count || 0;
+  // Map and filter: students don't see notifications for SCHEDULED (future) assessments
+  const allNotifications: MappedNotification[] = knockItems.map(mapKnockItemToNotification);
+  const notifications = isStudent
+    ? allNotifications.filter((n) => !isScheduledAssessmentNotification(n))
+    : allNotifications;
+  const unreadCount = isStudent
+    ? notifications.filter((n) => !n.isRead).length
+    : knockMetadata.unread_count || 0;
 
   const markAllAsRead = () => {
     feedClient?.markAllAsRead();

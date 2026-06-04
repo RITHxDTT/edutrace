@@ -15,18 +15,18 @@ export const getAllAssessementService = async ({
   type,
   subjectId
 }: GetAssessmentParams = {}) => {
-  const searchParmas = new URLSearchParams();
+  const searchParams = new URLSearchParams();
 
-  searchParmas.set("page", String(page)); // Cast number to string
-  searchParmas.set("size", String(size)); // Cast number to string
+  searchParams.set("page", String(page)); // Cast number to string
+  searchParams.set("size", String(size)); // Cast number to string
 
-  if (sortBy) searchParmas.set("sortBy", sortBy);
-  if (status) searchParmas.set("status", status);
-  if (type) searchParmas.set("type", type);
-  if (subjectId) searchParmas.set("subjectId", subjectId);
+  if (sortBy) searchParams.set("sortBy", sortBy);
+  if (status) searchParams.set("status", status);
+  if (type) searchParams.set("type", type);
+  if (subjectId) searchParams.set("subjectId", subjectId);
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments?${searchParmas.toString()}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments?${searchParams.toString()}`,
     {
       headers: await headerToken(),
     },
@@ -34,6 +34,37 @@ export const getAllAssessementService = async ({
   const result = await res.json();
   return result;
 };
+
+export const getAllMyAssessmentService = async ({
+  page = 1,
+  size = 6,
+  sortBy,
+  status,
+  type,
+  subjectId
+}: GetAssessmentParams = {}) => {
+  const searchParams = new URLSearchParams();
+
+  searchParams.set("page", String(page));
+  searchParams.set("size", String(size));
+
+
+  if (sortBy) searchParams.set("sortBy", sortBy);
+  if (status) searchParams.set("status", status);
+  if (type) searchParams.set("type", type);
+  if (subjectId) searchParams.set("subjectId", subjectId);
+
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments/my?${searchParams.toString()}`,
+    {
+      headers: await headerToken(),
+    },
+  );
+
+  const result = await res.json();
+  return result;
+}
+
 
 export const getMyAssessmentsService = async () => {
   const res = await fetch(
@@ -170,6 +201,17 @@ export const submitAssignmentService = async (
     data: result.payload,
   };
 };
+export const getMySubmissionsService = async (assessmentId: string) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments/${assessmentId}/submissions/my`,
+    {
+      headers: await headerToken(),
+    },
+  );
+  const result = await res.json();
+  return result;
+};
+
 export const getMyWorkSessionsService = async (assessmentId: string) => {
   const searchParams = new URLSearchParams();
   searchParams.set("assessmentId", assessmentId);
@@ -200,7 +242,7 @@ export const getAssessmentWorkSessionsService = async (
       headers: await headerToken(),
     },
   );
-  
+
   const result = await res.json();
 
   if (!res.ok || !result?.success) {

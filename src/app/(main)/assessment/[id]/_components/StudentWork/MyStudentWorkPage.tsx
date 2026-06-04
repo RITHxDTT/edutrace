@@ -1,7 +1,7 @@
 "use client";
 
-import { AssessmentType, WorkSession } from "@/types/assessment";
-import { Calendar, Clock, TickCircle, TimerStart } from "iconsax-react";
+import { AssessmentSubmission, AssessmentType, SubmissionGrade, WorkSession } from "@/types/assessment";
+import { Award, Calendar, Clock, TickCircle, TimerStart } from "iconsax-react";
 import { formatDateLong } from "@/utils/formatDateLong";
 import { Pagination } from "@heroui/pagination";
 import { useState } from "react";
@@ -15,7 +15,23 @@ type Props = {
   now: number;
   message?: string;
   isPending?: boolean;
+  mySubmissions?: AssessmentSubmission[];
 };
+
+function getLatestGrade(submissions?: AssessmentSubmission[]): SubmissionGrade | null {
+  if (!submissions?.length) return null;
+  // Find most-recent submission that carries a grade (score present), regardless of status label
+  return (
+    [...submissions]
+      .sort(
+        (a, b) =>
+          new Date(b.submittedAt ?? 0).getTime() -
+          new Date(a.submittedAt ?? 0).getTime(),
+      )
+      .find((s) => s.grade?.score != null)
+      ?.grade ?? null
+  );
+}
 
 export function isActiveWorkSession(session?: WorkSession | null) {
   if (!session) return false;
@@ -111,6 +127,7 @@ export default function MyStudentWorkPage({
   now,
   message,
   isPending = false,
+  mySubmissions,
 }: Props) {
   const requiredDailyMinutes = assessment.requiredDailyMinutes ?? 0;
   const currentTime = now;
@@ -142,6 +159,8 @@ export default function MyStudentWorkPage({
     (currentSessionPage - 1) * WORK_SESSIONS_PER_PAGE,
     currentSessionPage * WORK_SESSIONS_PER_PAGE,
   );
+
+  console.log(assessment)
   const submissionStatus = assessment.currentSubmissionStatus?.toUpperCase();
 
   const statusLabel = {
@@ -152,6 +171,111 @@ export default function MyStudentWorkPage({
     ARCHIVED: "Archived",
   };
 
+  // Shared time stats block used by both graded and submitted views
+  const timeStats = (
+    <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="rounded-[12px] bg-input-field p-4">
+        <p className="text-xs font-semibold text-tertiary">Total Time Spent</p>
+        <p className="mt-1 text-[22px] font-bold text-primary">
+          {formatWorkMinutes(totalMinutes)}
+        </p>
+      </div>
+      <div className="rounded-[12px] bg-input-field p-4">
+        <p className="text-xs font-semibold text-tertiary">Time Spent Today</p>
+        <p className="mt-1 text-[22px] font-bold text-primary">
+          {formatWorkMinutes(liveTodayMinutes)}
+        </p>
+      </div>
+      <div className="rounded-[12px] bg-input-field p-4">
+        <p className="text-xs font-semibold text-tertiary">Assessment Status</p>
+        <p className="mt-1 text-[22px] font-bold text-primary uppercase">
+          {statusLabel[assessment.status]}
+        </p>
+      </div>
+    </div>
+  );
+
+  // Graded view — show score + feedback from instructor
+  if (submissionStatus === "GRADED") {
+    const grade = getLatestGrade(mySubmissions);
+
+    return (
+      <div className="py-4">
+        <div className="rounded-[20px] bg-white p-7.5">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent-sand">
+                <Award size={30} color="#DEA20A" />
+              </div>
+              <div>
+                <p className="text-[24px] font-semibold text-primary">
+                  Your work has been graded!
+                </p>
+                <p className="mt-2 max-w-2xl text-sm text-tertiary">
+                  Your instructor has evaluated your submission.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-[10px] bg-accent-sand px-4 py-2 text-sm font-semibold uppercase text-[#DEA20A]">
+              GRADED
+            </div>
+          </div>
+
+          {grade && (
+            <div className="mt-6 flex flex-col gap-4">
+              {/* Score card */}
+              <div className="flex items-center gap-5 rounded-[14px] bg-accent-sand/50 p-5">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-accent-sand">
+                  <Award size={28} color="#DEA20A" variant="Bold" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-tertiary">
+                    Your Score
+                  </p>
+                  <p className="text-[38px] font-bold leading-none text-[#DEA20A]">
+                    {grade.score}
+                    {assessment.maxScore != null && (
+                      <span className="text-[20px] font-medium text-tertiary">
+                        {" "}/ {assessment.maxScore}
+                      </span>
+                    )}
+                  </p>
+                  {(grade.graderName || grade.gradedAt) && (
+                    <p className="mt-1 text-sm text-tertiary">
+                      {grade.graderName && (
+                        <>
+                          Graded by{" "}
+                          <span className="font-medium text-primary">{grade.graderName}</span>
+                        </>
+                      )}
+                      {grade.gradedAt && (
+                        <> · {formatDateLong(grade.gradedAt)}</>
+                      )}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Instructor feedback */}
+              {grade.feedback && (
+                <div className="rounded-[14px] border border-[lab(90.952% -.0000596046 0)] p-5">
+                  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-tertiary">
+                    Instructor Feedback
+                  </p>
+                  <p className="text-sm leading-relaxed text-primary">{grade.feedback}</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {timeStats}
+        </div>
+      </div>
+    );
+  }
+
+  // Submitted (not yet graded) view
   if (hasSubmittedWork(submissionStatus)) {
     return (
       <div className="py-4">
@@ -176,26 +300,7 @@ export default function MyStudentWorkPage({
             </div>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            <div className="rounded-[12px] bg-input-field p-4">
-              <p className="text-xs font-semibold text-tertiary">Total Time Spent</p>
-              <p className="mt-1 text-[22px] font-bold text-primary">
-                {formatWorkMinutes(totalMinutes)}
-              </p>
-            </div>
-            <div className="rounded-[12px] bg-input-field p-4">
-              <p className="text-xs font-semibold text-tertiary">Time Spent Today</p>
-              <p className="mt-1 text-[22px] font-bold text-primary">
-                {formatWorkMinutes(liveTodayMinutes)}
-              </p>
-            </div>
-            <div className="rounded-[12px] bg-input-field p-4">
-              <p className="text-xs font-semibold text-tertiary">Assessment Status</p>
-              <p className="mt-1 text-[22px] font-bold text-primary uppercase">
-                {statusLabel[assessment.status]}
-              </p>
-            </div>
-          </div>
+          {timeStats}
         </div>
       </div>
     );

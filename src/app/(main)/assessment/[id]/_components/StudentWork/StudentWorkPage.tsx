@@ -18,7 +18,6 @@ import { UserProfile } from "@/types/user";
 import StudentSubmissionCard from "./StudentSubmissionCard";
 import StudentWorkStats from "./StudentWorkStats";
 import SubmissionDetailDrawer from "./SubmissionDetailDrawer";
-import { useSession } from "next-auth/react";
 
 type SubmissionData = AssessmentSubmissionPayload | AssessmentSubmission[] | undefined;
 
@@ -72,6 +71,29 @@ function getBackendCount(
   return submissions.totalAssigned ?? submissions.assigned;
 }
 
+function isSubmittedStatus(status?: string) {
+  const s = status?.trim().toUpperCase();
+  return s === "SUBMITTED" || s === "RESUBMITTED" || s === "GRADED";
+}
+
+function deduplicateByStudent(submissions: AssessmentSubmission[]): AssessmentSubmission[] {
+  const latestByStudent = new Map<string, AssessmentSubmission>();
+
+  for (const submission of submissions) {
+    const key = submission.studentId ?? submission.studentName ?? submission.submissionId;
+    const existing = latestByStudent.get(key);
+
+    if (
+      !existing ||
+      new Date(submission.submittedAt ?? 0) > new Date(existing.submittedAt ?? 0)
+    ) {
+      latestByStudent.set(key, submission);
+    }
+  }
+
+  return Array.from(latestByStudent.values());
+}
+
 function normalizeWorkSessions(data: WorkSessionPayload | WorkSession[] | undefined) {
   if (Array.isArray(data)) return data;
   return data?.content ?? [];
@@ -123,15 +145,16 @@ export default function StudentWorkPage({ assessment, submissions }: Props) {
 
   const filteredSubmissions = useMemo(() => {
     if (!selectedClassroomId) return submissionList;
-    return submissionList.filter(
-      (submission) => submission.classroomId === selectedClassroomId,
-    );
+    return submissionList;
   }, [selectedClassroomId, submissionList]);
 
   const backendHandedIn = getBackendCount(submissions, "handedIn");
   const backendAssigned = getBackendCount(submissions, "assigned") ?? assessment.totalAssigned;
-  const handedIn = selectedClassroomId ? filteredSubmissions.length : backendHandedIn ?? filteredSubmissions.length;
+  const handedIn = selectedClassroomId
+    ? filteredSubmissions.filter((a) => isSubmittedStatus(a.status)).length
+    : backendHandedIn ?? filteredSubmissions.filter((a) => a.status === "SUBMITTED").length;
   const assigned = selectedClassroomId ? filteredSubmissions.length : backendAssigned ?? filteredSubmissions.length;
+
   const selectedSubmissionDetail = selectedSubmission
     ? submissionDetailById[selectedSubmission.submissionId] ?? selectedSubmission
     : null;
@@ -159,15 +182,13 @@ export default function StudentWorkPage({ assessment, submissions }: Props) {
     let ignore = false;
 
     Promise.all(
-missingUserIds.map(async (userId) => {
-  console.log('calling getUserByIdAction with userId:', userId);
-  const result = await getUserByIdAction(userId);
-  console.log('getUserByIdAction result:', result);
-  return {
-    userId,
-    profile: result.success ? result.data as UserProfile : null,
-  };
-}),
+      missingUserIds.map(async (userId) => {
+        const result = await getUserByIdAction(userId);
+        return {
+          userId,
+          profile: result.success ? result.data as UserProfile : null,
+        };
+      }),
     ).then((profiles) => {
       if (ignore) return;
 
@@ -256,7 +277,7 @@ missingUserIds.map(async (userId) => {
       [submission.submissionId]: submission,
     }));
   };
-  
+
   return (
     <div className="flex flex-col gap-5 py-4">
       <StudentWorkStats
@@ -271,8 +292,20 @@ missingUserIds.map(async (userId) => {
       />
 
       <div className="grid grid-cols-3 gap-5">
-        {filteredSubmissions.length > 0 ? (
-          filteredSubmissions.map((submission) => (
+        {(() => {
+          const submitted = deduplicateByStudent(
+            filteredSubmissions.filter((a) => a.status === "SUBMITTED" || a.status === "GRADED"),
+          );
+
+          if (submitted.length === 0) {
+            return (
+              <div className="col-span-3 rounded-[20px] bg-white px-7.5 py-10 text-center text-tertiary">
+                No submitted work for this class yet.
+              </div>
+            );
+          }
+
+          return submitted.map((submission) => (
             <StudentSubmissionCard
               key={submission.submissionId}
               submission={submission}
@@ -286,12 +319,8 @@ missingUserIds.map(async (userId) => {
                 void handleSelectSubmission(submission);
               }}
             />
-          ))
-        ) : (
-          <div className="col-span-3 rounded-[20px] bg-white px-7.5 py-10 text-center text-tertiary">
-            No submitted work for this class yet.
-          </div>
-        )}
+          ));
+        })()}
       </div>
 
       <SubmissionDetailDrawer
