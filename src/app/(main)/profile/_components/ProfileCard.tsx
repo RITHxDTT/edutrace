@@ -1,10 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Camera, User } from "iconsax-react";
+import { Camera, Code, Code1, User } from "iconsax-react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { changeProfileImageAction } from "@/actions/user.action";
+import { Code2, Code2Icon, IdCard } from "lucide-react";
 export default function ProfileCard() {
   const { data: session, update } = useSession();
   const user = session?.user;
@@ -51,14 +52,16 @@ export default function ProfileCard() {
         }
 
         await update({
-          profileImageUrl: res.data.payload.resourceUrl
+          profileImageUrl: res.data.payload.resourceUrl,
         });
 
         setIsOpen(false);
         setTempImage(null);
         setSelectedFile(null);
       } else {
-        setError(res?.error || "Failed to update profile picture. Please try again.");
+        setError(
+          res?.error || "Failed to update profile picture. Please try again.",
+        );
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -80,7 +83,7 @@ export default function ProfileCard() {
       {/* Blur Background Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/20">
-          <div className="w-[400px] bg-white rounded-2xl p-6">
+          <div className="w-100 bg-white rounded-2xl p-6">
             <h2 className="text-xl font-semibold mb-5">
               Update Profile Picture
             </h2>
@@ -176,16 +179,31 @@ export default function ProfileCard() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-semibold">
-            {user?.fullName}
-          </h1>
+          <h1 className="text-2xl font-semibold">{user?.fullName}</h1>
 
           <p className="text-gray-500">{user?.email}</p>
-
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-3 bg-calendar text-ai px-3 py-1 rounded-full">
+              <IdCard size={20} />
+              {user?.role === "teacher" ? (
+                <p className="font-medium">{user?.generation}th Gen</p>
+              ) : (
+                <p className="font-medium">{user?.className}</p>
+              )}
+            </div>
+            {user?.taughtSubjects?.map((subject) => (
+              <div
+                key={subject.subjectId}
+                className="flex items-center gap-2 border border-blue-600 text-ai px-3 py-1 rounded-full"
+              >
+                <Code2 size={20} color="blue" />
+                <p className="font-medium text-main-linear">{subject.subjectName}</p>
+              </div>
+            ))}
+          </div>
           <div className="flex items-center gap-2 mt-2">
             {classroomAbbrev && (
               <div className="flex items-center gap-2 bg-indigo-50 px-3 py-1 rounded-full">
-              
                 <span className="text-xs text-indigo-600">
                   Class {classroomAbbrev}
                 </span>

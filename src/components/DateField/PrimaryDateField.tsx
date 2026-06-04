@@ -36,7 +36,7 @@ const inputVariants = tv({
                     "text-sm text-primary placeholder:text-tertiary font-normal",
                 helperWrapper: "px-1 pt-1.5",
                 description: "text-[11px] text-zinc-400",
-                errorMessage: "text-[11px] font-medium text-rose-500",
+                errorMessage: "text-[11px] font-medium text-error",
                 selectorButton: "text-primary mr-2",
             },
             secondary: {
@@ -70,11 +70,15 @@ export default function PrimaryDateInput({
     ...props
 }: PrimaryDateInputProps) {
     const slots = inputVariants({ inputType });
+    const accessibleLabel =
+        props["aria-label"] ??
+        (label.trim() ? undefined : "Date field");
 
 
     return (
         <DateInput
             label={label}
+            aria-label={accessibleLabel}
             classNames={{
                 base: slots.base({ class: className }),
                 label: slots.label(),

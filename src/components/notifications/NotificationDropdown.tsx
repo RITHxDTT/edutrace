@@ -1,98 +1,18 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
-import { parseAbsoluteToLocal } from "@internationalized/date";
-import { Bell, MessageSquare, Plus, Upload } from "lucide-react";
-import { useNotificationStore } from "@/components/notifications/useNotificationStore";
-
-interface NotificationItem {
-  notificationId: string | number;
-  title: string;
-  content: string;
-  createdAt: string;
-  isRead: boolean;
-  senderAvatar?: string;
-}
-
-
-let cachedNow = Date.now();
-
-const timeStore = {
-  subscribe(cb: () => void) {
-    const interval = setInterval(() => {
-      cachedNow = Date.now(); 
-      cb();
-    }, 60000); 
-    return () => clearInterval(interval);
-  },
-  getSnapshot() {
-    return cachedNow; 
-  },
-  getServerSnapshot() {
-    return null;
-  }
-};
-
-function RelativeTime({ createdAt }: { createdAt: string }) {
-  const now = useSyncExternalStore(timeStore.subscribe, timeStore.getSnapshot, timeStore.getServerSnapshot);
-
-  if (!now) return <span className="text-[13px] font-medium text-gray-400">...</span>;
-
-  const created = parseAbsoluteToLocal(createdAt).toDate().getTime();
-  const diffInSeconds = Math.floor((created - now) / 1000);
-  const absSeconds = Math.abs(diffInSeconds);
-  const rtf = new Intl.RelativeTimeFormat("en", { style: "short", numeric: "always" });
-
-  let timeText = "";
-  if (absSeconds < 60) {
-    timeText = rtf.format(diffInSeconds, "second");
-  } else {
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    const absMinutes = Math.abs(diffInMinutes);
-    if (absMinutes < 60) {
-      timeText = rtf.format(diffInMinutes, "minute");
-    } else {
-      const diffInHours = Math.floor(diffInMinutes / 60);
-      const absHours = Math.abs(diffInHours);
-      if (absHours < 24) {
-        timeText = rtf.format(diffInHours, "hour");
-      } else {
-        const diffInDays = Math.floor(diffInHours / 24);
-        timeText = rtf.format(diffInDays, "day");
-      }
-    }
-  }
-
-  return <div className="text-[13px] font-medium text-disabled whitespace-nowrap pl-2 pt-1 self-start">{timeText}</div>;
-}
+import { useMemo, useState } from "react";
+import { useAppNotifications } from "@/components/notifications/useAppNotifications";
+import NotificationItem from "./NotificationItem";
 
 export default function NotificationDropdown() {
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
 
-  const notifications = useNotificationStore((state) => state.notifications) as NotificationItem[];
-  const markAllAsRead = useNotificationStore((state) => state.markAllAsRead);
-
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const { notifications, unreadCount, markAllAsRead, markAsRead } = useAppNotifications();
 
   const filteredNotifications = useMemo(() => {
     if (activeTab === "unread") return notifications.filter((n) => !n.isRead);
     return notifications;
   }, [activeTab, notifications]);
-
-  const renderNotificationIcon = (n: NotificationItem) => {
-    const bgClass = "bg-[#E8F8F4] text-[#10B981]";
-    let IconComponent = Bell;
-
-    if (n.title?.toLowerCase().includes("assignment")) IconComponent = Plus;
-    else if (n.title?.toLowerCase().includes("feedback")) IconComponent = MessageSquare;
-    else if (n.title?.toLowerCase().includes("upload")) IconComponent = Upload;
-
-    return (
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${bgClass}`}>
-        <IconComponent className="w-5 h-5" strokeWidth={2.5} />
-      </div>
-    );
-  };
 
   return (
     <div className="font-sans pb-4 bg-white ">
@@ -144,21 +64,11 @@ export default function NotificationDropdown() {
           </div>
         ) : (
           filteredNotifications.map((n) => (
-            <div
-              key={n.notificationId}
-              className="flex items-start gap-4 px-6 py-[14px] hover:bg-slate-50/50 transition-colors cursor-pointer"
-            >
-              {renderNotificationIcon(n)}
-              <div className="flex-1 min-w-0 pt-0.5">
-                <h3 className="text-[15px] font-bold text-gray-900 leading-snug">
-                  {n.title}
-                </h3>
-                <p className="text-[13px] font-medium text-gray-400 mt-0.5 line-clamp-1">
-                  {n.content}
-                </p>
-              </div>
-              <RelativeTime createdAt={n.createdAt} />
-            </div>
+            <NotificationItem 
+              key={n.notificationId} 
+              notification={n} 
+              onClick={markAsRead} 
+            />
           ))
         )}
       </div>

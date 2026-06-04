@@ -4,21 +4,97 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="62495669-76ac-4f43-953c-f5dab3f93f86" name="Changes" comment="" />
+    <list default="true" id="62495669-76ac-4f43-953c-f5dab3f93f86" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/(main)/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/NotificationBell.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/NotificationBell.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/NotificationDropdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/NotificationDropdown.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/NotificationItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/NotificationItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/notification.utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/notification.utils.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="EmbeddingIndexingInfo">
+    <option name="cachedIndexableFilesCount" value="244" />
+    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0000900575480618" />
+      <entry key="MS500" value="1.5135369234253804" />
+      <entry key="S2" value="4.489852895842746" />
+      <entry key="S5" value="6.2765566694281825" />
+      <entry key="S10" value="7.073041924423258" />
+      <entry key="S30" value="7.705081837180825" />
+      <entry key="S60" value="8.469738363467673" />
+      <entry key="M2" value="11.507212917430396" />
+      <entry key="M5" value="21.017080380804224" />
+      <entry key="M10" value="35.832124223922094" />
+      <entry key="M15" value="48.36186560166855" />
+      <entry key="M30" value="77.25282995427608" />
+      <entry key="H1" value="116.89495165907228" />
+      <entry key="H2" value="157.93842334350015" />
+      <entry key="H4" value="189.30863932182982" />
+      <entry key="D1" value="223.9177708497861" />
+      <entry key="W1" value="230.8189062696322" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="0.0" />
+      <entry key="MS500" value="0.0" />
+      <entry key="S2" value="7.014208020358475E-175" />
+      <entry key="S5" value="2.4700282088391493E-70" />
+      <entry key="S10" value="2.0187324460596635E-35" />
+      <entry key="S30" value="4.324241550863842E-12" />
+      <entry key="S60" value="3.3696490270097637E-6" />
+      <entry key="M2" value="0.003487972284787849" />
+      <entry key="M5" value="0.31042669954504004" />
+      <entry key="M10" value="1.6974689351583918" />
+      <entry key="M15" value="3.1027168081391743" />
+      <entry key="M30" value="5.784748355678705" />
+      <entry key="H1" value="7.957581541431839" />
+      <entry key="H2" value="9.35029032405806" />
+      <entry key="H4" value="10.140136879088683" />
+      <entry key="D1" value="10.8515606887676" />
+      <entry key="W1" value="10.97866514784859" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="0.013226560898454321" />
+      <entry key="MS500" value="0.931637818030734" />
+      <entry key="S2" value="4.291751500369214" />
+      <entry key="S5" value="6.1916226679285895" />
+      <entry key="S10" value="7.029546300864689" />
+      <entry key="S30" value="7.690073273480116" />
+      <entry key="S60" value="8.460924078693164" />
+      <entry key="M2" value="11.504517886209731" />
+      <entry key="M5" value="21.319618357131887" />
+      <entry key="M10" value="37.517021083172764" />
+      <entry key="M15" value="51.450951617379495" />
+      <entry key="M30" value="83.02601483987472" />
+      <entry key="H1" value="124.84488287742126" />
+      <entry key="H2" value="167.28429396949718" />
+      <entry key="H4" value="199.4463977199763" />
+      <entry key="D1" value="234.76890975453352" />
+      <entry key="W1" value="241.79751051387817" />
+    </decayedShown>
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 2
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 2
+}</component>
   <component name="ProjectId" id="3DvzyJeQ6gLsxntEmGYwczTWSFI" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -26,13 +102,17 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "feature/calendar",
+    "full.screen.before.presentation.mode": "false",
+    "git-widget-placeholder": "feature-notification",
     "javascript.preferred.runtime.type.id": "node",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
@@ -45,7 +125,7 @@
     "nodejs_package_manager_path": "npm",
     "npm.Next.js: server-side.executor": "Run",
     "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "D:\\HRD-Room-Project\\GrowthyFlow\\HRD-Room-UI\\node_modules\\typescript\\lib",
+    "ts.external.directory.path": "/home/yannvanneth/Documents/KSHRD/HRDRoom/HRD-Room-UI/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -67,7 +147,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-WS-253.30387.83" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.24374.125" />
       </set>
     </attachedChunks>
   </component>
@@ -79,6 +159,7 @@
       <option name="presentableId" value="Default" />
       <updated>1779177586697</updated>
       <workItem from="1779177588654" duration="20142000" />
+      <workItem from="1780408817389" duration="4741000" />
     </task>
     <servers />
   </component>
