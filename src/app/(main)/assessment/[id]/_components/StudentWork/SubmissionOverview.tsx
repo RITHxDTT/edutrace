@@ -7,7 +7,7 @@ import PrimaryInput from "@/components/Inputs/PrimaryInputField";
 import { AssessmentSubmission } from "@/types/assessment";
 import { Award, Calendar, RefreshCircle } from "iconsax-react";
 import StudentWorkFileCard from "./StudentWorkFileCard";
-import { getSubmittedLabel } from "./studentWorkUtils";
+import { getSubmittedLabel } from "@/utils/studentWorkUtils";
 
 type Props = {
   submission: AssessmentSubmission;

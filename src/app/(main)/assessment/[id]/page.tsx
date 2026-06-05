@@ -107,6 +107,8 @@ export default async function page({ params }: PageProps) {
 
   const instructionContent = <InstructionDetailPage assessment={assessment} />;
 
+  console.log(assessment)
+
   const communicationContent = (
     <div className="py-4">
       {meetingRoomId ? (

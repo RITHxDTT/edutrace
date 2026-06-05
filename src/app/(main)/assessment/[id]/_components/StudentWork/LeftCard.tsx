@@ -4,12 +4,11 @@ import {
   WorkSession,
 } from "@/types/assessment";
 import { PieChart } from "@mui/x-charts";
-import { Clock } from "iconsax-react";
+import { Calendar, Clock, TimerStart } from "iconsax-react";
 import React from "react";
+import { formatWorkMinutes } from "./MyStudentWorkPage";
 
 type Props = {
-  assessment: AssessmentType;
-  sessions: WorkSession[];
   activeSession: WorkSession | null;
   message?: string;
   isPending?: boolean;
@@ -17,6 +16,8 @@ type Props = {
   progressLabel: string;
   remainingMinutes: number;
   currentStatus: string;
+  requiredDailyMinutes: number;
+  liveTodayMinutes: number;
 };
 
 export default function LeftCard({
@@ -26,6 +27,8 @@ export default function LeftCard({
   progressLabel,
   remainingMinutes,
   currentStatus,
+  requiredDailyMinutes,
+  liveTodayMinutes,
   message,
 }: Props) {
   return (

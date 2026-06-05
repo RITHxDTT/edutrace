@@ -1,13 +1,7 @@
 import { SubmissionResource } from "@/types/assessment";
 import Link from "next/link";
 import { Download, Eye } from "lucide-react";
-import {
-  formatFileSize,
-  getFileColor,
-  getFileIcon,
-  getResourceFileName,
-  isViewableResource,
-} from "./studentWorkUtils";
+import { formatFileSize, getFileColor, getFileIcon, getResourceFileName, isViewableFile } from "@/utils/fileUtils";
 
 type Props = {
   resource: SubmissionResource;
@@ -16,7 +10,7 @@ type Props = {
 export default function StudentWorkFileCard({ resource }: Props) {
   const fileName = getResourceFileName(resource);
   const colors = getFileColor(fileName);
-  const canView = isViewableResource(resource);
+  const canView = isViewableFile(resource);
 
   return (
     <div className="flex items-center justify-between gap-3 rounded-[8px] border border-[lab(90.952% -.0000596046 0)] px-4 py-3">

@@ -20,6 +20,7 @@ export default function StudentWorkStats({
   assigned,
   onClassroomChange,
 }: Props) {
+  console.log(classrooms)
   return (
     <div className="grid grid-cols-[1fr_220px_220px] items-center gap-5 rounded-[20px] bg-white px-7.5 py-5">
       <div className="flex items-center gap-5">
@@ -29,7 +30,7 @@ export default function StudentWorkStats({
         </div>
 
         <div className="w-[260px]">
-          <PrimarySelect
+          {/* <PrimarySelect
             label=""
             placeholder="All Classes"
             selectType="secondary"
@@ -46,7 +47,7 @@ export default function StudentWorkStats({
                 </SelectItem>
               ))}
             </>
-          </PrimarySelect>
+          </PrimarySelect> */}
         </div>
       </div>
 

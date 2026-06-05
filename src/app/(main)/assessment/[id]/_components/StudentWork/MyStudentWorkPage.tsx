@@ -6,12 +6,11 @@ import {
   SubmissionGrade,
   WorkSession,
 } from "@/types/assessment";
-import { Award, Calendar, Clock, TickCircle, TimerStart } from "iconsax-react";
+import { Award, TickCircle } from "iconsax-react";
 import { formatDateLong } from "@/utils/formatDateLong";
 import { Pagination } from "@heroui/pagination";
 import { useState } from "react";
 import GradeScoreCard from "./GradeScoreCard";
-import { PieChart } from "@mui/x-charts";
 import LeftCard from "./LeftCard";
 
 const WORK_SESSIONS_PER_PAGE = 5;
@@ -323,6 +322,8 @@ export default function MyStudentWorkPage({
           remainingMinutes={remainingMinutes}
           currentStatus={currentStatus}
           message={message}
+          liveTodayMinutes={liveTodayMinutes}
+          requiredDailyMinutes={requiredDailyMinutes}
         />
 
         {/* Right Card: Timer */}

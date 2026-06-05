@@ -1,9 +1,9 @@
 "use client"
 
 import { AssessmentSubmission } from "@/types/assessment";
+import { getStudentInitials, getSubmittedLabel } from "@/utils/studentWorkUtils";
 import { Clock, DocumentText } from "iconsax-react";
 import Image from "next/image";
-import { getStudentInitials, getSubmittedLabel } from "./studentWorkUtils";
 type Props = {
   submission: AssessmentSubmission;
   profileImageUrl?: string;

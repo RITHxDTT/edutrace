@@ -8,11 +8,7 @@ import { useRef, useState, useTransition } from "react";
 import { PrimaryInput } from "@/components/Inputs/PrimaryInputField";
 import { useRouter } from "next/navigation";
 import StudentWorkFileCard from "../StudentWork/StudentWorkFileCard";
-import {
-  formatFileSize,
-  getFileColor,
-  getFileIcon,
-} from "../StudentWork/studentWorkUtils";
+import { formatFileSize, getFileColor, getFileIcon } from "@/utils/fileUtils";
 
 type Props = {
   assessment: AssessmentType;

@@ -6,7 +6,7 @@ import { CloseCircle } from "iconsax-react";
 import Image from "next/image";
 import SubmissionOverview from "./SubmissionOverview";
 import SubmissionTimeTracking from "./SubmissionTimeTracking";
-import { getStudentInitials } from "./studentWorkUtils";
+import { getStudentInitials } from "@/utils/studentWorkUtils";
 
 type Props = {
   submission: AssessmentSubmission | null;
