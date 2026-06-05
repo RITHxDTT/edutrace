@@ -1,11 +1,8 @@
 import {
-  AssessmentSubmission,
-  AssessmentType,
   WorkSession,
 } from "@/types/assessment";
 import { PieChart } from "@mui/x-charts";
 import { Calendar, Clock, TimerStart } from "iconsax-react";
-import React from "react";
 import { formatWorkMinutes } from "./MyStudentWorkPage";
 
 type Props = {
@@ -20,7 +17,7 @@ type Props = {
   liveTodayMinutes: number;
 };
 
-export default function LeftCard({
+export default function TrackSessionCard({
   activeSession,
   isPending,
   progressPercent,
