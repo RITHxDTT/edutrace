@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import VerifyEmailForm from './_components/VerifyEmailForm'
+import { Suspense } from 'react'
 
 export default function page() {
       return (
@@ -12,7 +13,9 @@ export default function page() {
                         </div>
 
                         <div>
-                              <VerifyEmailForm />
+                              <Suspense fallback={<div>Loading...</div>}>
+                                    <VerifyEmailForm />
+                              </Suspense>
                               <div className='text-center'>
                                     <p className="text-sm text-strong/80 mt-6">
                                           Back to{' '}
