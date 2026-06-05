@@ -1,7 +1,9 @@
 import { auth } from "@/auth";
+import headerToken from "@/lib/headerToken";
 import z from "zod";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export const CalendarEventPayload = z.object({
     title: z
         .string()
@@ -15,17 +17,6 @@ export const CalendarEventPayload = z.object({
 });
 
 export type CalendarEventPayloadType = z.infer<typeof CalendarEventPayload>;
-
-async function getAuthHeaders() {
-    const session = await auth();
-    if (!session?.access_token) {
-        throw new Error("Unauthorized");
-    }
-    return {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session.access_token}`,
-    };
-}
 
 async function handleResponseError(response: Response, defaultMessage: string) {
     try {
@@ -50,13 +41,10 @@ async function handleResponseError(response: Response, defaultMessage: string) {
     }
 }
 
-export async function getCurrentUsersCalendarEvents() {
+export async function getCurrentUsersCalendarEventsService() {
     try {
-        const headers = await getAuthHeaders();
         const response = await fetch(`${API_URL}/calendar-events/my`, {
-            method: "GET",
-            headers,
-            cache: "no-store",
+            headers: await headerToken()
         });
 
         if (!response.ok) {
@@ -71,13 +59,10 @@ export async function getCurrentUsersCalendarEvents() {
     }
 }
 
-export async function getCalendarEventsById(id: string) {
+export async function getCalendarEventsByIdService(id: string) {
     try {
-        const headers = await getAuthHeaders();
         const response = await fetch(`${API_URL}/calendar-events/${id}`, {
-            method: "GET",
-            headers,
-            cache: "no-store",
+            headers: await headerToken(),
         });
 
         if (!response.ok) {
@@ -92,12 +77,11 @@ export async function getCalendarEventsById(id: string) {
     }
 }
 
-export async function createCalendarEvent(payload: CalendarEventPayloadType) {
+export async function createCalendarEventService(payload: CalendarEventPayloadType) {
     try {
-        const headers = await getAuthHeaders();
         const response = await fetch(`${API_URL}/calendar-events`, {
             method: "POST",
-            headers,
+            headers: await headerToken(),
             body: JSON.stringify(payload),
         });
 
@@ -116,15 +100,16 @@ export async function createCalendarEvent(payload: CalendarEventPayloadType) {
     }
 }
 
-export async function updateCalendarEvent(
+// ==>> Update the calendar
+export async function updateCalendarEventService(
     id: string,
     payload: Partial<CalendarEventPayloadType>,
 ) {
     try {
-        const headers = await getAuthHeaders();
+        // const headers = await getAuthHeaders();
         const response = await fetch(`${API_URL}/calendar-events/${id}`, {
-            method: "PUT", // Matched with your swagger schema image
-            headers,
+            method: "PUT",
+            headers: await headerToken(),
             body: JSON.stringify(payload),
         });
 
@@ -140,14 +125,30 @@ export async function updateCalendarEvent(
     }
 }
 
-export async function deleteCalendarEvent(id: string) {
+// export async function deleteCalendarEventService(id: string) {
+//     try {
+//         const response = await fetch(`${API_URL}/calendar-events/${id}`, {
+//             method: "DELETE",
+//             headers: await headerToken()
+//         });
+
+//         if (!response.ok) {
+//             await handleResponseError(response, `Failed to delete calendar event with ID: ${id}`);
+//         }
+
+//         const result = await response.json().catch(() => ({ success: true }));
+//         console.log(`5. deleteCalendarEvent (ID: ${id}) result:`, result);
+//         return result;
+//     } catch (error: any) {
+//         throw new Error(error.message || "Failed to delete calendar event");
+//     }
+// }
+
+export async function deleteCalendarEventService(id: string) {
     try {
-        const headers = await getAuthHeaders();
         const response = await fetch(`${API_URL}/calendar-events/${id}`, {
             method: "DELETE",
-            headers: {
-                Authorization: headers.Authorization
-            },
+            headers: await headerToken()
         });
 
         if (!response.ok) {

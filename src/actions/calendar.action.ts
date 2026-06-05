@@ -1,25 +1,38 @@
 "use server";
 
 import {
-    createCalendarEvent,
-    deleteCalendarEvent,
-    getCurrentUsersCalendarEvents,
-    updateCalendarEvent
+    createCalendarEventService,
+    deleteCalendarEventService,
+    getCalendarEventsByIdService,
+    getCurrentUsersCalendarEventsService,
+    updateCalendarEventService
 } from "@/services/calender.service";
 import type { CalendarEventPayloadType } from "@/services/calender.service";
 
-export async function getMyCalendar() {
-    return await getCurrentUsersCalendarEvents();
+export async function getMyCalendarAction() {
+    const result = await getCurrentUsersCalendarEventsService();
+
+    return result.payload.content;
 }
 
-export async function createCalendar(payload: CalendarEventPayloadType) {
-    return await createCalendarEvent(payload);
+export async function getCalendarEventsByIdAction(id: string) {
+    const result = await getCalendarEventsByIdService(id);
+
+    return result.payload.content;
+
 }
 
-export async function updateCalendar(id: string, payload: Partial<CalendarEventPayloadType>) {
-    return await updateCalendarEvent(id, payload);
+export async function createCalendarAction(payload: CalendarEventPayloadType) {
+    const result = await createCalendarEventService(payload);
+    return result.payload;
 }
 
-export async function deleteCalendar(id: string) {
-    return await deleteCalendarEvent(id);
+export async function updateCalendarAction(id: string, payload: Partial<CalendarEventPayloadType>) {
+    const resultAfterUpdate = await updateCalendarEventService(id, payload);
+    return resultAfterUpdate.payload;
+}
+
+export async function deleteCalendarAction(id: string) {
+    const resultAfterDelete = await deleteCalendarEventService(id);
+    return resultAfterDelete.payload;
 }
