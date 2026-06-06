@@ -12,7 +12,15 @@ import {
   WorkSession,
   WorkSessionPayload,
 } from "@/types/assessment";
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import SubmitAssignmentPage from "./SubmitAssignment/SubmitAssignmentPage";
 import MyStudentWorkPage, {
   isActiveWorkSession,
@@ -50,7 +58,9 @@ type Props = {
   mySubmissions?: AssessmentSubmission[];
 };
 
-function normalizeWorkSessions(workSessions?: WorkSessionPayload | WorkSession[]) {
+function normalizeWorkSessions(
+  workSessions?: WorkSessionPayload | WorkSession[],
+) {
   if (Array.isArray(workSessions)) return workSessions;
   return workSessions?.content ?? [];
 }
@@ -71,14 +81,14 @@ export default function StudentAssessmentTabs({
   workSessions,
   mySubmissions,
 }: Props) {
-  
   const initialSessions = useMemo(
     () => normalizeWorkSessions(workSessions),
     [workSessions],
   );
   const [sessions, setSessions] = useState<WorkSession[]>(initialSessions);
-  const [activeSession, setActiveSession] = useState<WorkSession | null>(() =>
-    initialSessions.find((session) => isActiveWorkSession(session)) ?? null,
+  const [activeSession, setActiveSession] = useState<WorkSession | null>(
+    () =>
+      initialSessions.find((session) => isActiveWorkSession(session)) ?? null,
   );
   const [now, setNow] = useState(0);
   const [message, setMessage] = useState("");
@@ -86,7 +96,9 @@ export default function StudentAssessmentTabs({
   const [isPending, startTransition] = useTransition();
   const activeSessionRef = useRef<WorkSession | null>(activeSession);
   const hasPostedEndOnPageExitRef = useRef(false);
-  const shouldStopTracking = hasSubmittedWork(assessment.currentSubmissionStatus);
+  const shouldStopTracking = hasSubmittedWork(
+    assessment.currentSubmissionStatus,
+  );
 
   const refreshSessions = useCallback(async () => {
     const result = await getMyWorkSessionsAction(assessment.assessmentId);
@@ -94,7 +106,9 @@ export default function StudentAssessmentTabs({
 
     const nextSessions = normalizeWorkSessions(result);
     setSessions(nextSessions);
-    setActiveSession(nextSessions.find((session) => isActiveWorkSession(session)) ?? null);
+    setActiveSession(
+      nextSessions.find((session) => isActiveWorkSession(session)) ?? null,
+    );
   }, [assessment.assessmentId]);
 
   useEffect(() => {
