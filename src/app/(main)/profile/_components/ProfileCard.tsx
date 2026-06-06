@@ -42,7 +42,6 @@ export default function ProfileCard() {
 
     setIsSubmitting(true);
     setError(null);
-
     try {
       const res = await changeProfileImageAction(selectedFile);
 
@@ -77,7 +76,7 @@ export default function ProfileCard() {
     setSelectedFile(null);
     setError(null);
   };
-
+  console.log(user)
   return (
     <>
       {/* Blur Background Modal */}
@@ -183,14 +182,16 @@ export default function ProfileCard() {
 
           <p className="text-gray-500">{user?.email}</p>
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-3 bg-calendar text-ai px-3 py-1 rounded-full">
-              <IdCard size={20} />
-              {user?.role === "teacher" ? (
+
+            {user?.role === "teacher" ? (
+              <div className="flex items-center gap-3 bg-calendar text-ai px-3 py-1 rounded-full">
+                <IdCard size={20} />
                 <p className="font-medium">{user?.generation}th Gen</p>
-              ) : (
-                <p className="font-medium">{user?.className}</p>
-              )}
-            </div>
+              </div>
+
+            ) : (
+              <p className="font-medium">{user?.className}</p>
+            )}
             {user?.taughtSubjects?.map((subject) => (
               <div
                 key={subject.subjectId}

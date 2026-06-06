@@ -2,8 +2,15 @@ import { ClipboardText } from "iconsax-react";
 import { AssessmentProps } from "@/types/assessment";
 import AssessmentCard from "./AssessmentCard";
 
-export default function AssessmentList({ assessments }: AssessmentProps) {
-    if (assessments.length === 0) {
+type Props = {
+    assessments: AssessmentProps["assessments"];
+    role?: "teacher" | "student";
+}
+
+export default function AssessmentList({ assessments, role }: Props) {
+
+    // For Student
+    if (assessments.length === 0 && role === "student") {
         return (
             <div className="flex flex-col items-center justify-center py-20 text-center">
                 <div className="mb-4 rounded-full bg-light-lavendar p-5">
@@ -19,6 +26,29 @@ export default function AssessmentList({ assessments }: AssessmentProps) {
 
                 <p className="mt-2 max-w-md text-sm text-gray-500">
                     There are currently no assessments available. Once your teacher
+                    creates and assigns assessments, they will appear here.
+                </p>
+            </div>
+        );
+    }
+
+    // For Teacher
+    if (assessments.length === 0 && role === "teacher") {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="mb-4 rounded-full bg-light-lavendar p-5">
+                    <ClipboardText
+                        size={48}
+                        color="white"
+                    />
+                </div>
+
+                <h3 className="text-xl font-semibold text-gray-800">
+                    No Assessments Yet
+                </h3>
+
+                <p className="mt-2 max-w-md text-sm text-gray-500">
+                    There are currently no assessments available. Once other teachers
                     creates and assigns assessments, they will appear here.
                 </p>
             </div>

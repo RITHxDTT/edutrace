@@ -26,7 +26,6 @@ export default async function Page({ searchParams }: PageProps) {
 
   const assessments = "content" in assessmentResult ? assessmentResult.content : [];
   const metaData = isTeacher && "metaData" in assessmentResult ? assessmentResult.metaData : undefined;
-  console.log(assessments)
 
   return (
     <AssessmentPage

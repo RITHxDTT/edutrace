@@ -185,7 +185,6 @@ export default function MyStudentWorkPage({
     activeSession,
     currentTime,
   );
-
   const progressPercent =
     requiredDailyMinutes > 0
       ? Math.min((liveTodayMinutes / requiredDailyMinutes) * 100, 100)

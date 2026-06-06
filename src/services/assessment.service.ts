@@ -186,8 +186,7 @@ export const submitAssignmentService = async (
     },
   );
 
-  const rawText = await res.clone().text();
-  console.log("Submission response:", rawText);
+
 
   const result = await readAssessmentResponse(res);
   if (!res.ok || !result?.success) {

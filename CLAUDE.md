@@ -73,8 +73,6 @@ Three UI layers coexist — use the right one:
 - **iconsax-react** — primary icon library, used as `Icon` type in component props
 - **lucide-react** — secondary, used in shadcn/ui components
 
-<<<<<<< HEAD
-=======
 ### Notable Third-Party Libraries
 
 - **@dayflow/react** — calendar UI on the `/calendar` page
@@ -83,7 +81,6 @@ Three UI layers coexist — use the right one:
 - **framer-motion** — animations
 - **sileo** — toast notifications in auth flows
 
->>>>>>> 8754187f4b9b9fdb36aa531e95d35c8e6a46ec81
 ## Design Tokens & Styling
 
 **Tailwind CSS v4** with PostCSS (`@tailwindcss/postcss`). All custom tokens defined in `src/styles/globals.css` under `@theme`:
