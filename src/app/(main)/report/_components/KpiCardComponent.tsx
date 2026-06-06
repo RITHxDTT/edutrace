@@ -35,20 +35,21 @@ export default function KpiCard({
         <div
           className="w-full shadow-sm"
           style={{
-            aspectRatio: "7 / 4",
+            aspectRatio: "7/4",
             clipPath: "url('#clipPath')",
-            backgroundColor: "white",
+            background: "white",
           }}
         >
-          <div className="flex h-full w-full flex-col justify-between p-5">
+          <div className="flex flex-col justify-between h-full p-4 md:p-5">
             <div>
-              <p className="text-sm leading-5 text-[#8A8A8A]">{title}</p>
-              <h2 className="mt-10 text-4xl font-semibold leading-none text-black">
+              <p className="text-sm text-gray-400">{title}</p>
+
+              <h2 className="mt-6 md:mt-10 text-3xl md:text-4xl font-semibold">
                 {numValue}
               </h2>
             </div>
 
-            <p className="text-sm font-medium text-indigo-500">{subtitle}</p>
+            <p className="text-xs md:text-sm text-indigo-500">{subtitle}</p>
           </div>
         </div>
 

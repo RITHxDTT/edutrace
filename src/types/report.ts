@@ -6,7 +6,6 @@ export interface Report {
   period: string;
   generatedAt: string;
   classScope?: string;
-  
 }
 
 export interface ReportSummary {
@@ -62,4 +61,64 @@ export interface taskBaseReport {
   assessmentId: string;
   startDate: string;
   endDate: string;
+}
+
+export interface ReportDetailResponse {
+  reportId: string;
+  reportName: string;
+  reportType: string;
+  generatedAt: string;
+
+  reportData: {
+    viewingLabel: string;
+
+    summary: {
+      late: number;
+      onTime: number;
+      missing: number;
+      averageScore: number;
+      totalStudents: number;
+      totalSubmitted: number;
+      totalSubmissionRate: number;
+    };
+
+    classroom?: {
+      classroomId: string;
+      className: string;
+      classroomAbbre: string;
+    };
+
+    students?: {
+      title: string;
+      total: number;
+
+      data: Student[];
+    };
+
+    submission?: {
+      late: number;
+      onTime: number;
+      missing: number;
+    };
+  };
+}
+
+export interface Student {
+  studentId: string;
+
+  fullName: string;
+
+  email: string;
+
+  gender: string | null;
+
+  dob: string | null;
+
+  averageScore: number;
+
+  profileImage?: string | null;
+
+  classroomAbbre: string;
+
+  submissionStatus: string;
 }

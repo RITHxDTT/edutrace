@@ -5,6 +5,7 @@ import {
   CreateTaskReportDto,
   CreateClassReportDto,
   taskBaseReport as taskBaseReportType,
+  ReportDetailResponse
 } from "../types/report";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -349,7 +350,6 @@ export async function getUserProfile() {
     throw new Error("Unauthorized");
   }
 
-  
   const res = await fetch(`${API_URL}/users/me`, {
     method: "GET",
     headers: {
@@ -368,3 +368,31 @@ export async function getUserProfile() {
   return data.payload;
 }
 
+// get report details
+export async function getReportDetail(
+  reportId: string,
+): Promise<ReportDetailResponse> {
+  const session = await auth();
+
+  if (!session?.access_token) {
+    throw new Error("Unauthorized");
+  }
+
+  const res = await fetch(`${API_URL}/reports/${reportId}`, {
+    headers: {
+      Accept: "application/json",
+
+      Authorization: `Bearer ${session.access_token}`,
+    },
+
+    cache: "no-store",
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw new Error(data.message || "Failed fetching report detail");
+  }
+
+  return data.payload;
+}
