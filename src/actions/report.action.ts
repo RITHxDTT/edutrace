@@ -4,7 +4,8 @@ import { auth } from "@/auth";
 import { taskBaseReport as taskBaseReportDto } from "@/types/report";
 import { deleteReport, getUserProfile } from "@/services/report.service";
 import { revalidatePath } from "next/cache";
-import { getReportDetail } from "@/services/report.service";
+import { getReportDetail, getTeacherSubject } from "@/services/report.service";
+
 // import { getTeacherAssessments } from "@/services/assessment.service";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -23,6 +24,7 @@ export async function getReportDetails(reportID: string) {
     throw new Error("Error to fetch data");
   }
 
+  
   return res;
 }
 
@@ -52,7 +54,7 @@ export async function taskBaseReport(payload: taskBaseReportDto) {
 
 export async function createClassReport(payload: {
   title: string;
-  subjectId: string;
+  subjectIds: string;
   classroomIds: string[];
   startDate: string;
   endDate: string;
@@ -147,5 +149,17 @@ export async function getTeacherClassesAction() {
   } catch (error) {
     console.error("Failed to fetch teacher classes:", error);
     throw new Error("Failed to load classes");
+  }
+}
+
+
+
+export async function getTeacherSubjectsAction() {
+  try {
+    const profile = await getTeacherSubject();
+    return profile.taughtSubjects || [];
+  } catch (error) {
+    console.error("Action error fetching teacher subjects:", error);
+    return [];
   }
 }

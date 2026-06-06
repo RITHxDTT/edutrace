@@ -108,7 +108,7 @@ export default function ReportClientPage({
           </p>
         </div>
 
-        <PrimaryButton onClick={() => setIsModalOpen(true)}>
+        <PrimaryButton onClick={() => setIsModalOpen(true)} className="h-[45px]">
           Generate Report
         </PrimaryButton>
       </div>

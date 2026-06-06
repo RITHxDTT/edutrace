@@ -12,11 +12,11 @@ import { SubmissionDonutChart } from "../../_components/_taskBase/SubmissionDonu
 import TickPlacementBars from "../../_components/_taskBase/BarChart";
 import useSWR from "swr";
 import { getReportDetail } from "@/services/report.service";
-
 import { ReportDetailResponse } from "@/types/report";
 
 interface Props {
   report: ReportDetailResponse;
+  isExportMode?: boolean; // Added flag to disable fetching hooks during print operations
 }
 
 type ReportMode = "ALL_CLASSES" | "SINGLE_CLASS" | "TASK";
@@ -35,9 +35,13 @@ function getReportMode(report: ReportDetailResponse): ReportMode {
   return "SINGLE_CLASS";
 }
 
-export default function ClassBasedView({ report }: Props) {
+export default function ClassBasedView({
+  report,
+  isExportMode = false,
+}: Props) {
+  // CRITICAL: Conditionally pass null to useSWR if in export mode so it doesn't break on authentication
   const { data: reports, error } = useSWR(
-    report.reportId ? report.reportId : null,
+    !isExportMode && report.reportId ? report.reportId : null,
     getReportDetail,
   );
 
@@ -70,7 +74,7 @@ export default function ClassBasedView({ report }: Props) {
   ];
 
   return (
-    <div className="pb-20 px-4 md:px-6">
+    <div className={`${isExportMode ? "pb-4 px-2" : "pb-20 px-4 md:px-6"}`}>
       {/* HEADER */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -84,10 +88,11 @@ export default function ClassBasedView({ report }: Props) {
           </p>
         </div>
 
-        <AllClassesActions />
+        {/* Hide action buttons when rendering inside a printed layout */}
+        {!isExportMode && <AllClassesActions />}
       </div>
 
-      
+      {/* KPI Section */}
       <div className="mt-6 flex flex-col xl:flex-row gap-4">
         <div className="w-full xl:w-[340px]">
           <KpiCardTaskBased
@@ -111,14 +116,12 @@ export default function ClassBasedView({ report }: Props) {
         </div>
       </div>
 
-      
+      {/* Charts / All Classes Insights Layout */}
       {isAllClasses && (
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 mt-6">
           <div className="xl:col-span-3 flex flex-col gap-4">
-           
-
-            {/* Score Analysis */}
-            <div className="bg-white rounded-2xl p-5">
+            {/* Score Analysis Chart wrapper */}
+            <div className="bg-white rounded-2xl p-5 shadow border border-gray-50">
               <h3 className="text-xl font-semibold mb-4">Score Analysis</h3>
 
               <HorizontalBars
@@ -134,7 +137,7 @@ export default function ClassBasedView({ report }: Props) {
             </div>
           </div>
 
-          {/* Side Card */}
+          {/* Side Card Insights Widget */}
           <div>
             <ClassSubmissionCard
               lateSubmission={summary.late}
@@ -146,12 +149,10 @@ export default function ClassBasedView({ report }: Props) {
         </div>
       )}
 
-    
-
-      <div className="mt-6 grid grid-cols-2 gap-4">
-        <div className="p-5 bg-white rounded-2xl shadow">
+      {/* Average Performance Data Analysis Widgets */}
+      <div className="mt-6 grid grid-cols-2 gap-4 break-inside-avoid">
+        <div className="p-5 bg-white rounded-2xl shadow border border-gray-50">
           <h3 className="font-medium mb-2">Average Scores</h3>
-      
           <TickPlacementBars data={scoreDistribution?.data ?? []} />
         </div>
         <div className="h-full">
@@ -164,8 +165,8 @@ export default function ClassBasedView({ report }: Props) {
         </div>
       </div>
 
-      {/* student list */}
-      <div className="mt-6 bg-white rounded-2xl p-5">
+      {/* Student list Table Grid breakdown view wrapper context */}
+      <div className="mt-6 bg-white rounded-2xl p-5 shadow border border-gray-50 break-inside-avoid">
         <div className="mb-4">
           <h3 className="text-xl font-semibold">Student List</h3>
           <p className="text-sm text-gray-500">{students.length} Students</p>
@@ -177,10 +178,12 @@ export default function ClassBasedView({ report }: Props) {
         />
       </div>
 
-      
-      <div className="fixed bottom-0 right-0 z-50">
-        <AiChatWrapper />
-      </div>
+      {/* Floating interactive AI components should never show in print streams */}
+      {!isExportMode && (
+        <div className="fixed bottom-0 right-0 z-50">
+          <AiChatWrapper />
+        </div>
+      )}
     </div>
   );
 }

@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import useSWR from "swr";
+
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import {
   taskBaseReport,
   createClassReport,
   getTeacherAssessmentsAction,
   getTeacherClassesAction,
+  getTeacherSubjectsAction,
 } from "@/actions/report.action";
 
 import {
@@ -24,6 +26,11 @@ interface Classroom {
   classroomAbbre: string;
 }
 
+interface Subject {
+  subjectId: string ;
+  subjectName: string;
+}
+
 interface GenerateReportModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -38,6 +45,7 @@ export default function GenerateReportModalComponent({
   const [activeTab, setActiveTab] = useState<"class" | "task">("class");
   const [reportName, setReportName] = useState("");
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
+  const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]); 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [taskDropdownOpen, setTaskDropdownOpen] = useState(false);
@@ -47,13 +55,13 @@ export default function GenerateReportModalComponent({
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fetch Tasks
+  
   const { data: assessments = [], isLoading: loadingAssessments } = useSWR(
     isOpen && activeTab === "task" ? "teacher-assessments" : null,
     getTeacherAssessmentsAction,
   );
 
-  // Fetch Classes dynamically using SWR
+  
   const { data: classrooms = [], isLoading: loadingClasses } = useSWR<
     Classroom[]
   >(
@@ -61,22 +69,47 @@ export default function GenerateReportModalComponent({
     getTeacherClassesAction,
   );
 
+  
+  const { data: subjects = [], isLoading: loadingSubjects } = useSWR<Subject[]>(
+    isOpen && activeTab === "class" ? "teacher-subjects" : null,
+    getTeacherSubjectsAction,
+  );
+
+  
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setTaskDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   if (!isOpen) return null;
 
   const selectedAssessmentName = assessments.find(
     (a: any) => a.assessmentId === selectedTask,
   )?.title;
 
+  
   const canGenerate =
     reportName.trim() !== "" &&
     !isSubmitting &&
     (activeTab === "class"
-      ? selectedClasses.length > 0 && startDate && endDate
+      ? selectedClasses.length > 0 &&
+        selectedSubjects.length > 0 &&
+        startDate &&
+        endDate
       : selectedTask && startDate && endDate);
 
   function resetForm() {
     setReportName("");
     setSelectedClasses([]);
+    setSelectedSubjects([]);
     setStartDate("");
     setEndDate("");
     setSelectedTask("");
@@ -85,21 +118,28 @@ export default function GenerateReportModalComponent({
     setActiveTab("class");
   }
 
+  
+  function toggleSubject(subjectId: string) {
+    setSelectedSubjects((prev) => {
+      if (prev.includes(subjectId)) {
+        return prev.filter((id) => id !== subjectId);
+      } else {
+        return [...prev, subjectId];
+      }
+    });
+  }
+
+  
   function toggleClass(classId: string) {
     setSelectedClasses((prev) => {
-      // Handle ALL toggle
       if (classId === "ALL") {
         const allIds = classrooms.map((c) => c.classroomId);
-
         const isAllSelected =
           prev.includes("ALL") || allIds.every((id) => prev.includes(id));
-
         return isAllSelected ? [] : ["ALL", ...allIds];
       }
 
-      // Remove ALL before processing individual classes
       const withoutAll = prev.filter((id) => id !== "ALL");
-
       let next;
 
       if (withoutAll.includes(classId)) {
@@ -107,12 +147,6 @@ export default function GenerateReportModalComponent({
       } else {
         next = [...withoutAll, classId];
       }
-
-      const allIds = classrooms.map((c) => c.classroomId);
-
-      // const hasSelectedEverything = allIds.every((id) => next.includes(id));
-
-      // return hasSelectedEverything ? ["ALL", ...allIds] : next;
       return next;
     });
   }
@@ -132,11 +166,8 @@ export default function GenerateReportModalComponent({
       } else {
         await createClassReport({
           title: reportName,
-          subjectId: "default-subject-id",
-
-          classroomIds: selectedClasses.includes("ALL")
-            ? [] 
-            : selectedClasses,
+          subjectIds: selectedSubjects,
+          classroomIds: selectedClasses.includes("ALL") ? [] : selectedClasses,
           startDate,
           endDate,
         });
@@ -162,28 +193,38 @@ export default function GenerateReportModalComponent({
         className="bg-white rounded-2xl w-full max-w-lg p-7"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Modal Header */}
         <div className="flex justify-between mb-6">
           <div className="flex gap-4">
             <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
-              <Edit2 size={28} />
+              <Edit2 size={28} className="text-blue-600" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">Generate Report</h2>
+              <h2 className="text-2xl font-bold text-gray-800">
+                Generate Report
+              </h2>
               <p className="text-gray-400 text-sm">Fill details below</p>
             </div>
           </div>
-          <button onClick={onClose}>
-            <XCircle />
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <XCircle size={24} />
           </button>
         </div>
 
+        
         <div className="flex rounded-xl bg-gray-100 p-1 mb-5">
           {(["class", "task"] as const).map((tab) => (
             <button
               key={tab}
+              type="button"
               onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 rounded-lg ${
-                activeTab === tab ? "bg-white shadow" : ""
+              className={`flex-1 py-2 rounded-lg font-medium text-sm transition ${
+                activeTab === tab
+                  ? "bg-white text-blue-600 shadow-sm"
+                  : "text-gray-500 hover:text-gray-800"
               }`}
             >
               {tab === "class" ? "Class Based" : "Task Based"}
@@ -191,78 +232,136 @@ export default function GenerateReportModalComponent({
           ))}
         </div>
 
+        
         <div className="space-y-5">
-          <input
-            placeholder="Report Name"
-            value={reportName}
-            onChange={(e) => setReportName(e.target.value)}
-            className="w-full border rounded-xl p-3"
-          />
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+              Report Name
+            </label>
+            <input
+              placeholder="Report Name"
+              value={reportName}
+              onChange={(e) => setReportName(e.target.value)}
+              className="w-full border rounded-xl p-3 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            />
+          </div>
 
           {activeTab === "class" ? (
-            <div className="flex gap-4 flex-wrap">
-              {loadingClasses ? (
-                <span className="text-sm text-gray-500">
-                  Loading classes...
-                </span>
-              ) : classrooms.length === 0 ? (
-                <span className="text-sm text-gray-500">No classes found.</span>
-              ) : (
-                <>
-                  {/* Static All Classes Checkbox */}
-                  <label
-                    key="ALL"
-                    className="flex items-center gap-2 cursor-pointer"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedClasses.includes("ALL")}
-                      onChange={() => toggleClass("ALL")}
-                    />
-                    All Classes
-                  </label>
+            <>
+              
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+                  Select Subjects
+                </label>
+                <div className="flex gap-4 flex-wrap p-3 bg-gray-50 border border-gray-150 rounded-xl max-h-32 overflow-auto">
+                  {loadingSubjects ? (
+                    <span className="text-sm text-gray-400">
+                      Loading subjects...
+                    </span>
+                  ) : subjects.length === 0 ? (
+                    <span className="text-sm text-gray-400">
+                      No subjects found.
+                    </span>
+                  ) : (
+                    subjects.map((sub) => (
+                      <label
+                        key={sub.subjectId}
+                        className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-700 select-none"
+                      >
+                        <input
+                          type="checkbox"
+                          className="rounded text-blue-600 border-gray-300 w-4 h-4 focus:ring-blue-500"
+                          checked={selectedSubjects.includes(sub.subjectId)}
+                          onChange={() => toggleSubject(sub.subjectId)}
+                        />
+                        {sub.subjectName}
+                      </label>
+                    ))
+                  )}
+                </div>
+              </div>
 
-                  {classrooms.map((cls) => (
-                    <label
-                      key={cls.classroomId}
-                      className="flex items-center gap-2 cursor-pointer"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={selectedClasses.includes(cls.classroomId)}
-                        onChange={() => toggleClass(cls.classroomId)}
-                      />
+              {/* Classrooms Checkbox Selection Area Widget */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+                  Target Classrooms
+                </label>
+                <div className="flex gap-4 flex-wrap p-3 bg-gray-50 border border-gray-150 rounded-xl max-h-32 overflow-auto">
+                  {loadingClasses ? (
+                    <span className="text-sm text-gray-400">
+                      Loading classes...
+                    </span>
+                  ) : classrooms.length === 0 ? (
+                    <span className="text-sm text-gray-400">
+                      No classes found.
+                    </span>
+                  ) : (
+                    <>
+                      <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-700 select-none">
+                        <input
+                          type="checkbox"
+                          className="rounded text-blue-600 border-gray-300 w-4 h-4 focus:ring-blue-500"
+                          checked={selectedClasses.includes("ALL")}
+                          onChange={() => toggleClass("ALL")}
+                        />
+                        All Classes
+                      </label>
 
-                      {cls.classroomAbbre}
-                    </label>
-                  ))}
-                </>
-              )}
-            </div>
+                      {classrooms.map((cls) => (
+                        <label
+                          key={cls.classroomId}
+                          className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-700 select-none"
+                        >
+                          <input
+                            type="checkbox"
+                            className="rounded text-blue-600 border-gray-300 w-4 h-4 focus:ring-blue-500"
+                            checked={selectedClasses.includes(cls.classroomId)}
+                            onChange={() => toggleClass(cls.classroomId)}
+                          />
+                          {cls.classroomAbbre}
+                        </label>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </div>
+            </>
           ) : (
-            <div ref={dropdownRef}>
+            /* Task-Based dropdown picker configuration block */
+            <div ref={dropdownRef} className="relative">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+                Target Assessment Task
+              </label>
               <button
-                className="w-full border rounded-xl p-3 flex justify-between"
+                type="button"
+                className="w-full border rounded-xl p-3 flex justify-between items-center text-left bg-white"
                 onClick={() => setTaskDropdownOpen((o) => !o)}
               >
-                {selectedAssessmentName || "Select Task"}
-                <ChevronDown />
+                <span
+                  className={
+                    selectedAssessmentName ? "text-gray-800" : "text-gray-400"
+                  }
+                >
+                  {selectedAssessmentName || "Select Task"}
+                </span>
+                <ChevronDown size={18} className="text-gray-400" />
               </button>
 
               {taskDropdownOpen && (
-                <div className="border rounded-xl mt-2">
-                  <div className="flex p-3 border-b">
-                    <Search size={16} />
+                <div className="absolute left-0 right-0 z-50 border bg-white rounded-xl mt-2 shadow-lg max-h-56 overflow-hidden flex flex-col">
+                  <div className="flex p-3 border-b bg-gray-50 items-center">
+                    <Search size={16} className="text-gray-400 flex-shrink-0" />
                     <input
+                      placeholder="Filter by title..."
                       value={taskSearch}
                       onChange={(e) => setTaskSearch(e.target.value)}
-                      className="flex-1 outline-none ml-2"
+                      className="flex-1 outline-none ml-2 bg-transparent text-sm text-gray-700"
                     />
                   </div>
 
-                  <ul className="max-h-48 overflow-auto">
+                  <ul className="max-h-40 overflow-auto py-1">
                     {loadingAssessments ? (
-                      <li className="p-4">Loading...</li>
+                      <li className="p-3 text-sm text-gray-400">Loading...</li>
                     ) : (
                       assessments
                         .filter((assessment: any) =>
@@ -277,11 +376,14 @@ export default function GenerateReportModalComponent({
                               setSelectedTask(assessment.assessmentId);
                               setTaskDropdownOpen(false);
                             }}
-                            className="p-3 hover:bg-gray-50 cursor-pointer flex justify-between"
+                            className="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center text-sm text-gray-700 transition"
                           >
                             {assessment.title}
                             {selectedTask === assessment.assessmentId && (
-                              <CheckCircle2 size={18} />
+                              <CheckCircle2
+                                size={18}
+                                className="text-blue-600"
+                              />
                             )}
                           </li>
                         ))
@@ -292,24 +394,33 @@ export default function GenerateReportModalComponent({
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="border rounded-xl p-3"
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="border rounded-xl p-3"
-            />
+          {/* Analysis Window Dates Row Context */}
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+              Analysis Window
+            </label>
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="border rounded-xl p-3 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-gray-700"
+              />
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="border rounded-xl p-3 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-gray-700"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 mt-6">
+        {/* Action Controls Footer Row */}
+        <div className="flex justify-end gap-3 mt-8 border-t pt-5">
           <button
+            type="button"
+            className="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700"
             onClick={() => {
               resetForm();
               onClose();

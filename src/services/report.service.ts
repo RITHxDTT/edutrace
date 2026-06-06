@@ -5,7 +5,7 @@ import {
   CreateTaskReportDto,
   CreateClassReportDto,
   taskBaseReport as taskBaseReportType,
-  ReportDetailResponse
+  ReportDetailResponse,
 } from "../types/report";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -75,7 +75,7 @@ export async function getMyListReport(payload: {
   if (!res.ok || !data.success) {
     throw new Error(data?.message || "Failed to fetch report list");
   }
-  console.log(data.payload.reportName)
+  console.log(data.payload.reportName);
   return data.payload;
 }
 
@@ -396,4 +396,56 @@ export async function getReportDetail(
   }
   // console.log(data.payload.reportType)
   return data.payload;
+}
+
+export async function getReportDetails(
+  reportId: string,
+  isSystemBypass = false,
+) {
+  let authorizationHeader = "";
+
+  if (isSystemBypass) {
+    authorizationHeader = `Bearer ${process.env.INTERNAL_SYSTEM_API_KEY}`;
+  } else {
+    const session = await auth();
+    if (!session?.access_token) throw new Error("Unauthorized");
+    authorizationHeader = `Bearer ${session.access_token}`;
+  }
+
+  const response = await fetch(`${API_URL}/reports/${reportId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: authorizationHeader,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed fetching report data details");
+  }
+
+  const resData = await response.json();
+  return resData.payload;
+}
+
+export async function getTeacherSubject() {
+  const session = await auth();
+  if (!session?.access_token) throw new Error("Unauthorized");
+
+  const response = await fetch(`${API_URL}/users/me`, {
+    method: "GET",
+    headers: {
+      Accept: "*/*",
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch user profile information");
+  }
+
+  const data = await response.json();
+  return data.payload; 
 }
