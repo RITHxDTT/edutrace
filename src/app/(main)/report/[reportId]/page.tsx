@@ -32,7 +32,7 @@ export default async function IndividualReportPage({ params }: PageProps) {
 
         generatedAt: report.generatedAt,
 
-        // reportType: report.reportType,
+        reportType: report.reportType,
       }}
     />
   );
