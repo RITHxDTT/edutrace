@@ -83,7 +83,7 @@ export default function TableDataComponent({
           const rowNumber = startIndex + index + 1;
           const displayId = `RTP-${String(rowNumber).padStart(3, "0")}`;
           const isClass = report.reportType === "CLASS";
-
+          const isAllClass = isClass && report.classScope === "ALL";
           return (
             <div
               key={report.reportId}
@@ -116,7 +116,11 @@ export default function TableDataComponent({
                   }`}
                 >
                   <LayoutGrid size={12} />
-                  {isClass ? "Class" : "Subject"}
+                  {isClass
+                    ? isAllClass
+                      ? "All Class"
+                      : "Class"
+                    : "Subject"}
                 </span>
               </div>
 

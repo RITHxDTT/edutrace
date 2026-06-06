@@ -112,7 +112,21 @@ export async function getTeacherClassesAction() {
     const userProfile = await getUserProfile();
     
     console.log("Fetched User Profile:", userProfile.taughtClassrooms);
-    return userProfile.taughtClassrooms || [];
+    const rawClassrooms = userProfile.taughtClassrooms || [];
+    
+    const normalized = rawClassrooms.flatMap((item: any) => {
+      if (!item) return [];
+      if (typeof item === "string") {
+        return {
+          classroomId: item,
+          className: item,
+          classroomAbbre: item,
+        };
+      }
+      return "classrooms" in item ? item.classrooms : item;
+    });
+
+    return normalized;
   } catch (error) {
     console.error("Failed to fetch teacher classes:", error);
     throw new Error("Failed to load classes");

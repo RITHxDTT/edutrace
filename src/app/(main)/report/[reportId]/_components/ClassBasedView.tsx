@@ -7,6 +7,7 @@ import AllClassesActions from "../../_components/_classBase/AllClassesAction";
 import BasicBars from "../../_components/_classBase/barChartThreeLine";
 import HorizontalBars from "../../_components/_classBase/barChartAxis";
 import AiChatWrapper from "../../AI/AiChatWrapper";
+import TableStudent from "./TableStudent";
 
 interface ClassBasedViewProps {
   summary: any;
@@ -18,7 +19,12 @@ export default function ClassBasedView({
   metadata,
 }: ClassBasedViewProps) {
   const reportName = metadata?.reportName || "All Classes Performance Report";
-  const viewingLabel = "All Classes Overview";
+  
+  const isAllClasses = !metadata?.classScope || metadata.classScope === "ALL";
+  const viewingLabel = isAllClasses
+    ? "All Classes Overview"
+    : `${metadata.classScope} Class Overview`;
+
   const displayPeriod = metadata?.generatedAt
     ? new Date(metadata.generatedAt).toLocaleDateString("en-US", {
         month: "long",
@@ -110,7 +116,7 @@ export default function ClassBasedView({
         <div className="w-111 h-111">
           <KpiCardTaskBased
             totalStudents={summary?.totalStudents ?? 0}
-            className="All Classes"
+            className={isAllClasses ? "All Classes" : `${metadata?.classScope || "Class"} Class`}
           />
         </div>
 
@@ -125,37 +131,51 @@ export default function ClassBasedView({
         </div>
       </div>
 
-      <section className="mt-5 grid grid-cols-4 gap-4">
-        <div className="col-span-3 flex flex-col gap-4">
+      {!isAllClasses ? (
+        <section className="mt-5 flex flex-col gap-4">
           <div className="bg-white p-6 rounded-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-semibold">Submission Breakdown</h3>
+            <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-3">
+              <h3 className="text-2xl font-semibold">Students Performance</h3>
             </div>
-            <BasicBars data={chartsMock.submissionBreakdownByClass.data} />
-          </div>
-
-          <div className="bg-white p-6 rounded-2xl w-full">
-            <h3 className="text-2xl font-semibold mb-4">Score Analysis</h3>
-            <HorizontalBars data={chartsMock.scoreAnalysis.data} />
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          {chartsMock.classComparison.data.map((cls) => (
-            <ClassSubmissionCard
-              key={cls.classroomId}
-              late={cls.late}
-              submitted={cls.submitted}
-              total={cls.totalStudents}
-              className={cls.className}
+            <TableStudent
+              students={summary?.students || []}
+              classroomAbbre={metadata?.classScope}
             />
-          ))}
-        </div>
+          </div>
+        </section>
+      ) : (
+        <section className="mt-5 grid grid-cols-4 gap-4">
+          <div className="col-span-3 flex flex-col gap-4">
+            <div className="bg-white p-6 rounded-2xl">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-2xl font-semibold">Submission Breakdown</h3>
+              </div>
+              <BasicBars data={chartsMock.submissionBreakdownByClass.data} />
+            </div>
 
-        <div className="fixed bottom-0 right-0 pointer-events-none z-50">
-          <AiChatWrapper />
-        </div>
-      </section>
+            <div className="bg-white p-6 rounded-2xl w-full">
+              <h3 className="text-2xl font-semibold mb-4">Score Analysis</h3>
+              <HorizontalBars data={chartsMock.scoreAnalysis.data} />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4">
+            {chartsMock.classComparison.data.map((cls) => (
+              <ClassSubmissionCard
+                key={cls.classroomId}
+                late={cls.late}
+                submitted={cls.submitted}
+                total={cls.totalStudents}
+                className={cls.className}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div className="fixed bottom-0 right-0 pointer-events-none z-50">
+        <AiChatWrapper />
+      </div>
     </div>
   );
 }

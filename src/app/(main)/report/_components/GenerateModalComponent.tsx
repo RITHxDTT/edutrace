@@ -7,7 +7,7 @@ import {
   taskBaseReport,
   createClassReport,
   getTeacherAssessmentsAction,
-  getTeacherClassesAction, 
+  getTeacherClassesAction,
 } from "@/actions/report.action";
 
 import {
@@ -17,7 +17,6 @@ import {
   Search,
   CheckCircle2,
 } from "lucide-react";
-
 
 interface Classroom {
   classroomId: string;
@@ -51,19 +50,21 @@ export default function GenerateReportModalComponent({
   // Fetch Tasks
   const { data: assessments = [], isLoading: loadingAssessments } = useSWR(
     isOpen && activeTab === "task" ? "teacher-assessments" : null,
-    getTeacherAssessmentsAction
+    getTeacherAssessmentsAction,
   );
 
   // Fetch Classes dynamically using SWR
-  const { data: classrooms = [], isLoading: loadingClasses } = useSWR<Classroom[]>(
+  const { data: classrooms = [], isLoading: loadingClasses } = useSWR<
+    Classroom[]
+  >(
     isOpen && activeTab === "class" ? "teacher-classes" : null,
-    getTeacherClassesAction
+    getTeacherClassesAction,
   );
 
   if (!isOpen) return null;
 
   const selectedAssessmentName = assessments.find(
-    (a: any) => a.assessmentId === selectedTask
+    (a: any) => a.assessmentId === selectedTask,
   )?.title;
 
   const canGenerate =
@@ -85,22 +86,33 @@ export default function GenerateReportModalComponent({
   }
 
   function toggleClass(classId: string) {
-    if (classId === "ALL") {
-      setSelectedClasses((prev) =>
-        prev.includes("ALL") ? [] : ["ALL", ...classrooms.map((c) => c.classroomId)]
-      );
-      return;
-    }
-
     setSelectedClasses((prev) => {
-      const next = prev.includes(classId)
-        ? prev.filter((id) => id !== classId && id !== "ALL")
-        : [...prev.filter((id) => id !== "ALL"), classId];
+      // Handle ALL toggle
+      if (classId === "ALL") {
+        const allIds = classrooms.map((c) => c.classroomId);
 
-      // If all individual classes are selected, automatically check "All Classes"
-      if (next.length === classrooms.length) {
-        return ["ALL", ...next];
+        const isAllSelected =
+          prev.includes("ALL") || allIds.every((id) => prev.includes(id));
+
+        return isAllSelected ? [] : ["ALL", ...allIds];
       }
+
+      // Remove ALL before processing individual classes
+      const withoutAll = prev.filter((id) => id !== "ALL");
+
+      let next;
+
+      if (withoutAll.includes(classId)) {
+        next = withoutAll.filter((id) => id !== classId);
+      } else {
+        next = [...withoutAll, classId];
+      }
+
+      const allIds = classrooms.map((c) => c.classroomId);
+
+      // const hasSelectedEverything = allIds.every((id) => next.includes(id));
+
+      // return hasSelectedEverything ? ["ALL", ...allIds] : next;
       return next;
     });
   }
@@ -188,13 +200,18 @@ export default function GenerateReportModalComponent({
           {activeTab === "class" ? (
             <div className="flex gap-4 flex-wrap">
               {loadingClasses ? (
-                <span className="text-sm text-gray-500">Loading classes...</span>
+                <span className="text-sm text-gray-500">
+                  Loading classes...
+                </span>
               ) : classrooms.length === 0 ? (
                 <span className="text-sm text-gray-500">No classes found.</span>
               ) : (
                 <>
                   {/* Static All Classes Checkbox */}
-                  <label key="ALL" className="flex items-center gap-2 cursor-pointer">
+                  <label
+                    key="ALL"
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
                     <input
                       type="checkbox"
                       checked={selectedClasses.includes("ALL")}
@@ -202,17 +219,19 @@ export default function GenerateReportModalComponent({
                     />
                     All Classes
                   </label>
-                  
-                  {/* Dynamic Class Checkboxes */}
+
                   {classrooms.map((cls) => (
-                    <label key={cls.classroomId} className="flex items-center gap-2 cursor-pointer">
+                    <label
+                      key={cls.classroomId}
+                      className="flex items-center gap-2 cursor-pointer"
+                    >
                       <input
                         type="checkbox"
                         checked={selectedClasses.includes(cls.classroomId)}
                         onChange={() => toggleClass(cls.classroomId)}
                       />
-                      {/* Using classroomAbbre to show "SR" instead of "Siem Reap" */}
-                      {cls.classroomAbbre} 
+
+                      {cls.classroomAbbre}
                     </label>
                   ))}
                 </>
@@ -247,7 +266,7 @@ export default function GenerateReportModalComponent({
                         .filter((assessment: any) =>
                           assessment.title
                             .toLowerCase()
-                            .includes(taskSearch.toLowerCase())
+                            .includes(taskSearch.toLowerCase()),
                         )
                         .map((assessment: any) => (
                           <li
