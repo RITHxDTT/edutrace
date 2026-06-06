@@ -131,6 +131,7 @@ export default function ReportClientPage({
         <PrimaryTabs
           tabs={[
             { key: "All Reports", title: "All Reports" },
+            { key: "All Class", title: "All Class" },
             { key: "Class Based", title: "Class Based" },
             { key: "Task Based", title: "Task Based" },
           ]}

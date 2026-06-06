@@ -4,9 +4,27 @@ import { auth } from "@/auth";
 import { taskBaseReport as taskBaseReportDto } from "@/types/report";
 import { deleteReport, getUserProfile } from "@/services/report.service";
 import { revalidatePath } from "next/cache";
+import { getReportDetail } from "@/services/report.service";
 // import { getTeacherAssessments } from "@/services/assessment.service";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+export async function getReportDetails(reportID: string) {
+  
+  const session = await auth();
+  if (!session?.access_token) {
+    throw new Error("Unauthorized");
+  }
+
+  
+  const res = await getReportDetail(reportID);
+
+  if (!res) {
+    throw new Error("Error to fetch data");
+  }
+
+  return res;
+}
 
 export async function taskBaseReport(payload: taskBaseReportDto) {
   const session = await auth();
@@ -106,14 +124,13 @@ export async function getTeacherAssessmentsAction() {
   return data.payload.content;
 }
 
-
 export async function getTeacherClassesAction() {
   try {
     const userProfile = await getUserProfile();
-    
+
     console.log("Fetched User Profile:", userProfile.taughtClassrooms);
     const rawClassrooms = userProfile.taughtClassrooms || [];
-    
+
     const normalized = rawClassrooms.flatMap((item: any) => {
       if (!item) return [];
       if (typeof item === "string") {

@@ -75,6 +75,7 @@ export async function getMyListReport(payload: {
   if (!res.ok || !data.success) {
     throw new Error(data?.message || "Failed to fetch report list");
   }
+  console.log(data.payload.reportName)
   return data.payload;
 }
 
@@ -393,6 +394,6 @@ export async function getReportDetail(
   if (!res.ok || !data.success) {
     throw new Error(data.message || "Failed fetching report detail");
   }
-
+  // console.log(data.payload.reportType)
   return data.payload;
 }

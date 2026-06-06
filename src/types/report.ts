@@ -63,6 +63,32 @@ export interface taskBaseReport {
   endDate: string;
 }
 
+export interface ScoreDistributionItem {
+  count: number;
+  range: string;
+}
+
+export interface ScoreDistribution {
+  title?: string;
+  xLabel?: string;
+  yLabel?: string;
+  scoreBasis?: string;
+  data: ScoreDistributionItem[];
+}
+
+export interface StudentProps {
+  
+  fullName: string;
+  gender: string;
+  email: string;
+  dob: string | null;
+  profileImage?: string | null;
+  className:string,
+  classroomAbbre:string,
+  submissionStatus:string,
+  averageScore: number,
+}
+
 export interface ReportDetailResponse {
   reportId: string;
   reportName: string;
@@ -71,6 +97,7 @@ export interface ReportDetailResponse {
 
   reportData: {
     viewingLabel: string;
+    scoreDistribution: ScoreDistribution;
 
     summary: {
       late: number;
@@ -92,7 +119,8 @@ export interface ReportDetailResponse {
       title: string;
       total: number;
 
-      data: Student[];
+      data: StudentProps[];  
+
     };
 
     submission?: {

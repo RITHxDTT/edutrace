@@ -15,8 +15,8 @@ type SubmissionDonutChartProps = {
   total: number;
 };
 
-const SVG_SIZE = 200;
-const CIRCLE_CENTER = SVG_SIZE / 2;
+const VIEWBOX_SIZE = 200;
+const CIRCLE_CENTER = VIEWBOX_SIZE / 2;
 
 function DonutProgressRing({
   radius,
@@ -91,22 +91,22 @@ export function SubmissionDonutChart({
   ];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-6 h-full w-full  shadow-sm">
-      <p className="text-md font-medium text-gray-400 uppercase tracking-widest mb-1">
+    <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 w-full shadow-sm">
+      <p className="text-sm sm:text-md font-medium text-gray-400 uppercase tracking-widest mb-1">
         Submission Behavior
       </p>
 
-      <p className="text-2xl font-semibold text-gray-900 mb-5">
+      <p className="text-lg sm:text-2xl font-semibold text-gray-900 mb-5">
         On-Time, Late, and Missing Submission
       </p>
 
-      <div className="flex items-center justify-between gap-10 px-44">
-        <div>
+      
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
+        
+        <div className="w-full max-w-[260px] sm:max-w-[300px] lg:max-w-[320px]">
           <svg
-            width={SVG_SIZE}
-            height={SVG_SIZE}
-            viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`}
-            className="shrink-0"
+            viewBox={`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}
+            className="w-full h-auto"
           >
             {submissionRings.map((ring) => (
               <DonutProgressRing key={ring.label} {...ring} />
@@ -114,28 +114,26 @@ export function SubmissionDonutChart({
           </svg>
         </div>
 
-        <div>
-          <p className="text-2xl font-medium text-gray-900 tracking-tight mb-5">
+        
+        <div className="w-full lg:w-auto">
+          <p className="text-lg sm:text-2xl font-medium text-gray-900 tracking-tight mb-4 sm:mb-5">
             Submission
           </p>
 
-          {submissionRings.map(({ progressColor, label, count }) => (
-            <div
-              key={label}
-              className="flex items-center gap-2.5 mb-3 last:mb-0"
-            >
-              <span
-                className="w-2.5 h-2.5 rounded-full shrink-0"
-                style={{ background: progressColor }}
-              />
-
-              <span className="text-sm text-gray-700 flex-1">{label}</span>
-
-              <span className="text-sm font-semibold text-gray-900">
-                {count}
-              </span>
-            </div>
-          ))}
+          <div className="space-y-3">
+            {submissionRings.map(({ progressColor, label, count }) => (
+              <div key={label} className="flex items-center gap-2.5">
+                <span
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ background: progressColor }}
+                />
+                <span className="text-sm text-gray-700 flex-1">{label}</span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {count}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

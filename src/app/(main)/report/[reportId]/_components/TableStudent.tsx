@@ -1,12 +1,6 @@
 "use client";
 
-interface StudentProps {
-  fullName: string;
-  gender: string;
-  email: string;
-  dob: string | null;
-  profileImage?: string | null;
-}
+import { StudentProps } from "@/types/report";
 
 interface TableStudentProps {
   students: StudentProps[];

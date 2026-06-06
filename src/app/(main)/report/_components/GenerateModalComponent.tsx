@@ -133,8 +133,10 @@ export default function GenerateReportModalComponent({
         await createClassReport({
           title: reportName,
           subjectId: "default-subject-id",
-          // Send real database IDs (excluding the "ALL" keyword)
-          classroomIds: selectedClasses.filter((id) => id !== "ALL"),
+
+          classroomIds: selectedClasses.includes("ALL")
+            ? [] 
+            : selectedClasses,
           startDate,
           endDate,
         });

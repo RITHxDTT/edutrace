@@ -8,6 +8,10 @@ import BasicBars from "../../_components/_classBase/barChartThreeLine";
 import HorizontalBars from "../../_components/_classBase/barChartAxis";
 import AiChatWrapper from "../../AI/AiChatWrapper";
 import TableStudent from "./TableStudent";
+import { SubmissionDonutChart } from "../../_components/_taskBase/SubmissionDonutChart";
+import TickPlacementBars from "../../_components/_taskBase/BarChart";
+import useSWR from "swr";
+import { getReportDetail } from "@/services/report.service";
 
 import { ReportDetailResponse } from "@/types/report";
 
@@ -15,16 +19,38 @@ interface Props {
   report: ReportDetailResponse;
 }
 
-export default function ClassBasedView({ report }: Props) {
-  const summary = report.reportData.summary;
+type ReportMode = "ALL_CLASSES" | "SINGLE_CLASS" | "TASK";
+
+function getReportMode(report: ReportDetailResponse): ReportMode {
+  if (report.reportType === "ASSESSMENT") {
+    return "TASK";
+  }
 
   const classroom = report.reportData.classroom;
 
+  if (!classroom || !("classroomId" in classroom)) {
+    return "ALL_CLASSES";
+  }
+
+  return "SINGLE_CLASS";
+}
+
+export default function ClassBasedView({ report }: Props) {
+  const { data: reports, error } = useSWR(
+    report.reportId ? report.reportId : null,
+    getReportDetail,
+  );
+
+  const summary = report.reportData.summary;
+  const classroom = report.reportData.classroom;
   const students = report.reportData.students?.data ?? [];
-
   const submission = report.reportData.submission;
+  const scoreDistribution = report.reportData.scoreDistribution;
 
-  const isAllClasses = !classroom;
+  const mode = getReportMode(report);
+
+  const isAllClasses = mode === "ALL_CLASSES";
+  const isSingleClass = mode === "SINGLE_CLASS";
 
   const displayPeriod = new Date(report.generatedAt).toLocaleDateString(
     "en-US",
@@ -35,50 +61,23 @@ export default function ClassBasedView({ report }: Props) {
   );
 
   const kpiCards = [
-    {
-      title: "Total Submitted",
-      value: summary.totalSubmitted,
-    },
-
-    {
-      title: "Submission Rate",
-      value: `${summary.totalSubmissionRate}%`,
-    },
-
-    {
-      title: "Avg. Score",
-      value: `${summary.averageScore}%`,
-    },
-
-    {
-      title: "On-Time",
-      value: summary.onTime,
-    },
-
-    {
-      title: "Late",
-      value: summary.late,
-    },
-
-    {
-      title: "Missing",
-      value: summary.missing,
-    },
+    { title: "Total Submitted", value: summary.totalSubmitted },
+    { title: "Submission Rate", value: `${summary.totalSubmissionRate}%` },
+    { title: "Avg. Score", value: `${summary.averageScore}%` },
+    { title: "On-Time", value: summary.onTime },
+    { title: "Late", value: summary.late },
+    { title: "Missing", value: summary.missing },
   ];
 
   return (
     <div className="pb-20 px-4 md:px-6">
       {/* HEADER */}
-
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">{report.reportName}</h1>
 
           <p className="text-sm text-gray-500">
-            {displayPeriod}
-
-            {" - Viewing: "}
-
+            {displayPeriod} - Viewing:{" "}
             <span className="text-blue-600">
               {report.reportData.viewingLabel}
             </span>
@@ -88,8 +87,7 @@ export default function ClassBasedView({ report }: Props) {
         <AllClassesActions />
       </div>
 
-      {/* KPI SECTION */}
-
+      
       <div className="mt-6 flex flex-col xl:flex-row gap-4">
         <div className="w-full xl:w-[340px]">
           <KpiCardTaskBased
@@ -97,7 +95,7 @@ export default function ClassBasedView({ report }: Props) {
             className={
               isAllClasses
                 ? "All Classes"
-                : `${classroom?.classroomAbbre} Class`
+                : `${classroom?.classroomAbbre ?? "Class"} Class`
             }
           />
         </div>
@@ -113,65 +111,63 @@ export default function ClassBasedView({ report }: Props) {
         </div>
       </div>
 
-      {/* ANALYTICS */}
+      
+      {isAllClasses && (
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 mt-6">
+          <div className="xl:col-span-3 flex flex-col gap-4">
+           
 
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 mt-6">
-        <div className="xl:col-span-3 flex flex-col gap-4">
-          <div className="bg-white rounded-2xl p-5">
-            <h3 className="text-xl font-semibold mb-4">Submission Breakdown</h3>
+            {/* Score Analysis */}
+            <div className="bg-white rounded-2xl p-5">
+              <h3 className="text-xl font-semibold mb-4">Score Analysis</h3>
 
-            <BasicBars
-              data={[
-                {
-                  late: submission?.late ?? 0,
-
-                  onTime: submission?.onTime ?? 0,
-
-                  missing: submission?.missing ?? 0,
-
-                  className: classroom?.className ?? "Class",
-
-                  classroomAbbre: classroom?.classroomAbbre,
-                },
-              ]}
-            />
+              <HorizontalBars
+                data={[
+                  {
+                    className: classroom?.className,
+                    averageScore: summary.averageScore,
+                    classroomAbbre: classroom?.classroomAbbre,
+                    secondAverageScore: summary.totalSubmissionRate,
+                  },
+                ]}
+              />
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-5">
-            <h3 className="text-xl font-semibold mb-4">Score Analysis</h3>
-
-            <HorizontalBars
-              data={[
-                {
-                  className: classroom?.className,
-
-                  averageScore: summary.averageScore,
-
-                  classroomAbbre: classroom?.classroomAbbre,
-
-                  secondAverageScore: summary.totalSubmissionRate,
-                },
-              ]}
+          {/* Side Card */}
+          <div>
+            <ClassSubmissionCard
+              lateSubmission={summary.late}
+              submitted={summary.totalSubmitted}
+              total={summary.totalStudents}
+              className={classroom?.className ?? "Class"}
             />
           </div>
         </div>
+      )}
 
-        <div>
-          <ClassSubmissionCard
+    
+
+      <div className="mt-6 grid grid-cols-2 gap-4">
+        <div className="p-5 bg-white rounded-2xl shadow">
+          <h3 className="font-medium mb-2">Average Scores</h3>
+      
+          <TickPlacementBars data={scoreDistribution?.data ?? []} />
+        </div>
+        <div className="h-full">
+          <SubmissionDonutChart
+            onTime={summary.onTime}
             late={summary.late}
-            submitted={summary.totalSubmitted}
+            missing={summary.missing}
             total={summary.totalStudents}
-            className={classroom?.className ?? "Class"}
           />
         </div>
       </div>
 
-      {/* STUDENT TABLE ALWAYS AT BOTTOM */}
-
+      {/* student list */}
       <div className="mt-6 bg-white rounded-2xl p-5">
         <div className="mb-4">
           <h3 className="text-xl font-semibold">Student List</h3>
-
           <p className="text-sm text-gray-500">{students.length} Students</p>
         </div>
 
@@ -181,6 +177,7 @@ export default function ClassBasedView({ report }: Props) {
         />
       </div>
 
+      
       <div className="fixed bottom-0 right-0 z-50">
         <AiChatWrapper />
       </div>
