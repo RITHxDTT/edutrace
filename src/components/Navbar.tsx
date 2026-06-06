@@ -16,23 +16,23 @@ export default function Navbar() {
           <Image
             src="/images/logo/edutraceLogo.png"
             alt="Edutrace"
-            width={34}
-            height={42}
+            width={60}
+            height={40}
             className="object-contain"
           />
-          <span className="text-lg font-semibold text-gray-900">Edutrace</span>
+          <span className="text-lg font-semibold text-linear-main">Edutrace</span>
         </Link>
 
         {/* Desktop nav links */}
         <div className="hidden md:flex items-center gap-8">
           <Link
-            href="#how-it-works"
+            href="/how-it-works"
             className="text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors"
           >
             How It Works
           </Link>
           <Link
-            href="#about"
+            href="/about"
             className="text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors"
           >
             About
@@ -69,14 +69,14 @@ export default function Navbar() {
       {open && (
         <div className="md:hidden border-t border-gray-100 bg-white px-5 py-3 space-y-1 shadow-lg">
           <Link
-            href="#how-it-works"
+            href="/how-it-works"
             onClick={() => setOpen(false)}
             className="block text-sm font-medium text-gray-600 py-2.5 hover:text-indigo-600 transition-colors"
           >
             How It Works
           </Link>
           <Link
-            href="#about"
+            href="/about"
             onClick={() => setOpen(false)}
             className="block text-sm font-medium text-gray-600 py-2.5 hover:text-indigo-600 transition-colors"
           >

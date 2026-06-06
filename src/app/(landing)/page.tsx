@@ -19,7 +19,7 @@ export default function LandingPage() {
       <section className="flex flex-col gap-20 md:gap-36 bg-white pt-16 pb-20 px-5 sm:px-8 max-w-7xl mx-auto text-center">
         {/* title */}
         <div>
-          <div className="flex flex-col justify-center items-center gap-4 sm:gap-6">
+          <div className="flex flex-col justify-center  items-center gap-4 sm:gap-6">
             <h1 className="text-3xl sm:text-4xl md:text-[48px] tracking-tight text-ai max-w-4xl mx-auto leading-tight">
               <span className="text-3xl sm:text-4xl md:text-[48px] text-linear-main font-medium">
                 Stay on track. Do not miss tasks.
@@ -28,12 +28,11 @@ export default function LandingPage() {
             </h1>
 
             {/* Subtitle */}
-            <p className="text-textDisable text-base sm:text-lg md:text-xl mx-auto max-w-md sm:max-w-lg">
+            <p className="text-disabled text-base sm:text-lg md:text-xl mx-auto max-w-md sm:max-w-lg">
               Manage your tasks, get timely notifications, and stay connected
               with your instructors
             </p>
-
-            <GetStartedButton />
+              <GetStartedButton />
           </div>
 
           {/* hero cards */}
