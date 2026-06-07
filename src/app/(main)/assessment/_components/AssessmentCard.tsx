@@ -102,7 +102,7 @@ export default function AssessmentCard({
 
   return (
     <div
-      className="relative min-w-105 min-h-95 h-full cursor-pointer"
+      className="relative w-full min-h-95 h-full cursor-pointer"
       onClick={() => redirect(`/assessment/${assessmentId}`)}
     >
       <BackgroundCard />
