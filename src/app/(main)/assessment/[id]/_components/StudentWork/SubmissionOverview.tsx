@@ -4,14 +4,14 @@ import { useState } from "react";
 import { gradeSubmissionAction } from "@/actions/assessment.action";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import PrimaryInput from "@/components/Inputs/PrimaryInputField";
-import { AssessmentSubmission } from "@/types/assessment";
+import { SubmissionDetail } from "@/types/assessment";
 import { Award, Calendar, RefreshCircle } from "iconsax-react";
 import StudentWorkFileCard from "./StudentWorkFileCard";
 import { getSubmittedLabel } from "@/utils/studentWorkUtils";
 
 type Props = {
-  submission: AssessmentSubmission;
-  onSubmissionChange?: (submission: AssessmentSubmission) => void;
+  submission: SubmissionDetail;
+  onSubmissionChange?: (submission: SubmissionDetail) => void;
 };
 
 export default function SubmissionOverview({
@@ -54,7 +54,7 @@ export default function SubmissionOverview({
       return;
     }
 
-    const nextSubmission: AssessmentSubmission = {
+    const nextSubmission: SubmissionDetail = {
       ...submission,
       status: "GRADED",
       grade: {

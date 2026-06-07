@@ -1,7 +1,7 @@
 "use client";
 
 import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
-import { AssessmentSubmission } from "@/types/assessment";
+import { SubmissionDetail } from "@/types/assessment";
 import { CloseCircle } from "iconsax-react";
 import Image from "next/image";
 import SubmissionOverview from "./SubmissionOverview";
@@ -9,37 +9,43 @@ import SubmissionTimeTracking from "./SubmissionTimeTracking";
 import { getStudentInitials } from "@/utils/studentWorkUtils";
 
 type Props = {
-  submission: AssessmentSubmission | null;
-  profileImageUrl?: string;
+  submission: SubmissionDetail | null;
   isLoading?: boolean;
   error?: string | null;
-  onSubmissionChange?: (submission: AssessmentSubmission) => void;
+  onSubmissionChange?: (submission: SubmissionDetail) => void;
   onClose: () => void;
 };
 
 export default function SubmissionDetailDrawer({
   submission,
-  profileImageUrl,
   isLoading = false,
   error,
   onSubmissionChange,
   onClose,
 }: Props) {
   if (!submission) return null;
+
+  const profileImageUrl = submission.student?.profileImageUrl;
+  const hasSubmission = !!submission.submissionId;
+
   const tabs = [
-    {
-      key: "overview",
-      title: "Overview",
-      content: (
-        <SubmissionOverview
-          submission={submission}
-          onSubmissionChange={onSubmissionChange}
-        />
-      ),
-    },
+    ...(hasSubmission
+      ? [
+          {
+            key: "overview",
+            title: "Overview",
+            content: (
+              <SubmissionOverview
+                submission={submission}
+                onSubmissionChange={onSubmissionChange}
+              />
+            ),
+          },
+        ]
+      : []),
     {
       key: "time-tracking",
-      title: "Time Tracking",
+      title: hasSubmission ? "Time Tracking" : "Progress",
       content: <SubmissionTimeTracking submission={submission} />,
     },
   ];
@@ -60,7 +66,7 @@ export default function SubmissionDetailDrawer({
               {profileImageUrl ? (
                 <Image
                   src={profileImageUrl}
-                  alt={submission.student?.profileImageUrl ?? "Student profile"}
+                  alt={submission.student?.fullName ?? "Student profile"}
                   width={52}
                   height={52}
                   className="h-full w-full rounded-full object-cover"
@@ -74,7 +80,7 @@ export default function SubmissionDetailDrawer({
                 {submission.student?.fullName ?? "Unnamed Student"}
               </p>
               <p className="truncate text-sm text-tertiary">
-                {submission.student?.classroom?.classroomAbbre ? submission.student?.classroom?.classroomAbbre : "No Class"}
+                {submission.student?.classroom?.classroomAbbre ?? "No Class"}
               </p>
             </div>
           </div>

@@ -87,12 +87,8 @@ export default function VideoTile({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-xl bg-[#2a2a4a] ${
-        small
-          ? "h-28 w-full flex-shrink-0"
-          : isScreenShare
-            ? "h-full w-full"
-            : "aspect-video w-full"
+      className={`relative overflow-hidden rounded-xl bg-[#16161f] ${
+        small ? "h-28 w-full flex-shrink-0" : "h-full w-full"
       }`}
     >
       <video

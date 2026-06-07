@@ -159,7 +159,7 @@ export default function ChatMessageList({
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      className="flex-1 overflow-y-auto px-3 py-3 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300"
+      className="flex-1 overflow-y-auto px-3 py-3 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20"
     >
       <div ref={sentinelRef} className="h-1" />
 
@@ -170,7 +170,7 @@ export default function ChatMessageList({
       )}
 
       {visibleMessages.length === 0 && !isLoadingMore && (
-        <div className="flex h-full items-center justify-center text-sm text-gray-400">
+        <div className="flex h-full items-center justify-center text-sm text-white/40">
           No messages yet
         </div>
       )}
@@ -222,7 +222,7 @@ export default function ChatMessageList({
               {/* Message content */}
               <div className={isMe ? "flex flex-col items-end" : ""}>
                 {isFirst && !isMe && (
-                  <p className="mb-0.5 ml-1 text-[11px] font-medium text-gray-500">
+                  <p className="mb-0.5 ml-1 text-[11px] font-medium text-white/50">
                     {senderName}
                   </p>
                 )}
@@ -231,7 +231,7 @@ export default function ChatMessageList({
                   className={`px-3 py-2 text-[13px] leading-relaxed ${bubbleCorners(position, isMe)} ${
                     isMe
                       ? "bg-gradient-to-br from-[#241cab] to-[#5d53f9] text-white"
-                      : "bg-[#f0f0f0] text-gray-900"
+                      : "bg-white/10 text-white"
                   }`}
                 >
                   <p className="whitespace-pre-wrap break-words">
@@ -241,7 +241,7 @@ export default function ChatMessageList({
 
                 {isLast && (
                   <p
-                    className={`mt-0.5 text-[10px] text-gray-400 ${
+                    className={`mt-0.5 text-[10px] text-white/40 ${
                       isMe ? "mr-1" : "ml-1"
                     }`}
                   >

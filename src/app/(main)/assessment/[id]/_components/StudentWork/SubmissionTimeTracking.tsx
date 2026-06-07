@@ -1,9 +1,9 @@
-import { AssessmentSubmission } from "@/types/assessment";
+import { SubmissionDetail } from "@/types/assessment";
 import { Award, Clock, DocumentText, RefreshCircle, TimerStart } from "iconsax-react";
 import { formatDateLong } from "@/utils/formatDateLong";
 
 type Props = {
-  submission: AssessmentSubmission;
+  submission: SubmissionDetail;
 };
 
 function formatMinutes(minutes?: number) {
@@ -33,54 +33,57 @@ function formatDateTime(value?: string) {
 export default function SubmissionTimeTracking({ submission }: Props) {
   const sessions = submission.workSessions ?? [];
   const resources = submission.submissionResources ?? [];
+  const hasSubmission = !!submission.submissionId;
 
   return (
     <div className="flex flex-col gap-5 pt-4">
-      <div>
-        <p className="mb-3 text-[18px] font-medium text-primary">Submission Details</p>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-[10px] border border-[lab(90.952% -.0000596046 0)] p-4">
-            <p className="text-xs text-tertiary">Status</p>
-            <p className="mt-1 text-sm font-semibold text-primary">
-              {submission.status ?? "N/A"}
-            </p>
-          </div>
-
-          <div className="rounded-[10px] border border-[lab(90.952% -.0000596046 0)] p-4">
-            <p className="text-xs text-tertiary">Submitted At</p>
-            <p className="mt-1 text-sm font-semibold text-primary">
-              {formatDateTime(submission.submittedAt)}
-            </p>
-          </div>
-
-          <div className="rounded-[10px] border border-[lab(90.952% -.0000596046 0)] p-4">
-            <div className="mb-2 flex items-center gap-2 text-sm text-tertiary">
-              <RefreshCircle size={18} color="#DEA20A" />
-              Resubmission
-            </div>
-            <p className="font-medium text-primary">
-              {submission.isResubmission ? "Yes" : "No"}
-            </p>
-          </div>
-
-          <div className="rounded-[10px] border border-[lab(90.952% -.0000596046 0)] p-4">
-            <div className="mb-2 flex items-center gap-2 text-sm text-tertiary">
-              <Award size={18} color="#009F15" />
-              Grade
-            </div>
-            <p className="font-medium text-primary">
-              {submission.grade?.score !== undefined
-                ? `${submission.grade.score} pts`
-                : "Not graded yet"}
-            </p>
-            {submission.grade?.gradedAt && (
-              <p className="mt-1 text-xs text-tertiary">
-                {formatDateTime(submission.grade.gradedAt)}
+      {hasSubmission && (
+        <div>
+          <p className="mb-3 text-[18px] font-medium text-primary">Submission Details</p>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-[10px] border border-[lab(90.952% -.0000596046 0)] p-4">
+              <p className="text-xs text-tertiary">Status</p>
+              <p className="mt-1 text-sm font-semibold text-primary">
+                {submission.status ?? "N/A"}
               </p>
-            )}
+            </div>
+
+            <div className="rounded-[10px] border border-[lab(90.952% -.0000596046 0)] p-4">
+              <p className="text-xs text-tertiary">Submitted At</p>
+              <p className="mt-1 text-sm font-semibold text-primary">
+                {formatDateTime(submission.submittedAt)}
+              </p>
+            </div>
+
+            <div className="rounded-[10px] border border-[lab(90.952% -.0000596046 0)] p-4">
+              <div className="mb-2 flex items-center gap-2 text-sm text-tertiary">
+                <RefreshCircle size={18} color="#DEA20A" />
+                Resubmission
+              </div>
+              <p className="font-medium text-primary">
+                {submission.isResubmission ? "Yes" : "No"}
+              </p>
+            </div>
+
+            <div className="rounded-[10px] border border-[lab(90.952% -.0000596046 0)] p-4">
+              <div className="mb-2 flex items-center gap-2 text-sm text-tertiary">
+                <Award size={18} color="#009F15" />
+                Grade
+              </div>
+              <p className="font-medium text-primary">
+                {submission.grade?.score !== undefined
+                  ? `${submission.grade.score} pts`
+                  : "Not graded yet"}
+              </p>
+              {submission.grade?.gradedAt && (
+                <p className="mt-1 text-xs text-tertiary">
+                  {formatDateTime(submission.grade.gradedAt)}
+                </p>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-[10px] border border-[lab(90.952% -.0000596046 0)] p-4">
@@ -129,7 +132,7 @@ export default function SubmissionTimeTracking({ submission }: Props) {
                 </div>
 
                 <p className="shrink-0 text-xs font-medium text-tertiary">
-                  {formatDateTime(resource.uploadedAt ?? resource.createdAt)}
+                  {formatDateTime(resource.uploadedAt ?? resource.updatedAt)}
                 </p>
               </div>
             ))

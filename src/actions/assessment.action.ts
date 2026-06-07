@@ -20,6 +20,7 @@ import {
   CreateAssessmentForm,
   GradeSubmissionForm,
   GetAssessmentParams,
+  StudentOwnSubmission,
   SubmitAssignmentForm,
 } from "@/types/assessment";
 
@@ -74,7 +75,8 @@ export const getAssessmentByIdAction = async (assessmentId: string) => {
   if (!result.success) {
     return { error: result.message };
   }
-  console.log(result)
+
+  console.log(result.payload)
   return result.payload;
 }
 
@@ -170,32 +172,19 @@ export const submitAssignmentAction = async (
   }
 };
 
-export const getMySubmissionsAction = async (assessmentId: string) => {
+export const getMySubmissionsAction = async (assessmentId: string): Promise<StudentOwnSubmission[] | { error: string }> => {
   const result = await getMySubmissionsService(assessmentId);
   if (!result.success) {
     return { error: result.message };
   }
 
-  // The /submissions/my endpoint nests student info under `student` and grader info
-  // under `grade.grader`. Normalise to flat fields so the rest of the UI works uniformly.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const normalized = (result.payload as any[] ?? []).map((item: any) => ({
+  const payload = (result.payload ?? []) as Array<StudentOwnSubmission & { grade?: { grader?: { fullName?: string }; graderName?: string } }>;
+  return payload.map((item) => ({
     ...item,
-    studentId: item.studentId ?? item.student?.userId,
-    studentName: item.studentName ?? item.student?.fullName,
-    studentProfileImageUrl: item.studentProfileImageUrl ?? item.student?.profileImageUrl,
-    classroomId: item.classroomId ?? item.student?.classroom?.classroomId,
-    classroomName: item.classroomName ?? item.student?.classroom?.className,
-    classroomAbbre: item.classroomAbbre ?? item.student?.classroom?.classroomAbbre,
     grade: item.grade
-      ? {
-          ...item.grade,
-          graderName: item.grade.graderName ?? item.grade.grader?.fullName,
-        }
+      ? { ...item.grade, graderName: item.grade.graderName ?? item.grade.grader?.fullName }
       : undefined,
   }));
-
-  return normalized;
 };
 
 export const getMyWorkSessionsAction = async (assessmentId: string) => {

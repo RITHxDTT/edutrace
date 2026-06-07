@@ -7,8 +7,8 @@ import {
 } from "@/actions/assessment.action";
 import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
 import {
-  AssessmentSubmission,
   AssessmentType,
+  StudentOwnSubmission,
   WorkSession,
   WorkSessionPayload,
 } from "@/types/assessment";
@@ -55,7 +55,7 @@ type Props = {
   instruction: ReactNode;
   communication: ReactNode;
   workSessions?: WorkSessionPayload | WorkSession[];
-  mySubmissions?: AssessmentSubmission[];
+  mySubmissions?: StudentOwnSubmission[];
 };
 
 function normalizeWorkSessions(

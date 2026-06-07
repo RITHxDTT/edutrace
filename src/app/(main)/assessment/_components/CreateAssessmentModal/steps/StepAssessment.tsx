@@ -6,7 +6,7 @@ import { AssessmentResource, CreateAssessmentForm } from "@/types/assessment";
 import { ClassroomType } from "@/types/classroom";
 import { SubjectType } from "@/types/subject";
 import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
-import { DateRangePicker } from "@heroui/date-picker";
+import { DatePicker, DateRangePicker } from "@heroui/date-picker";
 import { SelectItem } from "@heroui/select";
 import { useState, KeyboardEvent, useRef } from "react";
 import { File, Paperclip } from "lucide-react";
@@ -25,6 +25,7 @@ type Props = {
     subjects: SubjectType[];
     taughtClassrooms: ClassroomType[];
     existingResources?: AssessmentResource[];
+    mode?: "create" | "edit";
 };
 
 type RubricBadge = {
@@ -125,6 +126,13 @@ function getLocalTimeValue(value: string, fallback: string) {
     return `${padTimePart(date.getHours())}:${padTimePart(date.getMinutes())}`;
 }
 
+function formatDateDisplay(isoString: string) {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+}
+
 function combineDateAndTime(dateValue: string, timeValue: string) {
     if (!dateValue) return "";
 
@@ -138,6 +146,7 @@ export default function StepAssessment({
     subjects,
     taughtClassrooms,
     existingResources = [],
+    mode = "create",
 }: Props) {
     const selectedClassroomIds = form.classroomIds;
     const allSelected =
@@ -220,59 +229,91 @@ export default function StepAssessment({
                 </div>
             )}
 
-            <div className="w-full grid grid-cols-2 gap-2">
-                <DateRangePicker
-                    hideTimeZone
-                    className="col-span-2 w-full"
-                    label="Assessment Date"
-                    labelPlacement="outside-top"
-                    minValue={today(getLocalTimeZone())}
-                    value={
-                        form.startAt && form.dueAt
-                            ? {
-                                start: getDateOnlyValue(form.startAt),
-                                end: getDateOnlyValue(form.dueAt),
-                            }
-                            : null
-                    }
-                    isInvalid={!!errors.startAt || !!errors.dueAt}
-                    errorMessage={errors.startAt ?? errors.dueAt}
-                    onChange={(range) => {
-                        const startTime = getLocalTimeValue(form.startAt, "00:00");
-                        const dueTime = getLocalTimeValue(form.dueAt, "23:59");
 
-                        onChange(
-                            "startAt",
-                            range?.start
-                                ? combineDateAndTime(range.start.toString(), startTime)
-                                : "",
-                        );
-                        onChange(
-                            "dueAt",
-                            range?.end
-                                ? combineDateAndTime(range.end.toString(), dueTime)
-                                : "",
-                        );
-                    }}
-                    classNames={{
-                        base: "font-sans",
-                        label: "font-semibold text-label mb-1.5 transition-colors duration-150 group-focus-within:text-primary",
-                        inputWrapper:
-                            "bg-transparent border data-[focus=true]:bg-transparent data-[hover=true]:bg-transparent rounded-[8px] px-[18px] h-[50px] transition-all duration-150",
-                        input:
-                            "text-sm text-primary placeholder:text-tertiary bg-transparent font-normal h-full",
-                        helperWrapper: "px-1 pt-1.5",
-                        description: "text-[11px] text-zinc-400",
-                        errorMessage: "text-[11px] font-medium text-error",
-                    }}
-                />
+            <div className="w-full grid grid-cols-2 gap-2">
+                {mode === "edit" ? (
+                    <>
+                        <PrimaryInput
+                            label="Start Date"
+                            type="text"
+                            inputType="secondary"
+                            value={formatDateDisplay(form.startAt)}
+                            isDisabled
+                        />
+                        <DatePicker
+                            label="Due Date"
+                            labelPlacement="outside-top"
+                            value={form.dueAt ? getDateOnlyValue(form.dueAt) : null}
+                            isInvalid={!!errors.dueAt}
+                            errorMessage={errors.dueAt}
+                            onChange={(date) => {
+                                if (!date) return;
+                                const dueTime = getLocalTimeValue(form.dueAt, "23:59");
+                                onChange("dueAt", combineDateAndTime(date.toString(), dueTime));
+                            }}
+                            classNames={{
+                                base: "font-sans",
+                                label: "font-semibold text-label mb-1.5 transition-colors duration-150 group-focus-within:text-primary",
+                                inputWrapper: "bg-transparent border data-[focus=true]:bg-transparent data-[hover=true]:bg-transparent rounded-[8px] px-[18px] h-[50px] transition-all duration-150",
+                                input: "text-sm text-primary placeholder:text-tertiary bg-transparent font-normal h-full",
+                                errorMessage: "text-[11px] font-medium text-error",
+                            }}
+                        />
+                    </>
+                ) : (
+                    <DateRangePicker
+                        hideTimeZone
+                        className="col-span-2 w-full"
+                        label="Assessment Date"
+                        labelPlacement="outside-top"
+                        minValue={today(getLocalTimeZone())}
+                        value={
+                            form.startAt && form.dueAt
+                                ? {
+                                    start: getDateOnlyValue(form.startAt),
+                                    end: getDateOnlyValue(form.dueAt),
+                                }
+                                : null
+                        }
+                        isInvalid={!!errors.startAt || !!errors.dueAt}
+                        errorMessage={errors.startAt ?? errors.dueAt}
+                        onChange={(range) => {
+                            const startTime = getLocalTimeValue(form.startAt, "00:00");
+                            const dueTime = getLocalTimeValue(form.dueAt, "23:59");
+
+                            onChange(
+                                "startAt",
+                                range?.start
+                                    ? combineDateAndTime(range.start.toString(), startTime)
+                                    : "",
+                            );
+                            onChange(
+                                "dueAt",
+                                range?.end
+                                    ? combineDateAndTime(range.end.toString(), dueTime)
+                                    : "",
+                            );
+                        }}
+                        classNames={{
+                            base: "font-sans",
+                            label: "font-semibold text-label mb-1.5 transition-colors duration-150 group-focus-within:text-primary",
+                            inputWrapper:
+                                "bg-transparent border data-[focus=true]:bg-transparent data-[hover=true]:bg-transparent rounded-[8px] px-[18px] h-[50px] transition-all duration-150",
+                            input:
+                                "text-sm text-primary placeholder:text-tertiary bg-transparent font-normal h-full",
+                            helperWrapper: "px-1 pt-1.5",
+                            description: "text-[11px] text-zinc-400",
+                            errorMessage: "text-[11px] font-medium text-error",
+                        }}
+                    />
+                )}
 
                 <PrimaryInput
                     label="Start Time"
                     type="time"
                     inputType="secondary"
                     value={getLocalTimeValue(form.startAt, "00:00")}
-                    isDisabled={!form.startAt}
+                    isDisabled={!form.startAt || mode === "edit"}
                     isInvalid={!!errors.startAt}
                     errorMessage={errors.startAt}
                     onChange={(e) =>
@@ -343,31 +384,33 @@ export default function StepAssessment({
             </div>
 
             {/* Classrooms */}
-            <div className="flex flex-col gap-1">
-                <div className="flex gap-2">
-                    <Checkbox
-                        isSelected={allSelected}
-                        onValueChange={(checked) => {
-                            onChange(
-                                "classroomIds",
-                                checked ? taughtClassrooms.map((c) => c.classroomId) : []
-                            );
-                        }}
-                    >
-                        All Classrooms
-                    </Checkbox>
+            <div className="flex flex-col gap-2">
+                <p className="text-sm font-semibold text-label">Classrooms</p>
 
-                    <CheckboxGroup
-                        value={selectedClassroomIds}
-                        onValueChange={(value) => onChange("classroomIds", value as string[])}
-                    >
-                        {taughtClassrooms.map((classroom) => (
-                            <Checkbox key={classroom.classroomId} value={classroom.classroomId}>
-                                {classroom.classroomAbbre}
-                            </Checkbox>
-                        ))}
-                    </CheckboxGroup>
-                </div>
+                <Checkbox
+                    isSelected={allSelected}
+                    isIndeterminate={selectedClassroomIds.length > 0 && !allSelected}
+                    onValueChange={(checked) => {
+                        onChange(
+                            "classroomIds",
+                            checked ? taughtClassrooms.map((c) => c.classroomId) : []
+                        );
+                    }}
+                >
+                    All Classrooms
+                </Checkbox>
+
+                <CheckboxGroup
+                    value={selectedClassroomIds}
+                    onValueChange={(value) => onChange("classroomIds", value as string[])}
+                    classNames={{ wrapper: "flex flex-wrap gap-x-6 gap-y-1" }}
+                >
+                    {taughtClassrooms.map((classroom) => (
+                        <Checkbox key={classroom.classroomId} value={classroom.classroomId}>
+                            {classroom.classroomAbbre}
+                        </Checkbox>
+                    ))}
+                </CheckboxGroup>
 
                 {errors.classroomIds && (
                     <p className="px-1 text-[11px] font-medium text-error">

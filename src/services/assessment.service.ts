@@ -13,7 +13,7 @@ export const getAllAssessementService = async ({
   sortBy,
   status,
   type,
-  subjectId
+  subjectId,
 }: GetAssessmentParams = {}) => {
   const searchParams = new URLSearchParams();
 
@@ -41,13 +41,12 @@ export const getAllMyAssessmentService = async ({
   sortBy,
   status,
   type,
-  subjectId
+  subjectId,
 }: GetAssessmentParams = {}) => {
   const searchParams = new URLSearchParams();
 
   searchParams.set("page", String(page));
   searchParams.set("size", String(size));
-
 
   if (sortBy) searchParams.set("sortBy", sortBy);
   if (status) searchParams.set("status", status);
@@ -63,8 +62,7 @@ export const getAllMyAssessmentService = async ({
 
   const result = await res.json();
   return result;
-}
-
+};
 
 export const getMyAssessmentsService = async () => {
   const res = await fetch(
@@ -82,24 +80,21 @@ export const getAssessmentByIdService = async (assessmentId: string) => {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments/${assessmentId}`,
     {
-      headers: await headerToken()
-    }
-  )
+      headers: await headerToken(),
+    },
+  );
   const result = await res.json();
-  
+
   return result;
+};
 
-}
-
-export const getAssessmentSubmissionsService = async (
-  assessmentId: string,
-) => {
+export const getAssessmentSubmissionsService = async (assessmentId: string) => {
   const searchParams = new URLSearchParams();
 
   if (assessmentId) searchParams.set("assessmentId", assessmentId);
 
   const query = searchParams.toString();
-  console.log(query)
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments/${assessmentId}/submissions?${query}`,
     {
@@ -107,7 +102,7 @@ export const getAssessmentSubmissionsService = async (
     },
   );
   const result = await res.json();
-  
+
   return result;
 };
 
@@ -168,13 +163,12 @@ export const submitAssignmentService = async (
   const submissionRequest = {
     assessmentId,
     link: data.link || null,
-    studentNotes: data.studentNotes || null
+    studentNotes: data.studentNotes || null,
   };
 
   formData.append("submissionRequest", JSON.stringify(submissionRequest));
   formData.append("file", data.file, data.file.name);
-  console.log(formData.get("file"));
-  console.log(formData.get("submissionRequest"))
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/submissions`,
     {
@@ -185,8 +179,6 @@ export const submitAssignmentService = async (
       body: formData,
     },
   );
-
-
 
   const result = await readAssessmentResponse(res);
   if (!res.ok || !result?.success) {
@@ -295,7 +287,6 @@ export const endWorkSessionService = async (
     },
   );
 
-
   const result = await readAssessmentResponse(res);
 
   if (!res.ok || !result?.success) {
@@ -338,7 +329,6 @@ export const createAssessmentService = async (data: CreateAssessmentForm) => {
   const session = await auth();
   const formData = createAssessmentFormData(data);
 
-  console.log(formData)
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments`,
     {
@@ -349,9 +339,6 @@ export const createAssessmentService = async (data: CreateAssessmentForm) => {
       body: formData,
     },
   );
-  const rawText = await res.clone().text();
-  console.log("Response body:", rawText);
-
 
   const result = await readAssessmentResponse(res);
 

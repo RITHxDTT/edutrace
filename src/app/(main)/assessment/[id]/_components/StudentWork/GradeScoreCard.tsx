@@ -1,4 +1,4 @@
-import { AssessmentSubmission, AssessmentType, SubmissionGrade } from "@/types/assessment";
+import { AssessmentType, SubmissionGrade } from "@/types/assessment";
 import { formatDateLong } from "@/utils/formatDateLong";
 import { Award } from "iconsax-react";
 import React from "react";

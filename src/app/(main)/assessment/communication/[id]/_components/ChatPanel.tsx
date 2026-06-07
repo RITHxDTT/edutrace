@@ -17,6 +17,7 @@ interface ChatPanelProps {
   accessToken: string;
   onLoadMore: () => void;
   onSend: (content: string) => void;
+  readOnly?: boolean;
 }
 
 function formatTime(dateStr: string): string {
@@ -33,6 +34,7 @@ export default function ChatPanel({
   accessToken,
   onLoadMore,
   onSend,
+  readOnly = false,
 }: ChatPanelProps) {
   const toggleChatPanel = useMeetingRoomStore((s) => s.toggleChatPanel);
 
@@ -70,9 +72,7 @@ export default function ChatPanel({
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    if (!searchQuery.trim()) {
-      return;
-    }
+    if (!searchQuery.trim()) return;
     debounceRef.current = setTimeout(() => doSearch(searchQuery), 400);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -86,41 +86,43 @@ export default function ChatPanel({
   }
 
   return (
-    <div className="flex min-w-[360px] w-[360px] flex-col border-l border-gray-200 bg-white h-full">
+    <div className={`flex h-full w-full flex-col bg-black/60 backdrop-blur-xl ${readOnly ? "" : "border-l border-white/10"}`}>
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
         <div>
-          <h3 className="text-sm font-semibold text-gray-800">Meeting Chat</h3>
-          {!isConnected && (
-            <p className="text-[10px] text-yellow-600">Connecting...</p>
+          <h3 className="text-sm font-semibold text-white">Meeting Chat</h3>
+          {!isConnected && !readOnly && (
+            <p className="text-[10px] text-yellow-400">Connecting…</p>
           )}
         </div>
         <div className="flex items-center gap-1">
           <button
             onClick={() => (searchOpen ? closeSearch() : setSearchOpen(true))}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+            className="flex h-7 w-7 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/10 hover:text-white"
           >
             <Search size={14} />
           </button>
-          <button
-            onClick={toggleChatPanel}
-            className="flex h-7 w-7 items-center justify-center rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-          >
-            <X size={16} />
-          </button>
+          {!readOnly && (
+            <button
+              onClick={toggleChatPanel}
+              className="flex h-7 w-7 items-center justify-center rounded-full text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
       </div>
 
       {/* Search bar */}
       {searchOpen && (
-        <div className="flex items-center gap-2 border-b border-gray-200 px-3 py-2">
-          <Search size={14} className="text-gray-400 flex-shrink-0" />
+        <div className="flex items-center gap-2 border-b border-white/10 px-3 py-2">
+          <Search size={14} className="flex-shrink-0 text-white/40" />
           <input
             autoFocus
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search messages..."
-            className="flex-1 bg-transparent text-sm text-gray-800 placeholder-gray-400 outline-none"
+            placeholder="Search messages…"
+            className="flex-1 bg-transparent text-sm text-white placeholder-white/30 outline-none"
           />
           {searchQuery && (
             <button
@@ -128,7 +130,7 @@ export default function ChatPanel({
                 setSearchQuery("");
                 setSearchResults([]);
               }}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-white/40 hover:text-white/70"
             >
               <X size={14} />
             </button>
@@ -141,22 +143,22 @@ export default function ChatPanel({
         <div className="flex-1 overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {isSearching ? (
             <div className="flex items-center justify-center py-8">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-primary" />
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/20 border-t-white/70" />
             </div>
           ) : searchResults.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-sm text-gray-400">
+            <div className="flex items-center justify-center py-8 text-sm text-white/40">
               No messages found
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-white/10">
               {searchResults.map((msg) => {
                 const isMe = msg.senderUserId === currentUserId;
                 return (
                   <div
                     key={msg.chatMessageId}
-                    className="px-4 py-3 hover:bg-gray-50 transition-colors"
+                    className="px-4 py-3 transition-colors hover:bg-white/5"
                   >
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="mb-1 flex items-center gap-2">
                       {msg.senderProfileImage ? (
                         <img
                           src={msg.senderProfileImage}
@@ -168,16 +170,16 @@ export default function ChatPanel({
                           {msg.senderFirstName.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <span className="text-xs font-medium text-gray-700">
+                      <span className="text-xs font-medium text-white/80">
                         {isMe
                           ? "You"
                           : `${msg.senderFirstName} ${msg.senderLastName}`}
                       </span>
-                      <span className="text-[10px] text-gray-400 ml-auto">
+                      <span className="ml-auto text-[10px] text-white/40">
                         {formatTime(msg.createdAt)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 line-clamp-2 ml-7">
+                    <p className="ml-7 line-clamp-2 text-sm text-white/60">
                       {msg.content}
                     </p>
                   </div>
@@ -196,8 +198,13 @@ export default function ChatPanel({
       )}
 
       {/* Input */}
-      {(!searchOpen || !searchQuery.trim()) && (
+      {!readOnly && (!searchOpen || !searchQuery.trim()) && (
         <ChatInput onSend={onSend} disabled={!isConnected} />
+      )}
+      {readOnly && (
+        <div className="border-t border-white/10 px-4 py-3 text-center text-xs text-white/40">
+          Messaging is disabled — this assessment is closed
+        </div>
       )}
     </div>
   );

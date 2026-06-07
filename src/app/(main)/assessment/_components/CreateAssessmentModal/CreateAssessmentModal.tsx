@@ -224,6 +224,7 @@ export default function CreateAssessmentModal({
               subjects={taughtSubjects}
               taughtClassrooms={classroomOptions}
               existingResources={assessment?.resources ?? []}
+              mode={mode}
             />
           }
         </ModalBody>

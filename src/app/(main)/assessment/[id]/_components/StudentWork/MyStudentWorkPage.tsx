@@ -1,6 +1,6 @@
 import {
-  AssessmentSubmission,
   AssessmentType,
+  StudentOwnSubmission,
   SubmissionGrade,
   WorkSession,
 } from "@/types/assessment";
@@ -17,11 +17,11 @@ type Props = {
   now: number;
   message?: string;
   isPending?: boolean;
-  mySubmissions?: AssessmentSubmission[];
+  mySubmissions?: StudentOwnSubmission[];
 };
 
 function getLatestGrade(
-  submissions?: AssessmentSubmission[],
+  submissions?: StudentOwnSubmission[],
 ): SubmissionGrade | null {
   if (!submissions?.length) return null;
   return (
@@ -196,6 +196,11 @@ export default function MyStudentWorkPage({
 
   const submissionStatus = assessment.currentSubmissionStatus?.toUpperCase();
 
+  const isClosedOrExpired =
+    assessment.status === "CLOSED" ||
+    assessment.status === "ARCHIVED" ||
+    (!!assessment.dueAt && new Date(assessment.dueAt).getTime() < now);
+
   const statusLabel = {
     NOT_YET: "Not Yet",
     IN_PROGRESS: "In Progress",
@@ -288,6 +293,36 @@ export default function MyStudentWorkPage({
 
           {timeStats}
         </div>
+      </div>
+    );
+  }
+
+  if (isClosedOrExpired) {
+    return (
+      <div className="flex flex-col gap-5 py-4">
+        <div className="rounded-[20px] bg-white p-7.5">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p className="text-[20px] font-semibold text-primary">
+                This assessment is closed
+              </p>
+              <p className="mt-1 text-sm text-tertiary">
+                Time tracking is no longer available. Review your work session
+                history below.
+              </p>
+            </div>
+            <div className="shrink-0 rounded-[10px] bg-input-field px-4 py-2 text-sm font-semibold uppercase text-tertiary">
+              {statusLabel[assessment.status]}
+            </div>
+          </div>
+          {timeStats}
+        </div>
+        <WorkSessionTable
+          sessions={sessions}
+          now={currentTime}
+          liveTodayMinutes={liveTodayMinutes}
+          requiredDailyMinutes={requiredDailyMinutes}
+        />
       </div>
     );
   }

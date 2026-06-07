@@ -1,6 +1,5 @@
 import {
   getAssessmentByIdAction,
-  getAssessmentSubmissionsAction,
   getMyAssessmentsAction,
   getMySubmissionsAction,
   getMyWorkSessionsAction,
@@ -13,9 +12,8 @@ import { BookOpenIcon } from "lucide-react";
 import CommunicationRoom from "../communication/[id]/_components/CommunicationRoom";
 
 import {
-  AssessmentSubmission,
-  AssessmentSubmissionPayload,
   AssessmentType,
+  StudentOwnSubmission,
   WorkSession,
   WorkSessionPayload,
 } from "@/types/assessment";
@@ -29,18 +27,12 @@ import AssessmentHeaderActions from "./_components/AssessmentHeaderActions";
 import StudentWorkPage from "./_components/StudentWork/StudentWorkPage";
 import StudentAssessmentTabs from "./_components/StudentAssessmentTabs";
 import { getMeetingRoomByAssessmentIdAction } from "@/actions/meeting.action";
-import { getAllClassroomsAction } from "@/actions/classroom.action";
 
 type PageProps = {
   params: Promise<{
     id: string;
   }>;
 };
-
-type SubmissionData =
-  | AssessmentSubmissionPayload
-  | AssessmentSubmission[]
-  | undefined;
 
 type WorkSessionData = WorkSessionPayload | WorkSession[] | undefined;
 
@@ -49,12 +41,7 @@ type MyAssessmentData =
   | { content?: AssessmentType[] }
   | undefined;
 
-type MeetingRoomResult =
-  | {
-      meetingRoomId?: string;
-    }
-  | null
-  | undefined;
+type MeetingRoomResult = { meetingRoomId?: string } | null | undefined;
 
 function normalizeMyAssessments(assessments: MyAssessmentData) {
   if (Array.isArray(assessments)) return assessments;
@@ -77,24 +64,21 @@ export default async function page({ params }: PageProps) {
   const [
     assessmentResult,
     subjects,
-    submissions,
     workSessions,
     myAssessments,
     mySubmissions,
   ] = (await Promise.all([
     getAssessmentByIdAction(id),
     isTeacher ? getAllSubjectAction() : Promise.resolve([]),
-    isTeacher ? getAssessmentSubmissionsAction(id) : Promise.resolve(undefined),
     isStudent ? getMyWorkSessionsAction(id) : Promise.resolve(undefined),
     isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
     isStudent ? getMySubmissionsAction(id) : Promise.resolve(undefined),
   ])) as [
     AssessmentType,
     SubjectType[],
-    SubmissionData,
     WorkSessionData,
     MyAssessmentData,
-    AssessmentSubmission[] | undefined,
+    StudentOwnSubmission[] | undefined,
   ];
 
   const myAssessment = normalizeMyAssessments(myAssessments).find(
@@ -103,16 +87,21 @@ export default async function page({ params }: PageProps) {
 
   const assessment = myAssessment ?? assessmentResult;
 
-  const classrooms = await getAllClassroomsAction();
-
   const instructionContent = <InstructionDetailPage assessment={assessment} />;
 
-  console.log(assessment)
+  const now = Date.now();
+  const isAssessmentClosed =
+    assessment.status === "CLOSED" ||
+    assessment.status === "ARCHIVED" ||
+    (!!assessment.dueAt && new Date(assessment.dueAt).getTime() < now);
 
   const communicationContent = (
     <div className="py-4">
       {meetingRoomId ? (
-        <CommunicationRoom meetingRoomId={meetingRoomId} />
+        <CommunicationRoom
+          meetingRoomId={meetingRoomId}
+          readOnly={isAssessmentClosed}
+        />
       ) : (
         <p className="text-gray-600">
           No communication room available for this assessment.
@@ -130,31 +119,15 @@ export default async function page({ params }: PageProps) {
     {
       key: "communication",
       title: "Communication",
-      content: (
-        <div className="py-4">
-          {meetingRoomId ? (
-            <CommunicationRoom meetingRoomId={meetingRoomId} />
-          ) : (
-            <p className="text-gray-600">
-              No communication room available for this assessment.
-            </p>
-          )}
-        </div>
-      ),
+      content: communicationContent,
     },
     {
       key: "student-work",
       title: "Student Work",
-      content: (
-        <StudentWorkPage
-          assessment={assessment}
-          classrooms={classrooms}
-          submissions={submissions}
-        />
-      ),
+      content: <StudentWorkPage assessment={assessment} />,
     },
   ];
-
+  console.log(session?.access_token);
   return (
     <div className="flex flex-col gap-5">
       <PrimaryBreadcrumbs
@@ -227,14 +200,20 @@ export default async function page({ params }: PageProps) {
             </div>
           </div>
         </div>
-
-        {isTeacher && (
-          <AssessmentHeaderActions
-            assessment={assessment}
-            assessmentId={id}
-            subjects={subjects}
-          />
-        )}
+        <div className="flex flex-col gap-2.5">
+          <div className="inline-flex min-w-0 items-center justify-between gap-2 rounded-[6px]  text-sm font-medium">
+            <span className="shrink-0 rounded bg-light-lavendar px-2 py-1 font-medium text-menta">
+              {assessment.maxScore} pts
+            </span>
+          </div>
+          {isTeacher && (
+            <AssessmentHeaderActions
+              assessment={assessment}
+              assessmentId={id}
+              subjects={subjects}
+            />
+          )}
+        </div>
       </div>
 
       <div className="w-full">
