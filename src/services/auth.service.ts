@@ -51,6 +51,8 @@ export const registerService = async (
   data: RegisterFormData
 ) => {
 
+  console.log(data)
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`,
     {
@@ -61,6 +63,8 @@ export const registerService = async (
       body: JSON.stringify(data),
     }
   );
+
+  console.log(res)
 
   const result = await res.json().catch(() => null);
 
