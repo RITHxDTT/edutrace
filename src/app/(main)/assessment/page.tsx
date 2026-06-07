@@ -18,7 +18,6 @@ export default async function Page({ searchParams }: PageProps) {
   const role = session?.user?.role;
   const isTeacher = role === 'teacher';
   const currentPage = Math.max(Number(page) || 1, 1);
-console.log(session?.access_token)
   const assessmentResult = isTeacher
     ? await getAllAssessmentAction({ page: currentPage, status: status as GetAssessmentParams["status"], sortBy })
     : await getAllMyAssessmentAction({ page: 1, size: 100 });

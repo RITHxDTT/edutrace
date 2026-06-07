@@ -127,7 +127,6 @@ export default async function page({ params }: PageProps) {
       content: <StudentWorkPage assessment={assessment} />,
     },
   ];
-  console.log(session?.access_token);
   return (
     <div className="flex flex-col gap-5">
       <PrimaryBreadcrumbs

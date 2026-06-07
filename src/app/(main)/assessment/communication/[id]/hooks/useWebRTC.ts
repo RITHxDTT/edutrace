@@ -179,15 +179,6 @@ function attachIceLogging(
 
     const tag = `[WebRTC][${direction}↔${call.peer}]`;
 
-    pc.oniceconnectionstatechange = () =>
-      console.log(tag, "iceConnectionState:", pc.iceConnectionState);
-
-    pc.onicegatheringstatechange = () =>
-      console.log(tag, "iceGatheringState:", pc.iceGatheringState);
-
-    pc.onconnectionstatechange = () =>
-      console.log(tag, "connectionState:", pc.connectionState);
-
     pc.addEventListener("icecandidateerror", (e) => {
       const err = e as RTCPeerConnectionIceErrorEvent;
       console.warn(
