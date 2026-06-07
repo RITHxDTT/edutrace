@@ -67,9 +67,13 @@ export const RegisterFormSchema = z.object({
 
   password: z
     .string()
-    .refine((val) => (val.match(/[a-zA-Z]/g) ?? []).length >= 8, {
-      message: "Password must contain at least 8 alphabet characters",
-    }),
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d#@$!%*?&]{8,}$/,
+      {
+        message:
+          "Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and special character (#@$!%*?&)",
+      }
+    ),
   // gender: z.string().min(0, ''),
 });
 

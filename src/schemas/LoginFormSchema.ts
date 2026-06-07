@@ -4,11 +4,11 @@ export const loginFormSchema = z.object({
     email: z.email({ message: 'Please enter a valid email' }).trim(),
     password: z
         .string()
-        .min(8, { message: 'Password need to be at least 8 characters long' })
-        .regex(/[a-zA-Z]/, { message: 'Contain at least one letter.' })
-        .regex(/[0-9]/, { message: 'Contain at least one number.' })
-        .regex(/[^a-zA-Z0-9]/, {
-            message: 'Contain at least one special character.',
-        })
-        .trim(),
+        .regex(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d#@$!%*?&]{8,}$/,
+            {
+                message:
+                    "Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and special character (#@$!%*?&)",
+            }
+        ),
 })
