@@ -1,7 +1,7 @@
 import { createAssessmentAction, updateAssessmentAction } from "@/actions/assessment.action";
 import { AssessmentType, CreateAssessmentForm } from "@/types/assessment";
 import { ClassroomType } from "@/types/classroom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 
 type CreateAssessmentFormErrors = Partial<
@@ -125,7 +125,7 @@ function toAssessmentForm(
     dueAt: assessment.dueAt ?? "",
     maxScore: assessment.maxScore ?? 10,
     requiredDailyMinutes: assessment.requiredDailyMinutes ?? 5,
-    allowLateSubmissions: false,
+    allowLateSubmissions: assessment.isResubmission ?? false,
     gradingRubric: Array.isArray(assessment.gradingRubric)
       ? assessment.gradingRubric.join(";")
       : assessment.gradingRubric ?? "",
@@ -155,6 +155,13 @@ export function useCreateAssessment({
   );
   const [form, setForm] = useState<CreateAssessmentForm>(initialForm);
   const [errors, setErrors] = useState<CreateAssessmentFormErrors>({});
+
+  // Re-sync when switching to a different assessment (e.g., edit modal opens for a new assessment,
+  // or when taughtClassrooms loads async after initial mount)
+  useEffect(() => {
+    setForm(initialForm);
+    setErrors({});
+  }, [initialForm]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

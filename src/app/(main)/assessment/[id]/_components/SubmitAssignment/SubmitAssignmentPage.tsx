@@ -2,7 +2,7 @@
 
 import { submitAssignmentAction } from "@/actions/assessment.action";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
-import { AssessmentSubmission, AssessmentType } from "@/types/assessment";
+import { AssessmentType, StudentOwnSubmission } from "@/types/assessment";
 import { Award, Paperclip2, Trash, Link as LinkIcon, TickCircle } from "iconsax-react";
 import { useRef, useState, useTransition } from "react";
 import { PrimaryInput } from "@/components/Inputs/PrimaryInputField";
@@ -12,7 +12,7 @@ import { formatFileSize, getFileColor, getFileIcon } from "@/utils/fileUtils";
 
 type Props = {
   assessment: AssessmentType;
-  mySubmissions?: AssessmentSubmission[];
+  mySubmissions?: StudentOwnSubmission[];
   onGoToStudentWork?: () => void;
 };
 
@@ -23,10 +23,10 @@ type SelectedFile = {
 
 function hasSubmittedWork(status?: string) {
   const s = status?.toUpperCase();
-  return s === "SUBMITTED" || s === "RESUBMITTED" || s === "GRADED";
+  return s === "SUBMITTED" || s === "RESUBMITTED" || s === "GRADED" || s === "LATE";
 }
 
-function getLatestSubmission(submissions: AssessmentSubmission[]): AssessmentSubmission | null {
+function getLatestSubmission(submissions: StudentOwnSubmission[]): StudentOwnSubmission | null {
   return (
     [...submissions]
       .sort(
@@ -38,7 +38,7 @@ function getLatestSubmission(submissions: AssessmentSubmission[]): AssessmentSub
   );
 }
 
-function getGradedSubmission(submissions: AssessmentSubmission[]): AssessmentSubmission | null {
+function getGradedSubmission(submissions: StudentOwnSubmission[]): StudentOwnSubmission | null {
   return (
     [...submissions]
       .sort(
@@ -71,7 +71,7 @@ export default function SubmitAssignmentPage({ assessment, mySubmissions = [], o
 
   const gradedSubmission = getGradedSubmission(mySubmissions);
   const initialSubmission = getLatestSubmission(mySubmissions);
-  const [currentSubmission, setCurrentSubmission] = useState<AssessmentSubmission | null>(
+  const [currentSubmission, setCurrentSubmission] = useState<StudentOwnSubmission | null>(
     initialSubmission,
   );
   const [isFormMode, setIsFormMode] = useState(!initialSubmission);
@@ -113,10 +113,12 @@ export default function SubmitAssignmentPage({ assessment, mySubmissions = [], o
       }
 
       // Optimistically show submitted state using the API response or local file info
-      const newSubmission: AssessmentSubmission = {
+      const submittedAfterDeadline = assessment.dueAt ? new Date() > new Date(assessment.dueAt) : false;
+      const newSubmission: StudentOwnSubmission = {
         submissionId: result.data?.submissionId ?? crypto.randomUUID(),
-        status: currentSubmission ? "RESUBMITTED" : "SUBMITTED",
+        status: submittedAfterDeadline ? "LATE" : currentSubmission ? "RESUBMITTED" : "SUBMITTED",
         submittedAt: result.data?.submittedAt ?? new Date().toISOString(),
+        isResubmission: !!currentSubmission,
         submissionResources: result.data?.submissionResources ?? [
           {
             fileName: file.file.name,
@@ -209,7 +211,9 @@ export default function SubmitAssignmentPage({ assessment, mySubmissions = [], o
   // Submitted state
   if (!isFormMode && currentSubmission) {
     const resources = currentSubmission.submissionResources ?? [];
-    const isResubmitted = currentSubmission.status?.toUpperCase() === "RESUBMITTED";
+    const submissionStatus = currentSubmission.status?.toUpperCase();
+    const isResubmitted = submissionStatus === "RESUBMITTED";
+    const isLate = submissionStatus === "LATE";
 
     return (
       <div className="grid grid-cols-[1fr_360px] gap-5 py-4">
@@ -229,17 +233,18 @@ export default function SubmitAssignmentPage({ assessment, mySubmissions = [], o
             </button>
           </div>
 
-          <div className="flex items-center gap-4 rounded-[14px] bg-light-green p-5">
+          <div className={`flex items-center gap-4 rounded-[14px] p-5 ${isLate ? "bg-[#FFF3E0]" : "bg-light-green"}`}>
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white">
-              <TickCircle size={28} color="#009F15" variant="Bold" />
+              <TickCircle size={28} color={isLate ? "#E65100" : "#009F15"} variant="Bold" />
             </div>
             <div>
-              <p className="text-[18px] font-semibold text-[#009F15]">
-                {isResubmitted ? "Resubmitted" : "Submitted"}
+              <p className={`text-[18px] font-semibold ${isLate ? "text-[#E65100]" : "text-[#009F15]"}`}>
+                {isLate ? "Submitted Late" : isResubmitted ? "Resubmitted" : "Submitted"}
               </p>
               {currentSubmission.submittedAt && (
-                <p className="text-sm text-[#009F15]/80">
+                <p className={`text-sm ${isLate ? "text-[#E65100]/80" : "text-[#009F15]/80"}`}>
                   Turned in: {formatSubmittedAt(currentSubmission.submittedAt)}
+                  {isLate && " · Late submission"}
                 </p>
               )}
             </div>
@@ -270,6 +275,9 @@ export default function SubmitAssignmentPage({ assessment, mySubmissions = [], o
 
   // Form state (initial submit or resubmit)
   const isResubmitMode = !!currentSubmission;
+  const isAfterDeadline = assessment.dueAt ? new Date() > new Date(assessment.dueAt) : false;
+  const canLateSubmit = !!assessment.isResubmission;
+  const isDeadlineBlocked = isAfterDeadline && !canLateSubmit;
 
   return (
     <div className="grid grid-cols-[1fr_360px] gap-5 py-4">
@@ -296,7 +304,7 @@ export default function SubmitAssignmentPage({ assessment, mySubmissions = [], o
             <PrimaryButton
               size="md"
               onClick={handleSubmit}
-              disabled={isPending}
+              disabled={isPending || isDeadlineBlocked}
               className="disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isPending ? "Submitting..." : "Submit Work"}
@@ -304,7 +312,19 @@ export default function SubmitAssignmentPage({ assessment, mySubmissions = [], o
           </div>
         </div>
 
-        {isResubmitMode && (
+        {isDeadlineBlocked && (
+          <div className="mb-4 rounded-[10px] bg-[#FCD3D3] px-4 py-3 text-sm font-medium text-error">
+            The deadline has passed. This assessment does not allow late submissions.
+          </div>
+        )}
+
+        {!isDeadlineBlocked && isAfterDeadline && canLateSubmit && (
+          <div className="mb-4 rounded-[10px] bg-[#FFF3E0] px-4 py-3 text-sm font-medium text-[#E65100]">
+            You are submitting after the deadline. This will be marked as a late submission.
+          </div>
+        )}
+
+        {!isDeadlineBlocked && isResubmitMode && (
           <div className="mb-4 rounded-[10px] bg-accent-sand px-4 py-3 text-sm font-medium text-[#DEA20A]">
             You are resubmitting your work. A new submission will be created.
           </div>

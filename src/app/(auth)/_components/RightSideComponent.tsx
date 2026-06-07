@@ -21,7 +21,7 @@ export default function RightSideCover() {
         <div className="relative z-10 flex h-full items-center justify-center p-8 xl:p-16">
           <div className="max-w-md text-white">
             <h2 className="text-4xl xl:text-7xl font-bold mb-4">
-              Endutrace
+              EduTrace
             </h2>
 
             <p className="text-lg xl:text-xl leading-relaxed">

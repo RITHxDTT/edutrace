@@ -10,7 +10,7 @@ import CreateAssessmentModal from "./CreateAssessmentModal/CreateAssessmentModal
 import { useDisclosure } from "@heroui/modal";
 import { useSession } from "next-auth/react";
 import { ClassroomProps, ClassroomType } from "@/types/classroom";
-import {Pagination} from "@heroui/pagination";
+import { Pagination } from "@heroui/pagination";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { AssessmentMetaData } from "@/types/assessment";
 
@@ -24,7 +24,7 @@ type Props = {
   assessments: AssessmentType[];
   metaData?: AssessmentMetaData;
   subjects: SubjectType[];
-  role?: string;
+  role?: "teacher" | "student";
   taughtClassrooms?: ClassroomType[] | ClassroomProps[];
 };
 
@@ -69,10 +69,10 @@ export default function AssessmentPage({ assessments, metaData, role, subjects }
   const filters: FilterState =
     role === "teacher"
       ? {
-          status: searchParams.get("status") ?? "",
-          sortBy: searchParams.get("sortBy") ?? "",
-          subject: "",
-        }
+        status: searchParams.get("status") ?? "",
+        sortBy: searchParams.get("sortBy") ?? "",
+        subject: "",
+      }
       : studentFilters;
 
   const classroomsTaught =
@@ -98,20 +98,20 @@ export default function AssessmentPage({ assessments, metaData, role, subjects }
     role === "teacher"
       ? assessments // server already applied filters and pagination
       : assessments
-          .filter((a) => {
-            // Students never see scheduled (not-yet-started) assessments
-            if (a.status === "SCHEDULED") return false;
-            if (a.startAt && new Date(a.startAt) > new Date()) return false;
-            return true;
-          })
-          .filter((a) => (filters.status ? a.status === filters.status : true))
-          .filter((a) =>
-            filters.subject ? a.subject.subjectId === filters.subject : true,
-          )
-          .sort((a, b) => {
-            if (filters.sortBy === "STATUS") return a.status.localeCompare(b.status);
-            return 0;
-          });
+        .filter((a) => {
+          // Students never see scheduled (not-yet-started) assessments
+          if (a.status === "SCHEDULED") return false;
+          if (a.startAt && new Date(a.startAt) > new Date()) return false;
+          return true;
+        })
+        .filter((a) => (filters.status ? a.status === filters.status : true))
+        .filter((a) =>
+          filters.subject ? a.subject.subjectId === filters.subject : true,
+        )
+        .sort((a, b) => {
+          if (filters.sortBy === "STATUS") return a.status.localeCompare(b.status);
+          return 0;
+        });
 
   // Students: client-side pagination over the filtered list
   // Teachers: server-side pagination (filtered list is already one server page)
@@ -177,7 +177,7 @@ export default function AssessmentPage({ assessments, metaData, role, subjects }
         subjects={subjects}
       />
 
-      <AssessmentList assessments={pagedAssessments} />
+      <AssessmentList assessments={pagedAssessments} role={role} />
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between rounded-[20px] bg-white px-7.5 py-4">
@@ -197,7 +197,7 @@ export default function AssessmentPage({ assessments, metaData, role, subjects }
           />
         </div>
       )}
-    
+
     </div>
   );
 }

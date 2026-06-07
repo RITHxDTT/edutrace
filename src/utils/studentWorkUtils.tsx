@@ -1,7 +1,7 @@
-import { AssessmentSubmission } from "@/types/assessment";
+import { LatestSubmission } from "@/types/assessment";
 import { formatDateLong } from "@/utils/formatDateLong";
 
-export function getSubmittedLabel(submission: AssessmentSubmission) {
+export function getSubmittedLabel(submission: LatestSubmission) {
   if (!submission.submittedAt) return "Not submitted";
   return formatDateLong(submission.submittedAt);
 }

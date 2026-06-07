@@ -7,10 +7,7 @@ import type {
   PeerInfo,
   RemoteParticipant,
 } from "@/types/meeting-room";
-import {
-  registerPeer,
-  unregisterPeer,
-} from "@/services/meeting-room.service";
+import { registerPeer, unregisterPeer } from "@/services/meeting-room.service";
 import { getMeetingRoomStompBrokerUrl } from "@/lib/meeting-room-stomp";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
 
@@ -38,6 +35,10 @@ interface UseWebRTCOptions {
   userId: string;
   accessToken: string;
   profileImageUrl?: string;
+  /** User's pre-join preference — applied once on the first init. Defaults to true. */
+  initialCamOn?: boolean;
+  /** User's pre-join preference — applied once on the first init. Defaults to true. */
+  initialMicOn?: boolean;
 }
 
 function getMediaStateDestination(meetingRoomId: string) {
@@ -49,11 +50,55 @@ type CallMetadata = {
   userName?: string;
   profileImageUrl?: string;
   mediaState?: Partial<LocalMediaState>;
+  isScreenShare?: boolean;
 };
 
 type PeerMediaConnection = import("peerjs").MediaConnection & {
   peerConnection?: RTCPeerConnection;
 };
+
+// Static fallback ICE servers used when the Cloudflare TURN credential fetch fails.
+// OpenRelay is a free public TURN service with non-expiring credentials on ports
+// 80/443 that pass through virtually every firewall and NAT.
+const FALLBACK_ICE_SERVERS: RTCIceServer[] = [
+  { urls: "stun:stun.l.google.com:19302" },
+  { urls: "stun:stun1.l.google.com:19302" },
+  { urls: "stun:openrelay.metered.ca:80" },
+  {
+    urls: "turn:openrelay.metered.ca:80",
+    username: "openrelayproject",
+    credential: "openrelayproject",
+  },
+  {
+    urls: "turn:openrelay.metered.ca:443",
+    username: "openrelayproject",
+    credential: "openrelayproject",
+  },
+  // TURNS on 443 — penetrates firewalls that only allow HTTPS traffic.
+  {
+    urls: "turns:openrelay.metered.ca:443",
+    username: "openrelayproject",
+    credential: "openrelayproject",
+  },
+];
+
+// Fetches short-lived Cloudflare TURN credentials from our server-side API route,
+// which keeps CLOUDFLARE_TURN_API_TOKEN out of the browser bundle.
+// Falls back to FALLBACK_ICE_SERVERS if the route is unreachable or unconfigured.
+async function fetchIceServers(): Promise<RTCIceServer[]> {
+  try {
+    const res = await fetch("/api/turn-credentials");
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const { iceServers } = (await res.json()) as { iceServers: RTCIceServer[] };
+    return iceServers;
+  } catch (err) {
+    console.warn(
+      "[useWebRTC] Cloudflare TURN fetch failed, falling back to OpenRelay:",
+      err,
+    );
+    return FALLBACK_ICE_SERVERS;
+  }
+}
 
 async function getInitialLocalStream(): Promise<MediaStream> {
   try {
@@ -86,7 +131,12 @@ async function getInitialLocalStream(): Promise<MediaStream> {
   }
 }
 
-function createPlaceholderVideoTrack(): MediaStreamTrack | null {
+// FIX 2: Return MediaStreamTrack (non-nullable) instead of MediaStreamTrack | null.
+// HTMLCanvasElement.captureStream() always produces a CanvasCaptureMediaStreamTrack
+// in every browser that supports WebRTC, so the null branch never fires in practice.
+// Making the return type non-nullable removes the optional-chaining guard in the
+// caller and ensures the placeholder is unconditionally added to the stream.
+function createPlaceholderVideoTrack(): MediaStreamTrack {
   const canvas = document.createElement("canvas");
   canvas.width = 16;
   canvas.height = 9;
@@ -98,7 +148,7 @@ function createPlaceholderVideoTrack(): MediaStreamTrack | null {
   }
 
   const stream = canvas.captureStream(1);
-  return stream.getVideoTracks()[0] ?? null;
+  return stream.getVideoTracks()[0];
 }
 
 function getCallPeerConnection(
@@ -107,12 +157,59 @@ function getCallPeerConnection(
   return (call as PeerMediaConnection).peerConnection;
 }
 
+// FIX 3: ICE connection state logging.
+// Attaches listeners to the underlying RTCPeerConnection so every state transition
+// is visible in the browser console. This lets you pinpoint exactly where the
+// cross-network handshake stalls (e.g. "checking" → stuck means TURN is failing;
+// "failed" means no relay path was found at all).
+// Deferred one tick so PeerJS has time to assign .peerConnection after call()/answer().
+function attachIceLogging(
+  call: import("peerjs").MediaConnection,
+  direction: "outgoing" | "incoming",
+) {
+  setTimeout(() => {
+    const pc = getCallPeerConnection(call);
+    if (!pc) {
+      console.warn(
+        `[WebRTC][${direction}] RTCPeerConnection not found for peer`,
+        call.peer,
+      );
+      return;
+    }
+
+    const tag = `[WebRTC][${direction}↔${call.peer}]`;
+
+    pc.oniceconnectionstatechange = () =>
+      console.log(tag, "iceConnectionState:", pc.iceConnectionState);
+
+    pc.onicegatheringstatechange = () =>
+      console.log(tag, "iceGatheringState:", pc.iceGatheringState);
+
+    pc.onconnectionstatechange = () =>
+      console.log(tag, "connectionState:", pc.connectionState);
+
+    pc.addEventListener("icecandidateerror", (e) => {
+      const err = e as RTCPeerConnectionIceErrorEvent;
+      console.warn(
+        tag,
+        "ICE candidate error:",
+        err.errorCode,
+        err.errorText,
+        "url:",
+        err.url,
+      );
+    });
+  }, 0);
+}
+
 export function useWebRTC({
   meetingRoomId,
   userName,
   userId,
   accessToken,
   profileImageUrl,
+  initialCamOn,
+  initialMicOn,
 }: UseWebRTCOptions) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
@@ -124,6 +221,10 @@ export function useWebRTC({
     Map<string, import("peerjs").DataConnection>
   >(new Map());
   const callsRef = useRef<Map<string, import("peerjs").MediaConnection>>(
+    new Map(),
+  );
+  // Separate calls carrying only the screen track, keyed by remote peerId.
+  const screenCallsRef = useRef<Map<string, import("peerjs").MediaConnection>>(
     new Map(),
   );
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -320,13 +421,10 @@ export function useWebRTC({
 
   const getOutgoingStream = useCallback(() => {
     const tracks: MediaStreamTrack[] = [];
-    const screenTrack = screenStreamRef.current?.getVideoTracks()[0];
     const localStream = localStreamRef.current;
     const localVideoTrack = localStream?.getVideoTracks()[0];
 
-    if (screenTrack && screenTrack.readyState === "live") {
-      tracks.push(screenTrack);
-    } else if (localVideoTrack && localVideoTrack.readyState === "live") {
+    if (localVideoTrack && localVideoTrack.readyState === "live") {
       tracks.push(localVideoTrack);
     }
 
@@ -339,21 +437,54 @@ export function useWebRTC({
     return new MediaStream(tracks);
   }, []);
 
-  const replaceOutgoingVideoTrack = useCallback(
+  // Replaces the camera sender's track (the first video sender) — used when
+  // turning the camera on/off. The screen sender is separate and unaffected.
+  const replaceCameraTrack = useCallback(
     (track: MediaStreamTrack | null) => {
       callsRef.current.forEach((call) => {
         const sender = getCallPeerConnection(call)
           ?.getSenders()
           .find((s) => s.track?.kind === "video");
-
         if (!sender) return;
-
         sender.replaceTrack(track).catch((err) => {
-          console.warn("[useWebRTC] failed to replace video track:", err);
+          console.warn("[useWebRTC] failed to replace camera track:", err);
         });
       });
     },
     [],
+  );
+
+  // Creates a dedicated PeerJS call carrying only the screen track to one peer.
+  // Using a separate call avoids SDP renegotiation entirely — the camera call
+  // stays untouched and the remote receives screenStream on a distinct call object.
+  const callPeerForScreen = useCallback(
+    (peerId: string) => {
+      const peer = peerRef.current;
+      const myPeerId = myPeerIdRef.current;
+      const currentScreen = screenStreamRef.current;
+      if (!peer || !myPeerId || !currentScreen || peerId === myPeerId) return;
+      if (screenCallsRef.current.has(peerId)) return;
+
+      const screenTrack = currentScreen.getVideoTracks()[0];
+      if (!screenTrack || screenTrack.readyState !== "live") return;
+
+      const call = peer.call(peerId, new MediaStream([screenTrack]), {
+        metadata: { userId, userName, isScreenShare: true },
+      });
+      screenCallsRef.current.set(peerId, call);
+
+      call.on("close", () => {
+        if (screenCallsRef.current.get(peerId) === call) {
+          screenCallsRef.current.delete(peerId);
+        }
+      });
+      call.on("error", () => {
+        if (screenCallsRef.current.get(peerId) === call) {
+          screenCallsRef.current.delete(peerId);
+        }
+      });
+    },
+    [userId, userName],
   );
 
   const stopScreenShare = useCallback(() => {
@@ -365,11 +496,16 @@ export function useWebRTC({
     });
     currentScreen.getTracks().forEach((track) => track.stop());
     screenStreamRef.current = null;
-    replaceOutgoingVideoTrack(getLocalVideoTrack());
+
+    // Close all dedicated screen calls and wipe screenStream from every remote.
+    screenCallsRef.current.forEach((call) => call.close());
+    screenCallsRef.current.clear();
+    setRemotes((prev) => prev.map((r) => ({ ...r, screenStream: null })));
+
     setScreenStream(null);
     store.getState().setScreenSharing(false);
     updateLocalMediaState({ screenSharing: false });
-  }, [getLocalVideoTrack, replaceOutgoingVideoTrack, store, updateLocalMediaState]);
+  }, [store, updateLocalMediaState]);
 
   const callPeer = useCallback(
     (
@@ -382,7 +518,20 @@ export function useWebRTC({
       if (callsRef.current.has(peerId)) return;
 
       const stream = getOutgoingStream();
-      if (stream.getTracks().length === 0) return;
+
+      // FIX 4: Explicit warning instead of silent early return.
+      // 0 tracks means the placeholder track creation failed (extremely rare) AND
+      // both camera and mic were denied. Log clearly so the developer can diagnose
+      // via the browser console rather than wondering why the call never fires.
+      if (stream.getTracks().length === 0) {
+        console.warn(
+          "[useWebRTC] callPeer aborted — outgoing stream has 0 tracks.",
+          "Check that createPlaceholderVideoTrack() succeeded and media permissions.",
+          "Target peer:",
+          peerId,
+        );
+        return;
+      }
 
       const call = peerRef.current.call(peerId, stream, {
         metadata: {
@@ -394,6 +543,9 @@ export function useWebRTC({
       });
 
       callsRef.current.set(peerId, call);
+      // Attach ICE logging immediately after the call is created so we catch
+      // every state transition from the very beginning of the handshake.
+      attachIceLogging(call, "outgoing");
 
       call.on("stream", (remoteStream) => {
         setRemotes((prev) => {
@@ -404,8 +556,7 @@ export function useWebRTC({
               ...next[idx],
               userId: peerUserId ?? next[idx].userId,
               userName: peerUserName || next[idx].userName,
-              profileImageUrl:
-                peerProfileImageUrl ?? next[idx].profileImageUrl,
+              profileImageUrl: peerProfileImageUrl ?? next[idx].profileImageUrl,
               stream: remoteStream,
             };
             return next;
@@ -453,12 +604,14 @@ export function useWebRTC({
       const stream = await getInitialLocalStream();
       const hasCameraVideo = stream.getVideoTracks().length > 0;
 
+      // FIX 2 (cont.): createPlaceholderVideoTrack() now returns a guaranteed
+      // non-null track, so the conditional guard is gone. The placeholder is
+      // unconditionally stored and added, ensuring getOutgoingStream() always
+      // returns at least one video track before the first peer connection.
       if (!hasCameraVideo) {
         const placeholderTrack = createPlaceholderVideoTrack();
-        if (placeholderTrack) {
-          placeholderVideoTrackRef.current = placeholderTrack;
-          stream.addTrack(placeholderTrack);
-        }
+        placeholderVideoTrackRef.current = placeholderTrack;
+        stream.addTrack(placeholderTrack);
       }
 
       if (!mounted) {
@@ -470,27 +623,43 @@ export function useWebRTC({
       setLocalStream(stream);
 
       const hasAudio = stream.getAudioTracks().length > 0;
+
+      // Apply the user's pre-join preference captured in the lobby.
+      // Tracks are disabled here rather than stopped so toggleCam/toggleMic
+      // can re-enable them without requesting a new getUserMedia.
+      const wantCam = initialCamOn !== false;
+      const wantMic = initialMicOn !== false;
+
+      if (hasCameraVideo && !wantCam) {
+        stream
+          .getVideoTracks()
+          .filter((t) => t !== placeholderVideoTrackRef.current)
+          .forEach((t) => {
+            t.enabled = false;
+          });
+      }
+      if (hasAudio && !wantMic) {
+        stream.getAudioTracks().forEach((t) => {
+          t.enabled = false;
+        });
+      }
+
       mediaStateRef.current = {
         ...mediaStateRef.current,
-        micOn: hasAudio,
-        camOn: hasCameraVideo,
+        micOn: hasAudio && wantMic,
+        camOn: hasCameraVideo && wantCam,
       };
-      store.getState().setCamOn(hasCameraVideo);
-      store.getState().setMicOn(hasAudio);
+      store.getState().setCamOn(hasCameraVideo && wantCam);
+      store.getState().setMicOn(hasAudio && wantMic);
+
+      // Fetch fresh Cloudflare TURN credentials once per room join.
+      // These are short-lived (up to 24 h) and generated server-side so the
+      // API token never reaches the browser.
+      const iceServers = await fetchIceServers();
 
       const { Peer } = await import("peerjs");
       peer = new Peer({
-        config: {
-          iceServers: [
-            { urls: "stun:stun.l.google.com:19302" },
-            { urls: "stun:stun1.l.google.com:19302" },
-            {
-              urls: "turn:0.peerjs.com:3478",
-              username: "peerjs",
-              credential: "peerjsp",
-            },
-          ],
-        },
+        config: { iceServers },
       });
       peerRef.current = peer;
 
@@ -500,7 +669,11 @@ export function useWebRTC({
 
         let existingPeers: PeerInfo[] = [];
         try {
-          const presence = await registerPeer(meetingRoomId, myPeerId, accessToken);
+          const presence = await registerPeer(
+            meetingRoomId,
+            myPeerId,
+            accessToken,
+          );
           joinedRef.current = true;
           existingPeers = presence.peers.filter((p) => p.peerId !== myPeerId);
         } catch (err) {
@@ -544,7 +717,11 @@ export function useWebRTC({
                 if (!mounted) return;
                 const event = JSON.parse(frame.body) as PeerEventResponse;
 
-                if (event.type === "JOINED" && event.peer && event.peer.peerId !== myPeerId) {
+                if (
+                  event.type === "JOINED" &&
+                  event.peer &&
+                  event.peer.peerId !== myPeerId
+                ) {
                   const newPeerId = event.peer!.peerId;
                   const newPeerName = `${event.peer!.firstName} ${event.peer!.lastName}`;
                   const newPeerUserId = event.peer!.userId;
@@ -570,14 +747,18 @@ export function useWebRTC({
                   connectDataPeer(newPeerId);
                   broadcastMediaState();
 
+                  // If we're currently screen sharing, send the screen to the new peer.
+                  if (screenStreamRef.current) {
+                    callPeerForScreen(newPeerId);
+                  }
+
                   // Fallback: if the joining peer's call doesn't arrive
                   // within 3 seconds, call them from this side instead.
                   const fallbackTimer = setTimeout(() => {
                     pendingFallbacks.delete(newPeerId);
                     if (!mounted) return;
                     if (callsRef.current.has(newPeerId)) return;
-                    const s = screenStreamRef.current ?? localStreamRef.current;
-                    if (s) {
+                    if (localStreamRef.current) {
                       callPeer(
                         newPeerId,
                         newPeerName,
@@ -596,9 +777,13 @@ export function useWebRTC({
                   }
                   callsRef.current.get(leftPeerId)?.close();
                   callsRef.current.delete(leftPeerId);
+                  screenCallsRef.current.get(leftPeerId)?.close();
+                  screenCallsRef.current.delete(leftPeerId);
                   dataConnectionsRef.current.get(leftPeerId)?.close();
                   dataConnectionsRef.current.delete(leftPeerId);
-                  setRemotes((prev) => prev.filter((r) => r.peerId !== leftPeerId));
+                  setRemotes((prev) =>
+                    prev.filter((r) => r.peerId !== leftPeerId),
+                  );
                 }
 
                 store.getState().setParticipantCount(event.activeCount);
@@ -629,6 +814,47 @@ export function useWebRTC({
 
       peer.on("call", (call) => {
         const metadata = call.metadata as CallMetadata | undefined;
+
+        // ── Dedicated screen-share call ────────────────────────────────────
+        // Answer with an empty stream (we don't send anything back on this call).
+        // Store the received stream as screenStream on the matching remote entry.
+        if (metadata?.isScreenShare) {
+          call.answer(new MediaStream());
+          screenCallsRef.current.set(call.peer, call);
+
+          call.on("stream", (screenStream) => {
+            if (!mounted) return;
+            setRemotes((prev) => {
+              const idx = prev.findIndex(
+                (r) =>
+                  r.peerId === call.peer ||
+                  (metadata.userId && r.userId === metadata.userId),
+              );
+              if (idx === -1) return prev;
+              const next = [...prev];
+              next[idx] = { ...next[idx], screenStream };
+              return next;
+            });
+          });
+
+          call.on("close", () => {
+            if (screenCallsRef.current.get(call.peer) === call) {
+              screenCallsRef.current.delete(call.peer);
+            }
+            if (!mounted) return;
+            setRemotes((prev) => {
+              const idx = prev.findIndex((r) => r.peerId === call.peer);
+              if (idx === -1) return prev;
+              const next = [...prev];
+              next[idx] = { ...next[idx], screenStream: null };
+              return next;
+            });
+          });
+
+          return; // do not process as a regular camera call
+        }
+
+        // ── Regular camera call ────────────────────────────────────────────
         const callerName = metadata?.userName ?? "Unknown";
         const callerUserId = metadata?.userId;
         const callerProfileImageUrl = metadata?.profileImageUrl;
@@ -640,7 +866,7 @@ export function useWebRTC({
           existingCall.close();
         }
 
-        // Cancel the fallback timer since we received the call
+        // Cancel the fallback timer since we received the call.
         const fb = pendingFallbacks.get(call.peer);
         if (fb) {
           clearTimeout(fb);
@@ -649,12 +875,15 @@ export function useWebRTC({
 
         call.answer(activeStream);
         callsRef.current.set(call.peer, call);
+        attachIceLogging(call, "incoming");
 
         call.on("stream", (remoteStream) => {
           if (!mounted) return;
           setRemotes((prev) => {
             const idx = prev.findIndex(
-              (r) => r.peerId === call.peer || (callerUserId && r.userId === callerUserId),
+              (r) =>
+                r.peerId === call.peer ||
+                (callerUserId && r.userId === callerUserId),
             );
             if (idx !== -1) {
               const next = [...prev];
@@ -675,8 +904,7 @@ export function useWebRTC({
                     ? next[idx].isCamOff
                     : !callerMediaState.camOn,
                 isScreenSharing:
-                  callerMediaState?.screenSharing ??
-                  next[idx].isScreenSharing,
+                  callerMediaState?.screenSharing ?? next[idx].isScreenSharing,
               };
               return next;
             }
@@ -717,15 +945,31 @@ export function useWebRTC({
       });
     }
 
+    // keepalive: true tells the browser to complete the request even when the tab
+    // is closed — the useEffect cleanup async call gets killed before it finishes.
+    const handleBeforeUnload = () => {
+      if (!joinedRef.current || !myPeerIdRef.current) return;
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+      fetch(`${apiBase}/meeting-room/${meetingRoomId}/peers/leave`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${accessToken}` },
+        keepalive: true,
+      });
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
     init();
 
     return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
       mounted = false;
       pendingFallbacks.forEach((timer) => clearTimeout(timer));
       pendingFallbacks.clear();
       stompRef.current?.deactivate();
       calls.forEach((c) => c.close());
       calls.clear();
+      screenCallsRef.current.forEach((c) => c.close());
+      screenCallsRef.current.clear();
       dataConnections.forEach((connection) => connection.close());
       dataConnections.clear();
       peerRef.current?.destroy();
@@ -748,6 +992,7 @@ export function useWebRTC({
     applyRemoteMediaState,
     broadcastMediaState,
     callPeer,
+    callPeerForScreen,
     connectDataPeer,
     getOutgoingStream,
   ]);
@@ -777,7 +1022,9 @@ export function useWebRTC({
 
     if (!cameraTrack) {
       try {
-        const videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        const videoStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+        });
         const videoTrack = videoStream.getVideoTracks()[0];
         if (!videoTrack) return;
 
@@ -789,9 +1036,9 @@ export function useWebRTC({
 
         stream.addTrack(videoTrack);
 
-        if (!screenStreamRef.current) {
-          replaceOutgoingVideoTrack(videoTrack);
-        }
+        // Camera sender is always the first video sender — update it regardless
+        // of whether screen sharing is active (screen has its own sender now).
+        replaceCameraTrack(videoTrack);
 
         setLocalStream(new MediaStream(stream.getTracks()));
         store.getState().setCamOn(true);
@@ -828,8 +1075,10 @@ export function useWebRTC({
         screenStreamRef.current = display;
         setScreenStream(display);
         store.getState().setScreenSharing(true);
-        replaceOutgoingVideoTrack(screenTrack);
         updateLocalMediaState({ screenSharing: true });
+
+        // Open a dedicated screen-share call to every currently connected peer.
+        callsRef.current.forEach((_, peerId) => callPeerForScreen(peerId));
 
         screenTrack.onended = () => {
           stopScreenShare();

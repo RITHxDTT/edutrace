@@ -1,325 +1,204 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   getAssessmentWorkSessionsAction,
   getSubmissionByIdAction,
 } from "@/actions/assessment.action";
-import { getUserByIdAction } from "@/actions/user.action";
 import {
-  AssessmentSubmission,
-  AssessmentSubmissionPayload,
   AssessmentType,
+  SubmissionDetail,
+  SubmittedStudent,
+  UnsubmittedStudent,
+  StudentWork,
   WorkSession,
-  WorkSessionPayload,
 } from "@/types/assessment";
-import { ClassroomProps, ClassroomType } from "@/types/classroom";
-import { UserProfile } from "@/types/user";
 import StudentSubmissionCard from "./StudentSubmissionCard";
-import StudentWorkStats from "./StudentWorkStats";
+import StudentWorkStats, { StatusFilter } from "./StudentWorkStats";
 import SubmissionDetailDrawer from "./SubmissionDetailDrawer";
 
-type SubmissionData = AssessmentSubmissionPayload | AssessmentSubmission[] | undefined;
+type AnyStudent = SubmittedStudent | UnsubmittedStudent;
 
 type Props = {
   assessment: AssessmentType;
-  submissions?: SubmissionData;
-  classrooms: ClassroomType[];
 };
 
-function normalizeSubmissions(
-  assessment: AssessmentType,
-  submissions?: SubmissionData,
-) {
-  if (Array.isArray(submissions)) return submissions;
-  return submissions?.content ?? assessment.studentWorks ?? [];
-}
+export default function StudentWorkPage({ assessment }: Props) {
+  const studentWorks = assessment.studentWorks ?? [];
 
-
-function getBackendCount(
-  submissions: SubmissionData,
-  key: "handedIn" | "assigned",
-) {
-  if (Array.isArray(submissions) || !submissions) return undefined;
-
-  if (key === "handedIn") {
-    return submissions.totalHandedIn ?? submissions.handedIn;
-  }
-
-  return submissions.totalAssigned ?? submissions.assigned;
-}
-
-function isSubmittedStatus(status?: string) {
-  const s = status?.trim().toUpperCase();
-  return s === "SUBMITTED" || s === "RESUBMITTED" || s === "GRADED";
-}
-
-function deduplicateByStudent(submissions: AssessmentSubmission[]): AssessmentSubmission[] {
-  const latestByStudent = new Map<string, AssessmentSubmission>();
-
-  for (const submission of submissions) {
-    const key = submission.student?.userId ?? submission.student?.fullName ?? submission.submissionId;
-    const existing = latestByStudent.get(key);
-
-    if (
-      !existing ||
-      new Date(submission.submittedAt ?? 0) > new Date(existing.submittedAt ?? 0)
-    ) {
-      latestByStudent.set(key, submission);
-    }
-  }
-  return Array.from(latestByStudent.values());
-}
-
-function normalizeWorkSessions(data: WorkSessionPayload | WorkSession[] | undefined) {
-  if (Array.isArray(data)) return data;
-  return data?.content ?? [];
-}
-
-function normalizedClassroom(submissions: AssessmentSubmission[]): ClassroomType[] {
-  const classroomMap = new Map<string, ClassroomType>();
-  for (const submission of submissions) {
-    const key = submission.student?.userId ?? submission.student?.fullName ?? submission.submissionId;
-    classroomMap.set(key, submission?.student?.classroom as ClassroomType);
-  }
-  return Array.from(classroomMap.values());
-}
-
-function getStudentWorkSessions(
-  sessions: WorkSession[],
-  submission: AssessmentSubmission,
-) {
-  return sessions.filter((session) => {
-    if (submission.student?.userId && session.userId === submission.student?.userId) {
-      return true;
-    }
-
-    if (submission.student?.fullName && session.studentName === submission.student.fullName) {
-      return true;
-    }
-
-    return false;
-  });
-}
-
-export default function StudentWorkPage({ assessment, submissions }: Props) {
-
-  const [selectedClassroomId, setSelectedClassroomId] = useState("");
-  const [selectedSubmission, setSelectedSubmission] =
-    useState<AssessmentSubmission | null>(null);
-  const [profileByUserId, setProfileByUserId] = useState<
-    Record<string, UserProfile | null>
+  const [selectedStudent, setSelectedStudent] = useState<AnyStudent | null>(null);
+  const [studentDetailByUserId, setStudentDetailByUserId] = useState<
+    Record<string, SubmissionDetail>
   >({});
-  const [submissionDetailById, setSubmissionDetailById] = useState<
-    Record<string, AssessmentSubmission>
-  >({});
-  const [workSessionsBySubmissionId, setWorkSessionsBySubmissionId] = useState<
-    Record<string, WorkSession[]>
-  >({});
-  const [loadingSubmissionId, setLoadingSubmissionId] = useState<string | null>(null);
+  const [loadingUserId, setLoadingUserId] = useState<string | null>(null);
   const [submissionDetailError, setSubmissionDetailError] = useState<string | null>(null);
+  const [selectedClassroomId, setSelectedClassroomId] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
-  const submissionList = useMemo(
-    () => normalizeSubmissions(assessment, submissions),
-    [assessment, submissions],
+  const classrooms = useMemo(
+    () =>
+      studentWorks.map((sw) => ({
+        classroomId: sw.classroomId,
+        classroomName: sw.classroomName,
+      })),
+    [studentWorks],
   );
 
-  const filteredSubmissions = useMemo(() => {
-    if (!selectedClassroomId) return submissionList;
-    return submissionList;
-  }, [selectedClassroomId, submissionList]);
+  const filteredWorks = useMemo(
+    () =>
+      selectedClassroomId
+        ? studentWorks.filter((sw) => sw.classroomId === selectedClassroomId)
+        : studentWorks,
+    [studentWorks, selectedClassroomId],
+  );
 
-  const classrooms = useMemo(() => normalizedClassroom(submissionList), [submissionList])
+  const handedIn = filteredWorks.reduce((sum, sw) => sum + sw.submittedCount, 0);
+  const assigned = filteredWorks.reduce(
+    (sum, sw) => sum + sw.submittedCount + sw.unsubmittedCount,
+    0,
+  );
 
-  const backendHandedIn = getBackendCount(submissions, "handedIn");
-  const backendAssigned = getBackendCount(submissions, "assigned") ?? assessment.totalAssigned;
-  const handedIn = selectedClassroomId
-    ? filteredSubmissions.filter((a) => isSubmittedStatus(a.status)).length
-    : backendHandedIn ?? filteredSubmissions.filter((a) => a.status === "SUBMITTED").length;
-  const assigned = selectedClassroomId ? filteredSubmissions.length : backendAssigned ?? filteredSubmissions.length;
-
-  const selectedSubmissionDetail = selectedSubmission
-    ? submissionDetailById[selectedSubmission.submissionId] ?? selectedSubmission
-    : null;
-  const selectedSubmissionWithSessions =
-    selectedSubmissionDetail && selectedSubmission
-      ? {
-        ...selectedSubmissionDetail,
-        workSessions:
-          workSessionsBySubmissionId[selectedSubmission.submissionId] ??
-          selectedSubmissionDetail.workSessions,
-      }
-      : null;
-
-  useEffect(() => {
-    const missingUserIds = Array.from(
-      new Set(
-        submissionList
-          .map((submission) => submission.student?.userId)
-          .filter((studentId): studentId is string => !!studentId && !(studentId in profileByUserId)),
-      )
+  const studentItems = useMemo(() => {
+    const submitted = filteredWorks.flatMap((sw) =>
+      sw.submittedStudents.map((student) => ({ student: student as AnyStudent, work: sw })),
+    );
+    const unsubmitted = filteredWorks.flatMap((sw) =>
+      sw.unsubmittedStudents.map((student) => ({ student: student as AnyStudent, work: sw })),
     );
 
-    if (missingUserIds.length === 0) return;
+    if (statusFilter === "handed_in") return submitted;
+    if (statusFilter === "not_submitted") return unsubmitted;
+    return [...submitted, ...unsubmitted];
+  }, [filteredWorks, statusFilter]);
 
-    let ignore = false;
+  const selectedDetail = selectedStudent
+    ? (studentDetailByUserId[selectedStudent.userId] ?? null)
+    : null;
 
-    Promise.all(
-      missingUserIds.map(async (userId) => {
-        const result = await getUserByIdAction(userId);
-        return {
-          userId,
-          profile: result.success ? result.data as UserProfile : null,
-        };
-      }),
-    ).then((profiles) => {
-      if (ignore) return;
-
-      setProfileByUserId((prev) => {
-        const next = { ...prev };
-        profiles.forEach(({ userId, profile }) => {
-          next[userId] = profile;
-        });
-        return next;
-      });
-    });
-
-    return () => {
-      ignore = true;
-    };
-  }, [profileByUserId, submissionList]);
-
-  const handleSelectSubmission = async (submission: AssessmentSubmission) => {
-    setSelectedSubmission(submission);
+  const handleSelectStudent = async (student: AnyStudent, work: StudentWork) => {
+    setSelectedStudent(student);
     setSubmissionDetailError(null);
 
-    if (
-      submissionDetailById[submission.submissionId] &&
-      workSessionsBySubmissionId[submission.submissionId]
-    ) {
-      return;
-    }
+    const userId = student.userId;
 
-    setLoadingSubmissionId(submission.submissionId);
+    const baseDetail: SubmissionDetail = {
+      submissionId: student.latestSubmission?.submissionId ?? "",
+      status: student.latestSubmission?.status ?? "",
+      submittedAt: student.latestSubmission?.submittedAt ?? "",
+      isResubmission: student.latestSubmission?.isResubmission ?? false,
+      submissionResources: student.latestSubmission?.submissionResources,
+      student: {
+        userId: student.userId,
+        fullName: student.fullName,
+        profileImageUrl: student.profileImageUrl ?? undefined,
+        classroom: {
+          classroomId: work.classroomId,
+          className: work.classroomName,
+          classroomAbbre: work.classroomName,
+        },
+      },
+      totalTimeSpentMinutes: student.learningProgress.totalTimeSpentMinutes,
+      timeSpentTodayMinutes: student.learningProgress.timeSpentTodayMinutes,
+      remainingDailyMinutes: student.learningProgress.remainingDailyMinutes,
+    };
+
+    setStudentDetailByUserId((prev) => ({
+      ...prev,
+      [userId]: { ...prev[userId], ...baseDetail },
+    }));
+
+    if (studentDetailByUserId[userId]?.workSessions !== undefined) return;
+
+    setLoadingUserId(userId);
+
+    const submissionId = student.latestSubmission?.submissionId;
+
     const [submissionResult, workSessionsResult] = await Promise.all([
-      submissionDetailById[submission.submissionId]
-        ? Promise.resolve({
-          success: true,
-          data: submissionDetailById[submission.submissionId],
-          error: undefined,
-        })
-        : getSubmissionByIdAction(submission.submissionId),
-      workSessionsBySubmissionId[submission.submissionId]
-        ? Promise.resolve({
-          success: true,
-          data: {
-            content: workSessionsBySubmissionId[submission.submissionId],
-          },
-          error: undefined,
-        })
-        : getAssessmentWorkSessionsAction(assessment.assessmentId),
+      submissionId ? getSubmissionByIdAction(submissionId) : Promise.resolve(null),
+      getAssessmentWorkSessionsAction(assessment.assessmentId),
     ]);
 
-    const studentWorkSessions = workSessionsResult.success
-      ? getStudentWorkSessions(normalizeWorkSessions(workSessionsResult.data), submission)
+    const allSessions: WorkSession[] = workSessionsResult.success
+      ? Array.isArray(workSessionsResult.data)
+        ? workSessionsResult.data
+        : (workSessionsResult.data?.content ?? [])
       : [];
+    const studentSessions = allSessions.filter((s) => s.userId === userId);
 
-    if (submissionResult.success) {
-      setSubmissionDetailById((prev) => ({
+    if (submissionResult?.success) {
+      setStudentDetailByUserId((prev) => ({
         ...prev,
-        [submission.submissionId]: {
-          ...submission,
-          ...submissionResult.data,
-          workSessions: studentWorkSessions,
-        } as AssessmentSubmission,
+        [userId]: {
+          ...prev[userId],
+          ...(submissionResult.data as Partial<SubmissionDetail>),
+          workSessions: studentSessions,
+        },
       }));
     } else {
-      setSubmissionDetailError(
-        submissionResult.error || "Failed to load submission details.",
-      );
-    }
-
-    if (workSessionsResult.success) {
-      setWorkSessionsBySubmissionId((prev) => ({
+      if (submissionResult && !submissionResult.success) {
+        setSubmissionDetailError(
+          submissionResult.error || "Failed to load submission details.",
+        );
+      }
+      setStudentDetailByUserId((prev) => ({
         ...prev,
-        [submission.submissionId]: studentWorkSessions,
+        [userId]: { ...prev[userId], workSessions: studentSessions },
       }));
-    } else {
-      setSubmissionDetailError(
-        workSessionsResult.error || "Failed to load work sessions.",
-      );
     }
 
-    setLoadingSubmissionId(null);
+    setLoadingUserId(null);
   };
 
-
-  const handleSubmissionChange = (submission: AssessmentSubmission) => {
-    setSelectedSubmission(submission);
-    setSubmissionDetailById((prev) => ({
+  const handleSubmissionChange = (detail: SubmissionDetail) => {
+    if (!selectedStudent) return;
+    setStudentDetailByUserId((prev) => ({
       ...prev,
-      [submission.submissionId]: submission,
+      [selectedStudent.userId]: detail,
     }));
   };
-
 
   return (
     <div className="flex flex-col gap-5 py-4">
       <StudentWorkStats
-        classrooms={classrooms}
-        selectedClassroomId={selectedClassroomId}
         handedIn={handedIn}
         assigned={assigned}
-        onClassroomChange={(classroomId) => {
-          setSelectedClassroomId(classroomId);
-          setSelectedSubmission(null);
+        classrooms={classrooms}
+        selectedClassroomId={selectedClassroomId}
+        statusFilter={statusFilter}
+        onClassroomChange={(id) => {
+          setSelectedClassroomId(id);
+          setSelectedStudent(null);
+        }}
+        onStatusFilterChange={(f) => {
+          setStatusFilter(f);
+          setSelectedStudent(null);
         }}
       />
 
       <div className="grid grid-cols-3 gap-5">
-        {(() => {
-          const submitted = deduplicateByStudent(
-            filteredSubmissions.filter((a) => a.status === "SUBMITTED" || a.status === "GRADED"),
-          );
-
-          if (submitted.length === 0) {
-            return (
-              <div className="col-span-3 rounded-[20px] bg-white px-7.5 py-10 text-center text-tertiary">
-                No submitted work for this class yet.
-              </div>
-            );
-          }
-
-          return submitted.map((submission) => {
-            return (
-              <StudentSubmissionCard
-                key={submission.submissionId}
-                submission={submission}
-                profileImageUrl={
-                  submission.student?.profileImageUrl
-                }
-                isSelected={selectedSubmission?.submissionId === submission.submissionId}
-                onClick={() => {
-                  void handleSelectSubmission(submission);
-                }}
-              />
-            )
-          });
-        })()}
+        {studentItems.length === 0 ? (
+          <div className="col-span-3 rounded-[20px] bg-white px-7.5 py-10 text-center text-tertiary">
+            No students match the current filter.
+          </div>
+        ) : (
+          studentItems.map(({ student, work }) => (
+            <StudentSubmissionCard
+              key={student.userId}
+              student={student}
+              classroomName={work.classroomName}
+              isSelected={selectedStudent?.userId === student.userId}
+              onClick={() => void handleSelectStudent(student, work)}
+            />
+          ))
+        )}
       </div>
 
       <SubmissionDetailDrawer
-        submission={selectedSubmissionWithSessions}
-        profileImageUrl={
-          selectedSubmissionWithSessions?.student?.profileImageUrl
-        }
-        isLoading={
-          !!selectedSubmission &&
-          loadingSubmissionId === selectedSubmission.submissionId
-        }
+        submission={selectedDetail}
+        isLoading={!!selectedStudent && loadingUserId === selectedStudent.userId}
         error={submissionDetailError}
         onSubmissionChange={handleSubmissionChange}
-        onClose={() => setSelectedSubmission(null)}
+        onClose={() => setSelectedStudent(null)}
       />
     </div>
   );

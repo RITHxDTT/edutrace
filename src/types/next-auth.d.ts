@@ -12,7 +12,7 @@ declare module "next-auth" {
     user?: {
       firstName?: string;
       lastName?: string;
-      role?: string;
+      role?: "teacher" | "student";
       username?: string;
       fullName?: string;
       gender?: "MALE" | "FEMALE";
@@ -54,7 +54,7 @@ declare module "next-auth/jwt" {
     expires_at: number;
     refresh_token?: string;
     error?: string;
-    role?: string;
+    role?: "teacher" | "student";
     email: string;
     firstName?: string;
     lastName?: string;
