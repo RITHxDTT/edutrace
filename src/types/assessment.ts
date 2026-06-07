@@ -201,6 +201,7 @@ type CreateAssessmentForm = {
   requiredDailyMinutes: number;
   allowLateSubmissions: boolean;
   gradingRubric: string;
+  resourceLink: string[];
   files: File[];
   createdTimeZone: string;
 };

@@ -329,6 +329,8 @@ export const createAssessmentService = async (data: CreateAssessmentForm) => {
   const session = await auth();
   const formData = createAssessmentFormData(data);
 
+  console.log(formData)
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/assessments`,
     {
@@ -339,6 +341,8 @@ export const createAssessmentService = async (data: CreateAssessmentForm) => {
       body: formData,
     },
   );
+
+  console.log(res)
 
   const result = await readAssessmentResponse(res);
 

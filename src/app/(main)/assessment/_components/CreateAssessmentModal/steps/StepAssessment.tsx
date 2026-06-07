@@ -9,7 +9,7 @@ import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { DatePicker, DateRangePicker } from "@heroui/date-picker";
 import { SelectItem } from "@heroui/select";
 import { useState, KeyboardEvent, useRef } from "react";
-import { File, Paperclip } from "lucide-react";
+import { File, Link, Paperclip, X } from "lucide-react";
 import AttachmentCard from "./_components/FileCard";
 import { FolderOpen, Gallery } from "iconsax-react";
 import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
@@ -158,11 +158,19 @@ export default function StepAssessment({
     );
     const [rubricError, setRubricError] = useState("");
     const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
+    const [linkInput, setLinkInput] = useState("");
+    const [linkError, setLinkError] = useState("");
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleRubricChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setRubricInput(e.target.value);
         if (rubricError) setRubricError("");
+    };
+
+    const validateRubric = (parsed: RubricBadge[]): string => {
+        const total = parsed.reduce((sum, b) => sum + b.score, 0);
+        if (total > 100) return `Rubric total is ${total} pts — must not exceed 100.`;
+        return "";
     };
 
     const handleRubricBlur = () => {
@@ -171,10 +179,15 @@ export default function StepAssessment({
         const parsed = parseRubricInput(value);
         if (parsed.length === 0) {
             setRubricError("Invalid format. Use Label:Score;Label:Score (e.g. Web:30;Java:30)");
-        } else if (value !== form.gradingRubric.trim()) {
-            setRubricError("Press Enter to confirm your rubric entries");
         } else {
-            setRubricError("");
+            const err = validateRubric(parsed);
+            if (err) {
+                setRubricError(err);
+            } else if (value !== form.gradingRubric.trim()) {
+                setRubricError("Press Enter to confirm your rubric entries");
+            } else {
+                setRubricError("");
+            }
         }
     };
 
@@ -183,9 +196,14 @@ export default function StepAssessment({
             e.preventDefault();
             const parsed = parseRubricInput(rubricInput);
             if (parsed.length > 0) {
-                setRubricBadges(parsed);
-                onChange("gradingRubric", rubricInput);
-                setRubricError("");
+                const err = validateRubric(parsed);
+                if (err) {
+                    setRubricError(err);
+                } else {
+                    setRubricBadges(parsed);
+                    onChange("gradingRubric", rubricInput);
+                    setRubricError("");
+                }
             } else if (rubricInput.trim()) {
                 setRubricError("Invalid format. Use Label:Score;Label:Score (e.g. Web:30;Java:30)");
             }
@@ -217,6 +235,35 @@ export default function StepAssessment({
 
             return prev.filter((a) => a.id !== id);
         });
+    };
+
+    const addResourceLink = () => {
+        const trimmed = linkInput.trim();
+        if (!trimmed) return;
+        try {
+            new URL(trimmed);
+        } catch {
+            setLinkError("Please enter a valid URL (e.g. https://example.com)");
+            return;
+        }
+        if (form.resourceLink.includes(trimmed)) {
+            setLinkError("This link has already been added.");
+            return;
+        }
+        onChange("resourceLink", [...form.resourceLink, trimmed]);
+        setLinkInput("");
+        setLinkError("");
+    };
+
+    const removeResourceLink = (url: string) => {
+        onChange("resourceLink", form.resourceLink.filter((l) => l !== url));
+    };
+
+    const handleLinkKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addResourceLink();
+        }
     };
 
     const isScheduled = !!form.startAt && new Date(form.startAt) > new Date();
@@ -513,6 +560,66 @@ export default function StepAssessment({
                         />
                     ))}
                 </div>
+            </div>
+
+            {/* Resource Links */}
+            <div className="flex flex-col gap-2">
+                <span className="font-semibold text-label text-sm">Resource Links</span>
+
+                <div className="flex gap-2">
+                    <div className="flex-1">
+                        <PrimaryInput
+                            label=""
+                            type="url"
+                            inputType="secondary"
+                            placeholder="https://example.com"
+                            value={linkInput}
+                            isInvalid={!!linkError}
+                            errorMessage={linkError}
+                            onChange={(e) => {
+                                setLinkInput(e.target.value);
+                                if (linkError) setLinkError("");
+                            }}
+                            onKeyDown={handleLinkKeyDown}
+                        />
+                    </div>
+                    <button
+                        type="button"
+                        onClick={addResourceLink}
+                        className="inline-flex items-center gap-1.5 shrink-0 text-xs font-medium text-primary hover:opacity-75 transition-opacity mt-1"
+                    >
+                        <Link size={13} />
+                        Add
+                    </button>
+                </div>
+
+                {form.resourceLink.length > 0 && (
+                    <div className="flex flex-col gap-1.5">
+                        {form.resourceLink.map((url) => (
+                            <div
+                                key={url}
+                                className="flex items-center gap-2 rounded-[8px] bg-input-field px-3 py-2"
+                            >
+                                <Link size={12} className="shrink-0 text-primary" />
+                                <a
+                                    href={url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="flex-1 truncate text-xs font-medium text-primary hover:underline min-w-0"
+                                >
+                                    {url}
+                                </a>
+                                <button
+                                    type="button"
+                                    onClick={() => removeResourceLink(url)}
+                                    className="shrink-0 text-tertiary hover:text-red transition-colors"
+                                >
+                                    <X size={13} />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </>
     );

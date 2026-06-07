@@ -23,12 +23,13 @@ const assessmentFormSchema = z.object({
   classroomIds: z.array(z.string()).min(1, "Please select at least one classroom."),
   startAt: z.string().trim().min(1, "Please select an assessment date range."),
   dueAt: z.string().trim().min(1, "Please select an assessment date range."),
-  maxScore: z.number().min(1, "Set point must be greater than 0."),
+  maxScore: z.number().min(1, "Set point must be greater than 0.").max(100, "Set point must not exceed 100."),
   requiredDailyMinutes: z
     .number()
     .min(1, "Daily required minutes must be greater than 0."),
   allowLateSubmissions: z.boolean(),
   gradingRubric: z.string(),
+  resourceLink: z.array(z.string()),
   files: z.array(z.instanceof(File)),
   createdTimeZone: z.string(),
 });
@@ -45,6 +46,7 @@ const defaultForm: CreateAssessmentForm = {
   requiredDailyMinutes: 5,
   allowLateSubmissions: false,
   gradingRubric: "",
+  resourceLink: [],
   files: [],
   createdTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 };
@@ -129,6 +131,7 @@ function toAssessmentForm(
     gradingRubric: Array.isArray(assessment.gradingRubric)
       ? assessment.gradingRubric.join(";")
       : assessment.gradingRubric ?? "",
+    resourceLink: [],
     files: [],
     createdTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   };
