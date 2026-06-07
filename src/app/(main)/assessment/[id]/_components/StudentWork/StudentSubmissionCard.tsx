@@ -1,15 +1,19 @@
-import { AssessmentSubmission } from "@/types/assessment";
-import { Clock, DocumentText } from "iconsax-react";
-import { getStudentInitials, getSubmittedLabel } from "./studentWorkUtils";
+"use client"
 
+import { AssessmentSubmission } from "@/types/assessment";
+import { getStudentInitials, getSubmittedLabel } from "@/utils/studentWorkUtils";
+import { Clock, DocumentText } from "iconsax-react";
+import Image from "next/image";
 type Props = {
   submission: AssessmentSubmission;
+  profileImageUrl?: string;
   isSelected: boolean;
   onClick: () => void;
 };
 
 export default function StudentSubmissionCard({
   submission,
+  profileImageUrl,
   isSelected,
   onClick,
 }: Props) {
@@ -19,23 +23,32 @@ export default function StudentSubmissionCard({
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-full min-h-[158px] flex-col rounded-[15px] border bg-white p-5 text-left transition ${
-        isSelected
-          ? "border-menta shadow-[0_10px_28px_rgba(91,94,221,0.14)]"
-          : "border-[lab(90.952% -.0000596046 0)] hover:border-menta/60"
-      }`}
+      className={`flex h-full min-h-[158px] flex-col rounded-[15px] border bg-white p-5 text-left transition ${isSelected
+        ? "border-menta shadow-[0_10px_28px_rgba(91,94,221,0.14)]"
+        : "border-[lab(90.952% -.0000596046 0)] hover:border-menta/60"
+        }`}
     >
       <div className="flex items-start gap-3">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-light-lavendar text-sm font-semibold text-menta">
-          {getStudentInitials(submission.studentName)}
+          {profileImageUrl ? (
+            <Image
+              src={profileImageUrl}
+              alt={submission.student?.fullName ?? "Student profile"}
+              width={48}
+              height={48}
+              className="h-full w-full rounded-full object-cover"
+            />
+          ) : (
+            getStudentInitials(submission.student?.fullName)
+          )}
         </div>
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-[18px] font-medium text-primary">
-            {submission.studentName ?? "Unnamed Student"}
+            {submission.student?.fullName ?? "Unnamed Student"}
           </p>
           <p className="truncate text-sm text-tertiary">
-            {submission.classroomName ?? submission.classroomAbbre ?? "No class"}
+            {submission.student?.classroom.className ?? submission.student?.classroom.classroomAbbre ?? "No class"}
           </p>
         </div>
 

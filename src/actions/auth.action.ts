@@ -41,6 +41,7 @@ export async function registerAction(
 }
 
 export async function verifyEmailAction(data: OtpFormData, action: "REGISTRATION" | "FORGOT_PASSWORD") {
+    console.log(data)
     try {
         const res = await verifyOtpService(data, action);
 
@@ -86,9 +87,9 @@ export async function resetPasswordAction(data: ForgotPasswordFormData, token: s
     }
 }
 
-export async function resendEmailAction(email: string, action: "REGISTRATION") {
+export async function resendEmailAction(email: string) {
     try {
-        await resendOtpCodeService(email, action);
+        await resendOtpCodeService(email);
         return { success: true, error: null };
     } catch (err) {
         const message =

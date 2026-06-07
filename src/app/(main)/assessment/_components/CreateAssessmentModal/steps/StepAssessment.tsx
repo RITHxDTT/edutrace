@@ -12,7 +12,7 @@ import { useState, KeyboardEvent, useRef } from "react";
 import { File, Paperclip } from "lucide-react";
 import AttachmentCard from "./_components/FileCard";
 import { FolderOpen, Gallery } from "iconsax-react";
-import { parseDate } from "@internationalized/date";
+import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 import { CreateAssessmentFormErrors } from "../useCreateAssessmentForm";
 
 type Props = {
@@ -147,8 +147,27 @@ export default function StepAssessment({
     const [rubricBadges, setRubricBadges] = useState<RubricBadge[]>(
         () => parseRubricInput(form.gradingRubric),
     );
+    const [rubricError, setRubricError] = useState("");
     const [attachments, setAttachments] = useState<AttachmentFile[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleRubricChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setRubricInput(e.target.value);
+        if (rubricError) setRubricError("");
+    };
+
+    const handleRubricBlur = () => {
+        const value = rubricInput.trim();
+        if (!value) { setRubricError(""); return; }
+        const parsed = parseRubricInput(value);
+        if (parsed.length === 0) {
+            setRubricError("Invalid format. Use Label:Score;Label:Score (e.g. Web:30;Java:30)");
+        } else if (value !== form.gradingRubric.trim()) {
+            setRubricError("Press Enter to confirm your rubric entries");
+        } else {
+            setRubricError("");
+        }
+    };
 
     const handleRubricKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === "Enter") {
@@ -157,6 +176,9 @@ export default function StepAssessment({
             if (parsed.length > 0) {
                 setRubricBadges(parsed);
                 onChange("gradingRubric", rubricInput);
+                setRubricError("");
+            } else if (rubricInput.trim()) {
+                setRubricError("Invalid format. Use Label:Score;Label:Score (e.g. Web:30;Java:30)");
             }
         }
     };
@@ -188,14 +210,23 @@ export default function StepAssessment({
         });
     };
 
+    const isScheduled = !!form.startAt && new Date(form.startAt) > new Date();
+
     return (
         <>
+            {isScheduled && (
+                <div className="rounded-[10px] bg-accent-sand px-4 py-3 text-sm font-medium text-[#DEA20A]">
+                    This assessment is scheduled for a future date. Students will not see it or receive notifications until the start date.
+                </div>
+            )}
+
             <div className="w-full grid grid-cols-2 gap-2">
                 <DateRangePicker
                     hideTimeZone
                     className="col-span-2 w-full"
                     label="Assessment Date"
                     labelPlacement="outside-top"
+                    minValue={today(getLocalTimeZone())}
                     value={
                         form.startAt && form.dueAt
                             ? {
@@ -353,8 +384,11 @@ export default function StepAssessment({
                     inputType="secondary"
                     placeholder="Web:30;Java:30"
                     value={rubricInput}
-                    onChange={(e) => setRubricInput(e.target.value)}
+                    onChange={handleRubricChange}
+                    onBlur={handleRubricBlur}
                     onKeyDown={handleRubricKeyDown}
+                    isInvalid={!!rubricError}
+                    errorMessage={rubricError}
                     description="Format: Label:Score;Label:Score — press Enter to add"
                 />
 

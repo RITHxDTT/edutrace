@@ -139,7 +139,7 @@ export default function CreateAssessmentModal({
     () => getAssessmentClassroomOptions(assessment, taughtClassrooms),
     [assessment, taughtClassrooms],
   );
-  const { form, errors, handleChange, submit, reset, loading, error } =
+  const { form, errors, handleChange, submit, reset, loading, error, validateStep } =
     useCreateAssessment({
       assessment,
       assessmentId,
@@ -162,10 +162,21 @@ export default function CreateAssessmentModal({
     onClose();
   };
 
-  const handleNext = () => setCurrentStep((prev) => prev + 1);
+  const handleNext = () => {
+    const stepErrors = validateStep(currentStep);
+    if (stepErrors) return;
+    setCurrentStep((prev) => prev + 1);
+  };
   const handleBack = () => setCurrentStep((prev) => prev - 1);
 
   const handleSubmit = async () => {
+    // Validate step 1 fields even when submitting from step 2
+    const step1Errors = validateStep(0);
+    if (step1Errors) {
+      setCurrentStep(0);
+      return;
+    }
+
     const success = await submit();
     if (!success) return;
 

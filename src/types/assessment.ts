@@ -50,12 +50,26 @@ type SubmissionResource = {
   submissionId?: string;
 };
 
+type SubmissionGrader = {
+  userId?: string;
+  fullName?: string;
+  profileImageUrl?: string;
+};
+
 type SubmissionGrade = {
   gradeId?: string;
   score?: number;
   feedback?: string;
   gradedAt?: string;
-  graderName?: string;
+  graderName?: string;   // flat alias kept for backwards compat
+  grader?: SubmissionGrader;
+};
+
+type SubmissionStudent = {
+  userId?: string;
+  fullName?: string;
+  profileImageUrl?: string;
+  classroom: AssessmentClassroom
 };
 
 type WorkSession = {
@@ -72,15 +86,12 @@ type WorkSession = {
 
 type AssessmentSubmission = {
   submissionId: string;
-  status?: "PENDING" | "SUBMITTED" | "GRADED" | "RETURNED" | string;
+  status?: "PENDING" | "SUBMITTED" | "RESUBMITTED" | "GRADED" | "RETURNED" | string;
   submittedAt?: string;
-  studentId?: string;
-  studentName?: string;
+  studentProfileImageUrl?: string;
   assessmentTitle?: string;
   isResubmission?: boolean;
-  classroomId?: string;
-  classroomName?: string;
-  classroomAbbre?: string;
+  student?: SubmissionStudent;
   submissionResources?: SubmissionResource[];
   grade?: SubmissionGrade;
   totalTimeSpentMinutes?: number;
@@ -98,6 +109,12 @@ type AssessmentSubmissionPayload = {
   assigned?: number;
 };
 
+type SubmissionClassroom = {
+  classroomId?: string;
+  classroomName?: string;
+  classroomAbbre?: string;
+}
+
 type WorkSessionPayload = {
   content: WorkSession[];
   metaData?: AssessmentMetaData;
@@ -107,6 +124,12 @@ type SubmitAssignmentForm = {
   file: File;
   link?: string | null;
   studentNotes?: string | null;
+};
+
+type GradeSubmissionForm = {
+  submissionId: string;
+  score: number;
+  feedback: string;
 };
 
 interface AssessmentType {
@@ -171,6 +194,8 @@ export type {
   AssessmentSubmissionPayload,
   AssessmentType,
   CreateAssessmentForm,
+  GradeSubmissionForm,
+  SubmissionGrade,
   SubmissionResource,
   SubmitAssignmentForm,
   WorkSession,

@@ -2,6 +2,7 @@ import {
   getAssessmentByIdAction,
   getAssessmentSubmissionsAction,
   getMyAssessmentsAction,
+  getMySubmissionsAction,
   getMyWorkSessionsAction,
 } from "@/actions/assessment.action";
 import { getAllSubjectAction } from "@/actions/subject.action";
@@ -28,6 +29,7 @@ import AssessmentHeaderActions from "./_components/AssessmentHeaderActions";
 import StudentWorkPage from "./_components/StudentWork/StudentWorkPage";
 import StudentAssessmentTabs from "./_components/StudentAssessmentTabs";
 import { getMeetingRoomByAssessmentIdAction } from "@/actions/meeting.action";
+import { getAllClassroomsAction } from "@/actions/classroom.action";
 
 type PageProps = {
   params: Promise<{
@@ -47,9 +49,12 @@ type MyAssessmentData =
   | { content?: AssessmentType[] }
   | undefined;
 
-type MeetingRoomResult = {
-  meetingRoomId?: string;
-} | null | undefined;
+type MeetingRoomResult =
+  | {
+      meetingRoomId?: string;
+    }
+  | null
+  | undefined;
 
 function normalizeMyAssessments(assessments: MyAssessmentData) {
   if (Array.isArray(assessments)) return assessments;
@@ -69,20 +74,28 @@ export default async function page({ params }: PageProps) {
 
   const meetingRoomId = meetingRoomResult?.meetingRoomId;
 
-  const [assessmentResult, subjects, submissions, workSessions, myAssessments] =
-    (await Promise.all([
-      getAssessmentByIdAction(id),
-      isTeacher ? getAllSubjectAction() : Promise.resolve([]),
-      isTeacher ? getAssessmentSubmissionsAction(id) : Promise.resolve(undefined),
-      isStudent ? getMyWorkSessionsAction(id) : Promise.resolve(undefined),
-      isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
-    ])) as [
-      AssessmentType,
-      SubjectType[],
-      SubmissionData,
-      WorkSessionData,
-      MyAssessmentData,
-    ];
+  const [
+    assessmentResult,
+    subjects,
+    submissions,
+    workSessions,
+    myAssessments,
+    mySubmissions,
+  ] = (await Promise.all([
+    getAssessmentByIdAction(id),
+    isTeacher ? getAllSubjectAction() : Promise.resolve([]),
+    isTeacher ? getAssessmentSubmissionsAction(id) : Promise.resolve(undefined),
+    isStudent ? getMyWorkSessionsAction(id) : Promise.resolve(undefined),
+    isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
+    isStudent ? getMySubmissionsAction(id) : Promise.resolve(undefined),
+  ])) as [
+    AssessmentType,
+    SubjectType[],
+    SubmissionData,
+    WorkSessionData,
+    MyAssessmentData,
+    AssessmentSubmission[] | undefined,
+  ];
 
   const myAssessment = normalizeMyAssessments(myAssessments).find(
     (item) => item.assessmentId === id,
@@ -90,7 +103,11 @@ export default async function page({ params }: PageProps) {
 
   const assessment = myAssessment ?? assessmentResult;
 
+  const classrooms = await getAllClassroomsAction();
+
   const instructionContent = <InstructionDetailPage assessment={assessment} />;
+
+  console.log(assessment)
 
   const communicationContent = (
     <div className="py-4">
@@ -103,8 +120,6 @@ export default async function page({ params }: PageProps) {
       )}
     </div>
   );
-
-  console.log(session?.access_token);
 
   const assessmentTabs = [
     {
@@ -133,6 +148,7 @@ export default async function page({ params }: PageProps) {
       content: (
         <StudentWorkPage
           assessment={assessment}
+          classrooms={classrooms}
           submissions={submissions}
         />
       ),
@@ -228,6 +244,9 @@ export default async function page({ params }: PageProps) {
             instruction={instructionContent}
             communication={communicationContent}
             workSessions={workSessions}
+            mySubmissions={
+              Array.isArray(mySubmissions) ? mySubmissions : undefined
+            }
           />
         ) : (
           <PrimaryTabs tabs={assessmentTabs} colors="primary" />

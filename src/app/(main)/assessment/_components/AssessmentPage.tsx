@@ -47,54 +47,104 @@ function normalizeClassrooms(classrooms: SessionClassrooms): ClassroomType[] {
   });
 }
 
+const STUDENT_PAGE_SIZE = 6;
+
 export default function AssessmentPage({ assessments, metaData, role, subjects }: Props) {
-  const [filters, setFilters] = useState<FilterState>({
+  const [studentFilters, setStudentFilters] = useState<FilterState>({
     subject: "",
     status: "",
     sortBy: "",
   });
-
+  const [studentPage, setStudentPage] = useState(1);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-
   const session = useSession();
-  const totalPages = Math.max(metaData?.totalPage ?? 1, 1);
   const pageFromUrl = Math.max(Number(searchParams.get("page")) || 1, 1);
-  const currentPage = Math.min(pageFromUrl, totalPages);
-  
+
+  // Teachers: filters live in the URL so server-side pagination stays in sync.
+  // Students: filters are local state (all data fetched at once).
+  const filters: FilterState =
+    role === "teacher"
+      ? {
+          status: searchParams.get("status") ?? "",
+          sortBy: searchParams.get("sortBy") ?? "",
+          subject: "",
+        }
+      : studentFilters;
 
   const classroomsTaught =
     role === "teacher" ? normalizeClassrooms(session?.data?.user?.taughtClassrooms) : [];
 
   const handleFilterChange = (key: keyof FilterState, value: string) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+    if (role === "teacher") {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+      params.delete("page"); // reset to page 1 whenever a filter changes
+      router.push(`${pathname}?${params.toString()}`);
+      return;
+    }
+    setStudentFilters((prev) => ({ ...prev, [key]: value }));
+    setStudentPage(1);
   };
 
-  const handlePageChange = (page: number) => {
-    const params = new URLSearchParams(searchParams.toString());
+  const filtered =
+    role === "teacher"
+      ? assessments // server already applied filters and pagination
+      : assessments
+          .filter((a) => {
+            // Students never see scheduled (not-yet-started) assessments
+            if (a.status === "SCHEDULED") return false;
+            if (a.startAt && new Date(a.startAt) > new Date()) return false;
+            return true;
+          })
+          .filter((a) => (filters.status ? a.status === filters.status : true))
+          .filter((a) =>
+            filters.subject ? a.subject.subjectId === filters.subject : true,
+          )
+          .sort((a, b) => {
+            if (filters.sortBy === "STATUS") return a.status.localeCompare(b.status);
+            return 0;
+          });
 
+  // Students: client-side pagination over the filtered list
+  // Teachers: server-side pagination (filtered list is already one server page)
+  const totalPages =
+    role === "student"
+      ? Math.max(Math.ceil(filtered.length / STUDENT_PAGE_SIZE), 1)
+      : Math.max(metaData?.totalPage ?? 1, 1);
+
+  const currentPage =
+    role === "student"
+      ? Math.min(studentPage, totalPages)
+      : Math.min(pageFromUrl, totalPages);
+
+  const pagedAssessments =
+    role === "student"
+      ? filtered.slice((currentPage - 1) * STUDENT_PAGE_SIZE, currentPage * STUDENT_PAGE_SIZE)
+      : filtered;
+
+  const handlePageChange = (page: number) => {
+    if (role === "student") {
+      setStudentPage(page);
+      return;
+    }
+    const params = new URLSearchParams(searchParams.toString());
     if (page <= 1) {
       params.delete("page");
     } else {
       params.set("page", String(page));
     }
-
     const query = params.toString();
     router.push(query ? `${pathname}?${query}` : pathname);
   };
 
-  const filtered = assessments
-    .filter((a) => (filters.status ? a.status === filters.status : true))
-    .filter((a) =>
-      filters.subject ? a.subject.subjectId === filters.subject : true,
-    )
-    .sort((a, b) => {
-      if (filters.sortBy === "STATUS") return a.status.localeCompare(b.status);
-      return 0;
-    });
 
   return (
     <div className="flex flex-col gap-5 p-5">
@@ -127,7 +177,7 @@ export default function AssessmentPage({ assessments, metaData, role, subjects }
         subjects={subjects}
       />
 
-      <AssessmentList assessments={filtered} />
+      <AssessmentList assessments={pagedAssessments} />
 
       {totalPages > 1 && (
         <div className="flex items-center justify-between rounded-[20px] bg-white px-7.5 py-4">

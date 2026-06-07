@@ -3,9 +3,10 @@ import { ClassroomType } from "@/types/classroom";
 import { SelectItem } from "@heroui/select";
 import { FilterIcon } from "lucide-react";
 import { TickCircle, UserSquare } from "iconsax-react";
+import { getAllClassroomsAction } from "@/actions/classroom.action";
 
 type Props = {
-  classrooms: ClassroomType[];
+  classrooms: ClassroomType[]
   selectedClassroomId: string;
   handedIn: number;
   assigned: number;
@@ -19,6 +20,7 @@ export default function StudentWorkStats({
   assigned,
   onClassroomChange,
 }: Props) {
+  console.log(classrooms)
   return (
     <div className="grid grid-cols-[1fr_220px_220px] items-center gap-5 rounded-[20px] bg-white px-7.5 py-5">
       <div className="flex items-center gap-5">
@@ -28,12 +30,14 @@ export default function StudentWorkStats({
         </div>
 
         <div className="w-[260px]">
-          <PrimarySelect
+          {/* <PrimarySelect
             label=""
             placeholder="All Classes"
             selectType="secondary"
             selectedKeys={[selectedClassroomId]}
-            onChange={(event) => onClassroomChange(event.target.value)}
+            onChange={(event) => {
+              onClassroomChange(event.target.value)
+            }}
           >
             <>
               <SelectItem key="">All Classes</SelectItem>
@@ -43,7 +47,7 @@ export default function StudentWorkStats({
                 </SelectItem>
               ))}
             </>
-          </PrimarySelect>
+          </PrimarySelect> */}
         </div>
       </div>
 

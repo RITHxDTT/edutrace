@@ -2,28 +2,23 @@
 
 import { verifyEmailAction } from "@/actions/auth.action";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
-import PrimaryInput from "@/components/Inputs/PrimaryInputField";
 import { verifyEmailFormSchema } from "@/schemas/VerifyEmailFormSchema";
 import { resendOtpCodeService } from "@/services/auth.service";
 import { OtpFormData } from "@/types/auth";
 import { InputOtp } from "@heroui/input-otp";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { SmsEdit } from "iconsax-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { sileo } from "sileo";
 import ServerError from "../../_components/ServerError";
 
-const STEP_FIELDS: Record<number, (keyof OtpFormData)[]> = {
-  1: ["email"],
-  2: ["code"],
-};
-
 type ResendStatus = "idle" | "loading" | "success" | "error";
 
 export default function VerifyEmailForm() {
-  const [step, setStep] = useState(1);
+  const params = useSearchParams();
+  const email = params.get("email");
+
   const [serverError, setServerError] = useState("");
   const [resendStatus, setResendStatus] = useState<ResendStatus>("idle");
   const [resendMessage, setResendMessage] = useState("");
@@ -50,35 +45,24 @@ export default function VerifyEmailForm() {
   const {
     register,
     handleSubmit,
-    trigger,
-    getValues,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<OtpFormData>({
     resolver: zodResolver(verifyEmailFormSchema),
     defaultValues: {
-      email: "",
+      email: email ?? "",
       code: "",
     },
   });
 
-  const handleNext = async () => {
-    const valid = await trigger(STEP_FIELDS[step]);
-    if (valid) setStep((s) => s + 1);
-  };
-
-  const handleBack = () => setStep((s) => s - 1);
-
   const handleResend = async () => {
-    if (cooldown > 0) return;
-
-    const email = getValues("email");
-
+    if (!email) return;
     setResendStatus("loading");
     setResendMessage("");
 
     try {
-      const res = await resendOtpCodeService(email, "REGISTRATION");
+      const res = await resendOtpCodeService(email);
 
       setResendStatus("success");
       setResendMessage(res.message ?? "A new code was sent to your email.");
@@ -115,111 +99,71 @@ export default function VerifyEmailForm() {
     }
   }
 
+  useEffect(() => {
+    if (email) setValue("email", email);
+  }, [email, setValue]);  
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-8">
       {serverError && <ServerError serverError={serverError} />}
+      <Controller
+        name="code"
+        control={control}
+        render={({ field }) => (
+          <div className="flex flex-col items-center gap-2">
+            <InputOtp
+              length={6}
+              value={field.value}
+              onValueChange={field.onChange}
+              classNames={{
+                segmentWrapper: "gap-x-4 justify-center",
+                segment:
+                  "w-14 h-14 text-2xl font-semibold rounded-xl border border-gray-300 bg-white text-center shadow-sm transition-all " +
+                  "focus:border-purple-500 focus:ring-2 focus:ring-purple-200",
+              }}
+              size="lg"
+              errorMessage={errors.code?.message}
+              {...register("code")}
+            />
+          </div>
+        )}
+      />
 
-      {step === 1 && (
-        <PrimaryInput
-          label="Email"
-          placeholder="Enter your email here..."
-          className="text-left"
-          type="email"
-          icon={SmsEdit}
-          iconPosition="right"
-          isInvalid={!!errors.email}
-          errorMessage={errors.email?.message}
-          {...register("email")}
-        />
-      )}
-
-      {step === 2 && (
-        <Controller
-          name="code"
-          control={control}
-          render={({ field }) => (
-            <div className="flex flex-col items-center gap-2">
-              <InputOtp
-                length={6}
-                value={field.value}
-                onValueChange={field.onChange}
-                classNames={{
-                  segmentWrapper: "gap-x-4 justify-center",
-                  segment:
-                    "w-14 h-14 text-2xl font-semibold rounded-xl border border-gray-300 bg-white text-center shadow-sm transition-all " +
-                    "focus:border-purple-500 focus:ring-2 focus:ring-purple-200",
-                }}
-                size="lg"
-                errorMessage={errors.code?.message}
-                {...register("code")}
-              />
-            </div>
-          )}
-        />
-      )}
-
-      {/* Resend code — only relevant on           */}
-      {step === 2 && (
-        <div className="space-y-1 text-center">
-          <p className="text-xs text-muted">
-            Didn't receive OTP code?{" "}
-            <button
-              type="button"
-              disabled={resendStatus === "loading" || cooldown > 0}
-              onClick={handleResend}
-              className="text-linear-main font-bold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {resendStatus === "loading"
-                ? "Sending..."
-                : cooldown > 0
-                  ? `Resend in ${cooldown}s`
-                  : "Resend code"}
-            </button>
-          </p>
-          {resendMessage && (
-            <p
-              className={`text-xs ${
-                resendStatus === "success" ? "text-success" : "text-danger"
+      <div className="space-y-1 text-center">
+        <p className="text-xs text-muted">
+          Didn't receive OTP code?{" "}
+          <button
+            type="button"
+            disabled={resendStatus === "loading" || cooldown > 0}
+            onClick={handleResend}
+            className="text-linear-main font-bold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {resendStatus === "loading"
+              ? "Sending..."
+              : cooldown > 0
+                ? `Resend in ${cooldown}s`
+                : "Resend code"}
+          </button>
+        </p>
+        {resendMessage && (
+          <p
+            className={`text-xs ${resendStatus === "success" ? "text-success" : "text-danger"
               }`}
-            >
-              {resendMessage}
-            </p>
-          )}
-        </div>
-      )}
+          >
+            {resendMessage}
+          </p>
+        )}
+      </div>
 
       <div className="flex gap-3">
-        {step === 2 && (
-          <PrimaryButton
-            type="button"
-            className="w-full"
-            size="md"
-            variant="secondary"
-            onClick={handleBack}
-          >
-            Back
-          </PrimaryButton>
-        )}
-
-        {step === 1 ? (
-          <PrimaryButton
-            type="button"
-            className="w-full"
-            size="md"
-            onClick={handleNext}
-          >
-            Next
-          </PrimaryButton>
-        ) : (
-          <PrimaryButton
-            type="submit"
-            className="w-full"
-            size="md"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Verifying..." : "Verify"}
-          </PrimaryButton>
-        )}
+        <PrimaryButton
+          type="submit"
+          className="w-full"
+          size="md"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Verifying..." : "Verify"}
+        </PrimaryButton>
       </div>
     </form>
   );

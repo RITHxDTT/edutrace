@@ -7,10 +7,10 @@ export default function ModernRoom() {
       
       {/* Header Context */}
       <div className="flex flex-col md:flex-row items-baseline justify-between mb-12">
-        <h2 className="font-medium text-[48px] bg-accent-linear-purple bg-clip-text text-transparent">
+        <h2 className="font-medium text-3xl sm:text-4xl md:text-[48px] bg-accent-linear-purple bg-clip-text text-transparent">
           Built For Modern Room
         </h2>
-        <p className="text-textDisable text-sm max-w-xs text-right">
+        <p className="text-textDisable text-sm max-w-xs md:text-right mt-2 md:mt-0">
           In GrowthyFlow, instructors are not just teaching they are supported by a system designed.
         </p>
       </div>
