@@ -3,7 +3,6 @@ import puppeteer from "puppeteer";
 import { auth } from "@/auth";
 
 export async function GET(request: NextRequest) {
-  
   const session = await auth();
   if (!session || !session.access_token) {
     return Response.json({ error: "Unauthorized access" }, { status: 401 });
@@ -14,12 +13,11 @@ export async function GET(request: NextRequest) {
 
   if (!reportId || reportId === "undefined" || reportId === "null") {
     return Response.json(
-      { error: "Invalid or missing reportId parameter" },
+      { error: "Invalid or missing reportId" },
       { status: 400 },
     );
   }
 
-  
   const targetUrl = `${origin}/report/print/${reportId}?token=${session.access_token}`;
   let browser;
 
@@ -30,12 +28,12 @@ export async function GET(request: NextRequest) {
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
+        "--font-render-hinting=none",
       ],
     });
 
     const page = await browser.newPage();
 
-    
     await page.setRequestInterception(true);
     page.on("request", (req) => {
       const url = req.url();
@@ -52,50 +50,101 @@ export async function GET(request: NextRequest) {
     });
 
     await page.setViewport({
-      width: 1440,
-      height: 2000,
+      width: 1400,
+      height: 1000,
       deviceScaleFactor: 2,
     });
 
-    console.log(
-      "NAVIGATING PUPPETEER TO SEED PAGE:",
-      `${origin}/report/print/${reportId}`,
-    );
+    console.log("PUPPETEER LOADING TARGET REPORT URL...");
 
     await page.goto(targetUrl, {
-      waitUntil: "networkidle2",
+      waitUntil: "networkidle0",
       timeout: 30000,
     });
 
-    
     await page.waitForSelector("#pdf-report", { timeout: 15000 });
-    console.log("PDF CONTAINER DETECTED SUCCESSFULLY");
 
-    
+    await page.addStyleTag({
+      content: `
+
+html,
+body{
+  background:#f6f3ff !important;
+  margin:0 !important;
+
+  -webkit-print-color-adjust:exact !important;
+  print-color-adjust:exact !important;
+}
+
+*{
+  -webkit-print-color-adjust:exact !important;
+  print-color-adjust:exact !important;
+  box-sizing:border-box;
+}
+
+#pdf-report{
+  background:#f6f3ff !important;
+
+  min-height:100vh;
+
+  padding:24px !important;
+}
+
+/* Hide unwanted stuff */
+
+header,
+nav,
+aside,
+button,
+.fixed,
+.hide-in-pdf,
+.print\\:hidden{
+ display:none !important;
+}
+
+
+/* smoother card appearance */
+
+.rounded-2xl{
+ box-shadow:
+  0 1px 3px rgba(0,0,0,.04),
+  0 8px 20px rgba(0,0,0,.03) !important;
+}
+
+/* charts */
+
+canvas,
+svg{
+ max-width:100% !important;
+}
+
+`,
+    });
+
     await page.evaluate(
       () => new Promise((resolve) => setTimeout(resolve, 2500)),
     );
 
     await page.emulateMediaType("screen");
 
-    await page.addStyleTag({
-      content: `
-        @page { size: A4; margin: 10mm; }
-        html, body { margin: 0; padding: 0; background: white; }
-        header, nav, aside, button, .fixed, .hide-in-pdf, .print\\:hidden { display: none !important; }
-        #pdf-report { width: 100% !important; overflow: visible !important; }
-        .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
-        canvas, svg { max-width: 100% !important; }
-      `,
-    });
+    console.log("GENERATING ARTIFACT PDF BUFFER...");
 
     const pdf = await page.pdf({
       format: "A4",
+
       printBackground: true,
+
       preferCSSPageSize: true,
-      margin: { top: "10mm", bottom: "10mm", left: "10mm", right: "10mm" },
+
+      margin: {
+        top: "0mm",
+        bottom: "0mm",
+        left: "8mm",
+        right: "8mm",
+      },
     });
 
+    console.log("PDF BUFFER COMPILED SUCCESSFUL");
     return new Response(Buffer.from(pdf), {
       headers: {
         "Content-Type": "application/pdf",
@@ -103,7 +152,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("EXPORT PDF EXCEPTION:", err);
+    console.error("PDF PRODUCTION FAULT CRASH:", err);
     return Response.json({ error: "PDF Generation Failed" }, { status: 500 });
   } finally {
     if (browser) await browser.close();

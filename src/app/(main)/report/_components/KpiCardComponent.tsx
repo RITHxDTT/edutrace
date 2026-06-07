@@ -54,10 +54,10 @@ export default function KpiCard({
         </div>
 
         <div
-          className="absolute right-0 top-0 flex h-10 w-10 items-center justify-center rounded-xl shadow-sm"
+          className="absolute right-0 top-0 flex h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 items-center justify-center rounded-xl "
           style={{ backgroundColor: "white" }}
         >
-          <ClipboardList className="h-5 w-5 text-black" />
+         <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
         </div>
       </div>
     </section>

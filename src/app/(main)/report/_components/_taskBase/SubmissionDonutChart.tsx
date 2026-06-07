@@ -13,6 +13,7 @@ type SubmissionDonutChartProps = {
   late: number;
   missing: number;
   total: number;
+  isExportMode?: boolean;
 };
 
 const VIEWBOX_SIZE = 200;
@@ -57,6 +58,7 @@ export function SubmissionDonutChart({
   late,
   missing,
   total,
+  isExportMode
 }: SubmissionDonutChartProps) {
   const safeTotal = total > 0 ? total : 1;
 
@@ -91,7 +93,8 @@ export function SubmissionDonutChart({
   ];
 
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-6 w-full shadow-sm">
+    <div
+  className={`w-full${isExportMode ? " h-[160px]" : "p-2 sm:p-6"}`}>
       <p className="text-sm sm:text-md font-medium text-gray-400 uppercase tracking-widest mb-1">
         Submission Behavior
       </p>
@@ -100,9 +103,7 @@ export function SubmissionDonutChart({
         On-Time, Late, and Missing Submission
       </p>
 
-      
       <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
-        
         <div className="w-full max-w-[260px] sm:max-w-[300px] lg:max-w-[320px]">
           <svg
             viewBox={`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}
@@ -114,7 +115,6 @@ export function SubmissionDonutChart({
           </svg>
         </div>
 
-        
         <div className="w-full lg:w-auto">
           <p className="text-lg sm:text-2xl font-medium text-gray-900 tracking-tight mb-4 sm:mb-5">
             Submission

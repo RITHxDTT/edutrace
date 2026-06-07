@@ -35,7 +35,7 @@ export default function KpiCardTaskBased({
         <div
           className="w-full h-full shadow-sm"
           style={{
-            aspectRatio: "7 / 4",
+            aspectRatio: "8 / 4",
             clipPath: "url('#clipPathTaskBased')",
             backgroundColor: "white",
           }}
@@ -49,13 +49,20 @@ export default function KpiCardTaskBased({
                 <Image
                   src="/images/kpi/Mask_group.png"
                   alt="KPI Chart"
-                  width={330}
-                  height={330}
+                  width={260}
+                  height={260}
+                  className="
+                    w-[140px]
+                    sm:w-[170px]
+                    md:w-[220px]
+
+                    h-auto
+                    "
                 />
               </div>
 
               <div className="flex justify-around items-center inset-0">
-                <h2 className="absolute -mt-24 text-6xl font-semibold leading-none text-black">
+                <h2 className="absolute -mt-24 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold leading-none text-black">
                   {formattedTotalStudents}
                 </h2>
               </div>
@@ -71,7 +78,7 @@ export default function KpiCardTaskBased({
         </div>
 
         <div
-          className="absolute right-0 top-0 flex h-15 w-15 items-center justify-center rounded-xl shadow-sm"
+          className="absolute right-0 top-0 flex h-15 w-15 items-center justify-center rounded-xl "
           style={{ backgroundColor: "white" }}
         >
           <UsersRound className="h-5 w-5 text-black" />

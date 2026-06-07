@@ -54,7 +54,7 @@ export async function taskBaseReport(payload: taskBaseReportDto) {
 
 export async function createClassReport(payload: {
   title: string;
-  subjectIds: string;
+  subjectIds: string[];
   classroomIds: string[];
   startDate: string;
   endDate: string;

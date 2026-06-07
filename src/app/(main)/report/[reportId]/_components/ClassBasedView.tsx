@@ -16,7 +16,7 @@ import { ReportDetailResponse } from "@/types/report";
 
 interface Props {
   report: ReportDetailResponse;
-  isExportMode?: boolean;
+  isExportMode?: boolean; 
 }
 
 type ReportMode = "ALL_CLASSES" | "SINGLE_CLASS" | "TASK";
@@ -39,6 +39,8 @@ export default function ClassBasedView({
   report,
   isExportMode = false,
 }: Props) {
+  
+  
   const { data: reports, error } = useSWR(
     !isExportMode && report.reportId ? report.reportId : null,
     getReportDetail,
@@ -73,120 +75,112 @@ export default function ClassBasedView({
   ];
 
   return (
-    <div
-      id="pdf-report"
-      className={`${isExportMode ? "pb-4 px-2" : "pb-20 px-4 md:px-6"}`}
-    >
-      <div className={`${isExportMode ? "pb-4 px-2" : "pb-20 px-4 md:px-6"}`}>
-        {/* HEADER */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold">{report.reportName}</h1>
+    <div className={`${isExportMode ? "pb-4 px-2" : "pb-20 px-4 md:px-6"}`}>
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold">{report.reportName}</h1>
 
-            <p className="text-sm text-gray-500">
-              {displayPeriod} - Viewing:{" "}
-              <span className="text-blue-600">
-                {report.reportData.viewingLabel}
-              </span>
-            </p>
-          </div>
-
-          {!isExportMode && <AllClassesActions reportId={report.reportId} />}
+          <p className="text-sm text-gray-500">
+            {displayPeriod} - Viewing:{" "}
+            <span className="text-blue-600">
+              {report.reportData.viewingLabel}
+            </span>
+          </p>
         </div>
 
-        {/* KPI Section */}
-        <div className="mt-6 flex flex-col xl:flex-row gap-4">
-          <div className="w-full xl:w-[340px]">
-            <KpiCardTaskBased
-              totalStudents={summary.totalStudents}
-              className={
-                isAllClasses
-                  ? "All Classes"
-                  : `${classroom?.classroomAbbre ?? "Class"} Class`
-              }
-            />
-          </div>
+        {!isExportMode && <AllClassesActions reportId={report.reportId} />}
+      </div>
 
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {kpiCards.map((card) => (
-              <KpiCardComponent
-                key={card.title}
-                title={card.title}
-                value={card.value}
-              />
-            ))}
-          </div>
-        </div>
-
-      
-        {isAllClasses && (
-          <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 mt-6">
-            <div className="xl:col-span-3 flex flex-col gap-4">
-             
-              <div className="bg-white rounded-2xl p-5 shadow border border-gray-50">
-                <h3 className="text-xl font-semibold mb-4">Score Analysis</h3>
-
-                <HorizontalBars
-                  data={[
-                    {
-                      className: classroom?.className,
-                      averageScore: summary.averageScore,
-                      classroomAbbre: classroom?.classroomAbbre,
-                      secondAverageScore: summary.totalSubmissionRate,
-                    },
-                  ]}
-                />
-              </div>
-            </div>
-
-         
-            <div>
-              <ClassSubmissionCard
-                lateSubmission={summary.late}
-                submitted={summary.totalSubmitted}
-                total={summary.totalStudents}
-                className={classroom?.className ?? "Class"}
-              />
-            </div>
-          </div>
-        )}
-
-       
-        <div className="mt-6 grid grid-cols-2 gap-4 break-inside-avoid">
-          <div className="p-5 bg-white rounded-2xl shadow border border-gray-50">
-            <h3 className="font-medium mb-2">Average Scores</h3>
-            <TickPlacementBars data={scoreDistribution?.data ?? []} />
-          </div>
-          <div className="h-full">
-            <SubmissionDonutChart
-              onTime={summary.onTime}
-              late={summary.late}
-              missing={summary.missing}
-              total={summary.totalStudents}
-            />
-          </div>
-        </div>
-
-     
-        <div className="mt-6 bg-white rounded-2xl p-5 shadow border border-gray-50 break-inside-avoid">
-          <div className="mb-4">
-            <h3 className="text-xl font-semibold">Student List</h3>
-            <p className="text-sm text-gray-500">{students.length} Students</p>
-          </div>
-
-          <TableStudent
-            students={students}
-            classroomAbbre={classroom?.classroomAbbre}
+      {/* KPI Section */}
+      <div className="mt-6 flex flex-col xl:flex-row gap-4">
+        <div className="w-full xl:w-[340px]">
+          <KpiCardTaskBased
+            totalStudents={summary.totalStudents}
+            className={
+              isAllClasses
+                ? "All Classes"
+                : `${classroom?.classroomAbbre ?? "Class"} Class`
+            }
           />
         </div>
 
-    
-        {!isExportMode && (
-          <div className="fixed bottom-0 right-0 z-50">
-            <AiChatWrapper />
-          </div>
-        )}
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {kpiCards.map((card) => (
+            <KpiCardComponent
+              key={card.title}
+              title={card.title}
+              value={card.value}
+            />
+          ))}
+        </div>
       </div>
+
+      {/* Charts / Layout */}
+      {isAllClasses && (
+        <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 mt-6">
+          <div className="xl:col-span-3 flex flex-col gap-4">
+            <div className="bg-white rounded-2xl p-5 shadow border border-gray-0">
+              <h3 className="text-xl font-semibold mb-4">Score Analysis</h3>
+
+              <HorizontalBars
+                data={[
+                  {
+                    className: classroom?.className,
+                    averageScore: summary.averageScore,
+                    classroomAbbre: classroom?.classroomAbbre,
+                    secondAverageScore: summary.totalSubmissionRate,
+                  },
+                ]}
+              />
+            </div>
+          </div>
+
+          <div>
+            <ClassSubmissionCard
+              lateSubmission={summary.late}
+              submitted={summary.totalSubmitted}
+              total={summary.totalStudents}
+              className={classroom?.className ?? "Class"}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Average Performance Section */}
+      <div className="mt-6 grid grid-cols-2 gap-4 break-inside-avoid">
+        <div className="p-5 bg-white rounded-2xl shadow border border-gray-55">
+          <h3 className="font-medium mb-2">Average Scores</h3>
+          <TickPlacementBars data={scoreDistribution?.data ?? []} />
+        </div>
+        <div className="h-full">
+          <SubmissionDonutChart
+            onTime={summary.onTime}
+            late={summary.late}
+            missing={summary.missing}
+            total={summary.totalStudents}
+          />
+        </div>
+      </div>
+
+      {/* Table Section */}
+      <div className="mt-6 bg-white rounded-2xl p-5 shadow border border-gray-50 break-inside-avoid">
+        <div className="mb-4">
+          <h3 className="text-xl font-semibold">Student List</h3>
+          <p className="text-sm text-gray-500">{students.length} Students</p>
+        </div>
+
+        <TableStudent
+          students={students}
+          classroomAbbre={classroom?.classroomAbbre}
+        />
+      </div>
+
+      {!isExportMode && (
+        <div className="fixed bottom-0 right-0 z-50">
+          <AiChatWrapper />
+        </div>
+      )}
     </div>
   );
 }

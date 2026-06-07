@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-
 import KpiCardTaskBased from "../../_components/_taskBase/KpiCardTaskBased";
 import KpiCardComponent from "../../_components/KpiCardComponent";
 import TopPerformersCard from "../../_components/_taskBase/TopPerformersCard";
@@ -9,10 +8,7 @@ import AtRiskStudentsCard from "../../_components/_taskBase/AtRiskStudentsCard";
 import TaskBasedActions from "../../_components/_taskBase/TaskBasedAction";
 import AiChatWrapper from "../../AI/AiChatWrapper";
 import TickPlacementBars from "../../_components/_taskBase/BarChart";
-
 import { SubmissionDonutChart } from "../../_components/_taskBase/SubmissionDonutChart";
-
-
 
 interface TaskSummary {
   totalStudents?: number;
@@ -33,6 +29,7 @@ interface ReportMetadata {
 interface TaskBasedViewProps {
   summary: TaskSummary;
   metadata: ReportMetadata;
+  isExportMode?: boolean;
 }
 
 const scoreDistributionMock = [
@@ -80,35 +77,36 @@ export default function TaskBasedView({
   ];
 
   return (
-    <div
-      id="pdf-report"
-      className={isExportMode ? "p-2 pb-4" : "pb-8 p-4 sm:p-6"}
-    >
-      <div className={isExportMode ? "p-2 pb-4" : "pb-8 p-4 sm:p-6"}>
-        {/* Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div id="pdf-report" className={isExportMode ? "" : ""}>
+      <div className={isExportMode ? "" : ""}>
+        {/* HEADER */}
+
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <p className="text-xl sm:text-2xl font-medium">{reportName}</p>
-            <p className="text-xs sm:text-sm text-gray-500">
-              {displayPeriod} - Viewing:{" "}
+            <p className="text-2xl font-semibold">{reportName}</p>
+
+            <p className="text-sm text-gray-500">
+              {displayPeriod} - Viewing:
               <span className="text-blue-600 font-medium">
                 Assessment Performance
               </span>
             </p>
           </div>
+
           {!isExportMode && <TaskBasedActions reportId={metadata.reportId} />}
         </div>
 
-        {/* KPI Section */}
-        <div className="mt-6 flex flex-col lg:flex-row gap-4">
-          <div className="w-full lg:w-[260px]">
+        {/* KPI */}
+
+        <div className="mt-6 flex flex-col xl:flex-row gap-4 ">
+          <div className="w-full xl:w-[340px]">
             <KpiCardTaskBased
               totalStudents={totalStudents}
               className="Active Classroom"
             />
           </div>
 
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {kpiCards.map((card) => (
               <KpiCardComponent
                 key={card.title}
@@ -119,14 +117,24 @@ export default function TaskBasedView({
           </div>
         </div>
 
-        {/* Charts */}
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="p-4 sm:p-5 bg-white rounded-2xl shadow border border-gray-50">
-            <h3 className="font-medium mb-2 text-gray-700">Average Scores</h3>
+        {/* CHARTS */}
+
+      <div
+  className={`
+grid grid-cols-1 xl:grid-cols-2 gap-4
+${isExportMode ? "mt-[280px] p-5" : "mt-6"}
+`}
+>
+          <div
+            className="bg-white rounded-2xl p-2  flex flex-col">
+            <h3 className="font-medium mb-2">Average Scores</h3>
+
             <TickPlacementBars data={scoreDistributionMock} />
           </div>
 
-          <div className="p-4 sm:p-5 bg-white rounded-2xl shadow border border-gray-50">
+          <div
+            className="bg-white rounded-2xl p-1 "
+          >
             <SubmissionDonutChart
               onTime={onTime}
               late={late}
@@ -136,15 +144,26 @@ export default function TaskBasedView({
           </div>
         </div>
 
-        {/* Bottom cards */}
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <TopPerformersCard data={topPerformersMock} />
-          <AtRiskStudentsCard data={atRiskStudentsMock} />
+        {/* BOTTOM */}
+
+        <div
+          className="mt-6 grid grid-cols-1 xl:grid-cols-2 gap-4"
+        >
+          <div
+            className="rounded-2xl  overflow-hidden"
+          >
+            <TopPerformersCard data={topPerformersMock} />
+          </div>
+
+          <div className="overflow-hidden">
+            <AtRiskStudentsCard data={atRiskStudentsMock} />
+          </div>
         </div>
 
-        {/* AI Chat */}
         {!isExportMode && (
-          <div className="fixed bottom-3 right-3 sm:bottom-4 sm:right-4 z-50">
+          <div
+            className="fixed bottom-4 right-4 z-50"
+          >
             <AiChatWrapper />
           </div>
         )}
