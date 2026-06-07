@@ -3,15 +3,32 @@
 import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 
-export default function TaskBasedActions() {
+interface TaskBasedActionsProps {
+  reportId: string;
+}
+
+export default function TaskBasedActions({
+  reportId,
+}: TaskBasedActionsProps) {
   const router = useRouter();
+
+  const handleExport = () => {
+    window.open(
+      `/api/export-pdf?reportId=${reportId}`,
+      "_blank"
+    );
+  };
+
   return (
     <div className="flex items-center gap-1">
-      <PrimaryButton onClick={() => router.push("/report")}>Back</PrimaryButton>
       <PrimaryButton
-        onClick={() =>
-          window.open("/report/api/export-pdf?path=/report/taskbased", "_blank")
-        }
+        onClick={() => router.push("/report")}
+      >
+        Back
+      </PrimaryButton>
+
+      <PrimaryButton
+        onClick={handleExport}
       >
         Export PDF
       </PrimaryButton>

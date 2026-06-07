@@ -1,30 +1,26 @@
-
 import { NextRequest } from "next/server";
 import puppeteer from "puppeteer";
-
 import { auth } from "@/auth";
-import { generatePdfToken } from "@/lib/pdf-token.ts";
+
 export async function GET(request: NextRequest) {
   
   const session = await auth();
-  if (!session) {
+  if (!session || !session.access_token) {
     return Response.json({ error: "Unauthorized access" }, { status: 401 });
   }
 
   const { searchParams, origin } = request.nextUrl;
   const reportId = searchParams.get("reportId");
 
-  if (!reportId) {
-    return Response.json({ error: "Missing reportId" }, { status: 400 });
+  if (!reportId || reportId === "undefined" || reportId === "null") {
+    return Response.json(
+      { error: "Invalid or missing reportId parameter" },
+      { status: 400 },
+    );
   }
 
   
-  const expiry = Date.now() + 60000;
-  const secureToken = generatePdfToken(reportId, expiry);
-
-  
-  const targetUrl = `${origin}/report/print/${reportId}?token=${secureToken}&expires=${expiry}`;
-
+  const targetUrl = `${origin}/report/print/${reportId}?token=${session.access_token}`;
   let browser;
 
   try {
@@ -40,54 +36,64 @@ export async function GET(request: NextRequest) {
     const page = await browser.newPage();
 
     
+    await page.setRequestInterception(true);
+    page.on("request", (req) => {
+      const url = req.url();
+      if (
+        url.includes("knocklabs") ||
+        url.includes("analytics") ||
+        url.includes("mixpanel") ||
+        req.resourceType() === "websocket"
+      ) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+
     await page.setViewport({
-      width: 2280,
+      width: 1440,
       height: 2000,
       deviceScaleFactor: 2,
     });
 
-    
+    console.log(
+      "NAVIGATING PUPPETEER TO SEED PAGE:",
+      `${origin}/report/print/${reportId}`,
+    );
+
     await page.goto(targetUrl, {
-      waitUntil: "networkidle0",
-      timeout: 60000,
+      waitUntil: "networkidle2",
+      timeout: 30000,
     });
 
-    await page.waitForSelector("#pdf-report", {
-      timeout: 60000,
-    });
+    
+    await page.waitForSelector("#pdf-report", { timeout: 15000 });
+    console.log("PDF CONTAINER DETECTED SUCCESSFULLY");
+
+    
+    await page.evaluate(
+      () => new Promise((resolve) => setTimeout(resolve, 2500)),
+    );
 
     await page.emulateMediaType("screen");
 
-    
     await page.addStyleTag({
       content: `
-        header, nav, aside, .fixed, button, [role="button"], .hide-in-pdf {
-          display: none !important;
-        }
-        body {
-          background: white !important;
-        }
-        #pdf-report {
-          width: 100% !important;
-          padding: 0 !important;
-        }
-        .break-inside-avoid {
-          break-inside: avoid;
-          page-break-inside: avoid;
-        }
+        @page { size: A4; margin: 10mm; }
+        html, body { margin: 0; padding: 0; background: white; }
+        header, nav, aside, button, .fixed, .hide-in-pdf, .print\\:hidden { display: none !important; }
+        #pdf-report { width: 100% !important; overflow: visible !important; }
+        .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+        canvas, svg { max-width: 100% !important; }
       `,
     });
 
     const pdf = await page.pdf({
       format: "A4",
-      landscape: true,
       printBackground: true,
-      margin: {
-        top: "15mm",
-        bottom: "15mm",
-        left: "15mm",
-        right: "15mm",
-      },
+      preferCSSPageSize: true,
+      margin: { top: "10mm", bottom: "10mm", left: "10mm", right: "10mm" },
     });
 
     return new Response(Buffer.from(pdf), {
@@ -97,11 +103,8 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (err) {
-    console.error("Puppeteer Export Error Pipeline:", err);
-    return Response.json(
-      { error: "PDF Generation Failed internal catch block" },
-      { status: 500 },
-    );
+    console.error("EXPORT PDF EXCEPTION:", err);
+    return Response.json({ error: "PDF Generation Failed" }, { status: 500 });
   } finally {
     if (browser) await browser.close();
   }

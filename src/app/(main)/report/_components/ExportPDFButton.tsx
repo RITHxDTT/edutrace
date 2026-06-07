@@ -1,12 +1,9 @@
 "use client";
 
-export default function ExportPdfButton({
-  reportId,
-}: {
-  reportId: string;
-}) {
+export default function ExportPdfButton({ reportId }: { reportId: string }) {
   const handleExport = () => {
-    window.open(`/api/export-pdf?reportId=${reportId}`, "_blank");
+    // window.open(`/api/export-pdf?reportId=${reportId}`, "_blank");
+    window.print();
   };
 
   return (

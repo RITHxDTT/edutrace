@@ -372,20 +372,26 @@ export async function getUserProfile() {
 // get report details
 export async function getReportDetail(
   reportId: string,
-): Promise<ReportDetailResponse> {
-  const session = await auth();
+  tokenOverride?: string, 
+): Promise<any> {
+  let token = tokenOverride;
 
-  if (!session?.access_token) {
-    throw new Error("Unauthorized");
+ 
+  if (!token) {
+    const session = await auth();
+    token = session?.access_token;
+  }
+
+  if (!token) {
+    throw new Error("Unauthorized: Access token missing.");
   }
 
   const res = await fetch(`${API_URL}/reports/${reportId}`, {
+    method: "GET",
     headers: {
       Accept: "application/json",
-
-      Authorization: `Bearer ${session.access_token}`,
+      Authorization: `Bearer ${token}`, 
     },
-
     cache: "no-store",
   });
 
@@ -394,7 +400,7 @@ export async function getReportDetail(
   if (!res.ok || !data.success) {
     throw new Error(data.message || "Failed fetching report detail");
   }
-  // console.log(data.payload.reportType)
+
   return data.payload;
 }
 
@@ -447,5 +453,5 @@ export async function getTeacherSubject() {
   }
 
   const data = await response.json();
-  return data.payload; 
+  return data.payload;
 }

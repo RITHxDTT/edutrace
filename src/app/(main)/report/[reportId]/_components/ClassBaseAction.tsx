@@ -1,24 +1,21 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { Download } from "lucide-react";
-import { PrimaryButton } from "@/components/Buttons/PrimaryButton"; 
+import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 
-export default function AllClassesActions() {
-  const pathname = usePathname();
+interface AllClassesActionsProps {
+  reportId: string;
+}
 
+export default function AllClassesActions({
+  reportId,
+}: AllClassesActionsProps) {
   const handleExportPDF = () => {
-    window.open(`/api/generate-pdf?path=${encodeURIComponent(pathname)}`, '_blank');
+    if (!reportId || reportId === "undefined" || reportId === "null") {
+      console.error("Export Error: reportId is missing or invalid");
+      return;
+    }
+    window.open(`/api/export-pdf?reportId=${reportId}`, "_blank");
   };
 
-  return (
-    <div className="flex items-center gap-3">
-      
-
-      <PrimaryButton onClick={handleExportPDF}>
-        <Download size={18} className="mr-2 inline" />
-        Export PDF
-      </PrimaryButton>
-    </div>
-  );
+  return <PrimaryButton onClick={handleExportPDF}>Export PDF</PrimaryButton>;
 }

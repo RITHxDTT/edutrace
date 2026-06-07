@@ -1,5 +1,4 @@
 import { getReportDetail } from "@/services/report.service";
-
 import TaskBasedView from "./_components/TaskBasedView";
 import ClassBasedView from "./_components/ClassBasedView";
 
@@ -29,10 +28,8 @@ export default async function IndividualReportPage({ params }: PageProps) {
       summary={report.reportData.summary}
       metadata={{
         reportName: report.reportName,
-
         generatedAt: report.generatedAt,
-
-        reportType: report.reportType,
+        reportId: report.reportId, 
       }}
     />
   );
