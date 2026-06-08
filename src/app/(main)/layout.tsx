@@ -21,9 +21,11 @@ export default async function Layout({ children }: { children: React.ReactNode }
             <SidebarProvider>
               <NavbarProvider>
                 <AppSidebar />
-                <div className="flex flex-col flex-1">
+                <div className="flex flex-col flex-1 min-h-screen">
                   <AppNavbar />
-                  <main className="px-5 py-5 flex-1">{children}</main>
+                  <main className="flex-1 overflow-y-auto px-5 py-5">
+                    {children}
+                  </main>
                 </div>
               </NavbarProvider>
             </SidebarProvider>

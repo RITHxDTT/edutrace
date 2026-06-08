@@ -56,7 +56,7 @@ export default function AssessmentList({ assessments, role }: Props) {
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-5 xl:gap-6">
             {assessments.map((assessment) => (
                 <AssessmentCard
                     key={assessment.assessmentId}

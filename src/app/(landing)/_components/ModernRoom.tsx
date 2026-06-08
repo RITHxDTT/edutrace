@@ -10,7 +10,7 @@ const slideVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? -56 : 56, opacity: 0 }),
 };
 
-const slideTransition = { duration: 0.38, ease: "easeInOut" };
+const slideTransition = { duration: 0.38, ease: "easeInOut" } as const;;
 
 const card2Slides = [
   {
@@ -97,10 +97,10 @@ export default function ModernRoom() {
         </div>
 
         {/* Card 2 — Carousel */}
-        <div className="flex-1 bg-linear-purple h-[500px] rounded-[32px] p-8 text-white flex flex-col shadow-lg overflow-hidden">
+        <div className="flex-1 bg-linear-purple h-auto lg:h-[500px] rounded-[32px] p-5 sm:p-6 lg:p-8 text-white flex flex-col shadow-lg overflow-hidden">
           <Viewmore colors="text-white" border="border-white/20" />
 
-          <div className="flex-1 relative overflow-hidden mt-4">
+          <div className="min-h-[400px] lg:min-h-0 lg:flex-1 relative overflow-hidden mt-4">
             <AnimatePresence custom={c2.dir}>
               <motion.div
                 key={c2.idx}
@@ -119,11 +119,11 @@ export default function ModernRoom() {
                   {c2.idx === 0 && (
                     <>
                       <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M26.97 16.185V22.185C26.97 22.575 26.955 22.95 26.91 23.31C26.565 27.36 24.18 29.37 19.785 29.37H19.185C18.81 29.37 18.45 29.55 18.225 29.85L16.425 32.25C15.63 33.315 14.34 33.315 13.545 32.25L11.745 29.85C11.55 29.595 11.115 29.37 10.785 29.37H10.185C5.40001 29.37 3 28.185 3 22.185V16.185C3 11.79 5.02501 9.40501 9.06001 9.06001C9.42001 9.01501 9.79501 9 10.185 9H19.785C24.57 9 26.97 11.4 26.97 16.185Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M32.9701 10.185V16.185C32.9701 20.595 30.945 22.965 26.91 23.31C26.955 22.95 26.9701 22.575 26.9701 22.185V16.185C26.9701 11.4 24.57 9 19.785 9H10.1851C9.79506 9 9.42006 9.01501 9.06006 9.06001C9.40506 5.02501 11.7901 3 16.1851 3H25.785C30.57 3 32.9701 5.40001 32.9701 10.185Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M20.2432 19.875H20.2567" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M14.9932 19.875H15.0067" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M9.74325 19.875H9.75675" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M26.97 16.185V22.185C26.97 22.575 26.955 22.95 26.91 23.31C26.565 27.36 24.18 29.37 19.785 29.37H19.185C18.81 29.37 18.45 29.55 18.225 29.85L16.425 32.25C15.63 33.315 14.34 33.315 13.545 32.25L11.745 29.85C11.55 29.595 11.115 29.37 10.785 29.37H10.185C5.40001 29.37 3 28.185 3 22.185V16.185C3 11.79 5.02501 9.40501 9.06001 9.06001C9.42001 9.01501 9.79501 9 10.185 9H19.785C24.57 9 26.97 11.4 26.97 16.185Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M32.9701 10.185V16.185C32.9701 20.595 30.945 22.965 26.91 23.31C26.955 22.95 26.9701 22.575 26.9701 22.185V16.185C26.9701 11.4 24.57 9 19.785 9H10.1851C9.79506 9 9.42006 9.01501 9.06006 9.06001C9.40506 5.02501 11.7901 3 16.1851 3H25.785C30.57 3 32.9701 5.40001 32.9701 10.185Z" stroke="white" strokeWidth="1.5" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M20.2432 19.875H20.2567" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M14.9932 19.875H15.0067" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M9.74325 19.875H9.75675" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       <div className="font-['Fredoka'] font-medium text-lg leading-tight mt-2 mb-2">
                         Real time <br /> Notification Alert
@@ -135,7 +135,7 @@ export default function ModernRoom() {
                   {c2.idx === 1 && (
                     <>
                       <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                        <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       <div className="font-['Fredoka'] font-medium text-lg leading-tight mt-2 mb-3">
                         Instant <br /> Messaging
@@ -160,7 +160,7 @@ export default function ModernRoom() {
                   {c2.idx === 2 && (
                     <>
                       <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
-                        <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                       <div className="font-['Fredoka'] font-medium text-lg leading-tight mt-2 mb-3">
                         Smart <br /> Reminders
@@ -191,19 +191,18 @@ export default function ModernRoom() {
               <button
                 key={i}
                 onClick={() => c2.go(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === c2.idx ? "w-6 bg-white" : "w-1.5 bg-white/40"
-                }`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${i === c2.idx ? "w-6 bg-white" : "w-1.5 bg-white/40"
+                  }`}
               />
             ))}
           </div>
         </div>
 
         {/* Card 3 — Carousel */}
-        <div className="flex-1 bg-white h-[500px] rounded-[32px] p-8 border border-gray-100 flex flex-col shadow-lg overflow-hidden">
+        <div className="flex-1 bg-white h-auto lg:h-[500px] rounded-[32px] p-5 sm:p-6 lg:p-8 border border-gray-100 flex flex-col shadow-lg overflow-hidden">
           <Viewmore colors="text-indigo-600" border="border-indigo-600/20" />
 
-          <div className="flex-1 relative overflow-hidden mt-4">
+          <div className="min-h-[380px] lg:min-h-0 lg:flex-1 relative overflow-hidden mt-4">
             <AnimatePresence custom={c3.dir}>
               <motion.div
                 key={c3.idx}
@@ -232,8 +231,8 @@ export default function ModernRoom() {
                         </div>
                         <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center">
                           <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                            <path d="M9 11l3 3L22 4" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M9 11l3 3L22 4" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         </div>
                       </div>
@@ -272,9 +271,8 @@ export default function ModernRoom() {
               <button
                 key={i}
                 onClick={() => c3.go(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === c3.idx ? "w-6 bg-indigo-600" : "w-1.5 bg-gray-200"
-                }`}
+                className={`h-1.5 rounded-full transition-all duration-300 ${i === c3.idx ? "w-6 bg-indigo-600" : "w-1.5 bg-gray-200"
+                  }`}
               />
             ))}
           </div>

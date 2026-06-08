@@ -1,12 +1,10 @@
 "use client";
 
 import { AssessmentType } from "@/types/assessment";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import styles from "../assessment.module.css";
 import Link from "next/link";
 import { ArrowRight2, Calendar2 } from "iconsax-react";
-import { useSession } from "next-auth/react";
-import { useEffect, useRef } from "react";
 
 function BackgroundCard() {
   return (
@@ -90,6 +88,7 @@ export default function AssessmentCard({
   startAt,
   status,
 }: AssessmentType) {
+  const router = useRouter();
   const statusLabel = {
     NOT_YET: "Not Yet",
     IN_PROGRESS: "In Progress",
@@ -97,35 +96,33 @@ export default function AssessmentCard({
     CLOSED: "Closed",
     ARCHIVED: "Archived",
   };
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
 
   return (
     <div
       className="relative w-full min-h-95 h-full cursor-pointer"
-      onClick={() => redirect(`/assessment/${assessmentId}`)}
+      onClick={() => router.push(`/assessment/${assessmentId}`)}
     >
       <BackgroundCard />
       <div className="relative z-10 px-2 py-5 flex flex-col h-full min-h-95">
         <div className="flex flex-col flex-1 p-3 sm:p-4 md:p-2">
           {/* Top meta */}
-          <div className="flex flex-col flex-1 gap-10 px-5 pb-3.75 pt-[5]">
+          <div className="flex flex-col flex-1 gap-3 md:gap-5 px-3 md:px-5 pb-2 pt-1">
             <div className="inline-flex items-center">
-              <span className="px-2.5 py-2 rounded-[10px] text-xs font-medium bg-light-lavendar text-menta">
+              <span className="px-2.5 py-1.5 rounded-[10px] text-xs font-medium bg-light-lavendar text-menta truncate max-w-full">
                 {subject.subjectName}
               </span>
             </div>
-            <div className="flex flex-col flex-1">
-              <h2 className="text-base sm:text-lg md:text-[20px] font-semibold text-linear-main">
+            <div className="flex flex-col flex-1 min-w-0">
+              <h2 className="text-sm sm:text-base md:text-[17px] font-semibold text-linear-main line-clamp-2">
                 {title}
               </h2>
               <span
-                className={`${styles.tiptapPreview} text-sm text-primary leading-snug line-clamp-3 sm:line-clamp-1 md:line-clamp-2`}
+                className={`${styles.tiptapPreview} text-xs md:text-sm text-primary leading-snug line-clamp-2`}
                 dangerouslySetInnerHTML={{ __html: description ?? "" }}
               />
-              <div className="mt-auto flex justify-between items-center border-b py-5">
+              <div className="mt-auto flex flex-wrap justify-between items-center border-b py-3 gap-2">
                 <span
-                  className={`px-2.5 py-2 rounded-[10px] text-xs font-medium ${statusLabel[status] === "Not Yet"
+                  className={`px-2.5 py-1.5 rounded-[10px] text-xs font-medium shrink-0 ${statusLabel[status] === "Not Yet"
                     ? styles.badgeNotYet
                     : statusLabel[status] === "In Progress"
                       ? styles.badgeInProgress
@@ -140,20 +137,20 @@ export default function AssessmentCard({
                 </span>
                 <Link
                   href={`/assessment/${assessmentId}`}
-                  className="ml-4 flex items-center gap-2 font-medium text-[#0948F7] hover:underline transition-all"
+                  className="flex items-center gap-1.5 font-medium text-[#0948F7] text-xs md:text-sm hover:underline transition-all shrink-0"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  View Details <ArrowRight2 size={16} color="black" />
+                  View Details <ArrowRight2 size={14} color="black" />
                 </Link>
               </div>
 
-              <div className="flex justify-between items-center text-sm text-border-focus pt-5">
+              <div className="flex flex-col sm:flex-row sm:justify-between gap-1.5 text-xs text-border-focus pt-3">
                 <span className="flex items-center gap-1">
-                  <Calendar2 size={16} color="#6B7280" /> Start:{" "}
+                  <Calendar2 size={14} color="#6B7280" /> Start:{" "}
                   {startAt ? new Date(startAt).toLocaleDateString("en-GB") : "N/A"}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Calendar2 size={16} color="#6B7280" /> Due:{" "}
+                  <Calendar2 size={14} color="#6B7280" /> Due:{" "}
                   {dueAt ? new Date(dueAt).toLocaleDateString("en-GB") : "N/A"}
                 </span>
               </div>

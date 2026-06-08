@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import FeatureCards from "./_components/Featurecard";
 import ConnectedSection from "./_components/Connectionsection";
 import HowItWorks from "./_components/HowItWorks";
@@ -13,8 +12,6 @@ export default function LandingPage() {
   const qrCodeUrl = "/images/landingpage/qr.png";
   return (
     <div className="w-full min-h-screen text-slate-900 overflow-x-hidden selection:bg-indigo-500 selection:text-white">
-      <Navbar />
-
       {/* hero */}
       <section className="flex flex-col gap-20 md:gap-36 bg-white pt-16 pb-20 px-5 sm:px-8 max-w-7xl mx-auto text-center">
         {/* title */}

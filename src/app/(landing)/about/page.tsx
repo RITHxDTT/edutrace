@@ -1,4 +1,3 @@
-import Navbar from "@/components/Navbar";
 import Footer from "../_components/Footer";
 import FeatureCards from "../_components/Featurecard";
 import ConnectedSection from "../_components/Connectionsection";
@@ -16,8 +15,6 @@ export default function AboutPage() {
   return (
     <PageTransition>
       <div className="w-full min-h-screen text-slate-900 overflow-x-hidden selection:bg-indigo-500 selection:text-white">
-        <Navbar />
-
         {/* Page hero */}
         <section className="bg-white pt-16 pb-10 px-5 sm:px-8 max-w-7xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-[#E9F6FF] px-4 py-1.5 rounded-[10px] mb-6">
