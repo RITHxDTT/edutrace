@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { Microphone, MicrophoneSlash, Video, VideoSlash } from "iconsax-react";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
 import { useWebRTC } from "../hooks/useWebRTC";
 import { useStompChat } from "../hooks/useStompChat";
@@ -114,6 +115,18 @@ export default function CommunicationRoom({
     if (communicationTabActive) setPipDismissed(false);
   }, [communicationTabActive]);
 
+  // Re-play the hidden PiP video whenever PiP exits so it's ready for the next session.
+  // Chrome pauses the video element when PiP closes, which causes the next
+  // requestPictureInPicture() call to fail silently.
+  useEffect(() => {
+    if (!enablePip) return;
+    const video = nativePipVideoRef.current;
+    if (!video) return;
+    const onLeave = () => video.play().catch(() => {});
+    video.addEventListener("leavepictureinpicture", onLeave);
+    return () => video.removeEventListener("leavepictureinpicture", onLeave);
+  }, [enablePip]);
+
   // Native browser PiP: trigger when the browser tab/window is hidden
   useEffect(() => {
     if (!enablePip || !joined) return;
@@ -127,9 +140,11 @@ export default function CommunicationRoom({
           "pictureInPictureEnabled" in document && document.pictureInPictureEnabled;
         if (pipEnabled && !document.pictureInPictureElement) {
           try {
+            // Ensure the video is playing — Chrome rejects PiP on a paused element
+            if (video.paused) await video.play();
             await video.requestPictureInPicture();
           } catch {
-            // Browser may deny PiP (no prior interaction, policy, etc.) — fail silently
+            // Browser may deny PiP (no prior interaction, policy, etc.)
           }
         }
       } else {
@@ -137,6 +152,8 @@ export default function CommunicationRoom({
           try {
             await document.exitPictureInPicture();
           } catch {}
+          // Re-play so the element is ready for the next hide event
+          video.play().catch(() => {});
         }
       }
     };
@@ -164,6 +181,10 @@ export default function CommunicationRoom({
   // Custom PiP tile: show when the student has joined but is on another tab
   const showCustomPip =
     enablePip && joined && !communicationTabActive && !pipDismissed && !!localStream;
+
+  // Collapsed "In Call" badge: shows after the user dismisses the PiP tile
+  const showCallBadge =
+    enablePip && joined && !communicationTabActive && pipDismissed;
 
   if (!session) {
     return (
@@ -319,6 +340,37 @@ export default function CommunicationRoom({
           onToggleScreen={toggleScreen}
         />
       )}
+
+      {/* Collapsed "In Call" badge — rendered as a portal so it appears on every page
+          after the user dismisses the PiP tile. Click to restore the PiP. */}
+      {showCallBadge && isBrowser &&
+        createPortal(
+          <button
+            onClick={() => setPipDismissed(false)}
+            title="You are still in the call — click to restore"
+            className="fixed bottom-6 right-6 z-[9998] flex items-center gap-2.5 rounded-full bg-[#0c0c14]/90 px-4 py-2 shadow-2xl ring-1 ring-white/10 backdrop-blur-md transition-all hover:bg-[#1a1a2a]/90 hover:ring-white/20 active:scale-95"
+          >
+            {/* Pulsing live dot */}
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
+            </span>
+
+            <span className="text-xs font-semibold text-white/90">In Call</span>
+
+            <span className="mx-0.5 h-3.5 w-px bg-white/20" />
+
+            {micOn
+              ? <Microphone size={14} variant="Bold" className="text-white/70" />
+              : <MicrophoneSlash size={14} variant="Bold" className="text-red-400" />
+            }
+            {camOn
+              ? <Video size={14} variant="Bold" className="text-white/70" />
+              : <VideoSlash size={14} variant="Bold" className="text-red-400" />
+            }
+          </button>,
+          document.body,
+        )}
     </div>
   );
 }
