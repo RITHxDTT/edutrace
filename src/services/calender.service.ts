@@ -125,25 +125,6 @@ export async function updateCalendarEventService(
     }
 }
 
-// export async function deleteCalendarEventService(id: string) {
-//     try {
-//         const response = await fetch(`${API_URL}/calendar-events/${id}`, {
-//             method: "DELETE",
-//             headers: await headerToken()
-//         });
-
-//         if (!response.ok) {
-//             await handleResponseError(response, `Failed to delete calendar event with ID: ${id}`);
-//         }
-
-//         const result = await response.json().catch(() => ({ success: true }));
-//         console.log(`5. deleteCalendarEvent (ID: ${id}) result:`, result);
-//         return result;
-//     } catch (error: any) {
-//         throw new Error(error.message || "Failed to delete calendar event");
-//     }
-// }
-
 export async function deleteCalendarEventService(id: string) {
     try {
         const response = await fetch(`${API_URL}/calendar-events/${id}`, {
@@ -162,3 +143,22 @@ export async function deleteCalendarEventService(id: string) {
         throw new Error(error.message || "Failed to delete calendar event");
     }
 }
+
+// export async function deleteCalendarEventService(id: string) {
+//     try {
+//         const response = await fetch(`${API_URL}/calendar-events/${id}`, {
+//             method: "DELETE",
+//             headers: await headerToken()
+//         });
+
+//         if (!response.ok) {
+//             await handleResponseError(response, `Failed to delete calendar event with ID: ${id}`);
+//         }
+
+//         const result = await response.json().catch(() => ({ success: true }));
+//         console.log(`5. deleteCalendarEvent (ID: ${id}) result:`, result);
+//         return result;
+//     } catch (error: any) {
+//         throw new Error(error.message || "Failed to delete calendar event");
+//     }
+// }

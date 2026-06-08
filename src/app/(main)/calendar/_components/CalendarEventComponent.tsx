@@ -14,6 +14,7 @@ import {
 import { createDragPlugin } from "@dayflow/plugin-drag";
 import { createSidebarPlugin } from "@dayflow/plugin-sidebar";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+
 import {
     createCalendarAction,
     deleteCalendarAction,
@@ -94,7 +95,7 @@ export default function CalendarEventComponent({ allevents }: Props) {
         return dataArray.map((ev: EventType) => {
             const startDate = ev.startAt ? new Date(ev.startAt) : new Date();
             const endDate = ev.endAt ? new Date(ev.endAt) : new Date(Date.now() + 60 * 60 * 1000);
-            // Fixed duplicate variable fallback chain assignment typo
+
             const eventId = resolveEventId(ev.calendarEventId || (ev as any).id || (ev as any)._id);
 
             return createEvent({
@@ -111,6 +112,164 @@ export default function CalendarEventComponent({ allevents }: Props) {
     const initialEvents = useMemo(() => {
         return parseServerEvents(allevents);
     }, [allevents]);
+
+    useEffect(() => {
+        const addPlusButtons = () => {
+            const labels = document.querySelectorAll(".df-sidebar-source-label");
+
+            labels.forEach((label) => {
+                if (label.querySelector(".group-plus-btn")) return;
+
+                const labelEl = label as HTMLElement;
+
+                labelEl.style.display = "inline-flex";
+                labelEl.style.alignItems = "center";
+                labelEl.style.gap = "6px";
+
+                const plusBtn = document.createElement("span");
+
+                plusBtn.textContent = "+";
+                plusBtn.className = "group-plus-btn";
+                plusBtn.setAttribute("role", "button");
+                plusBtn.setAttribute("tabindex", "0");
+
+                plusBtn.style.width = "18px";
+                plusBtn.style.height = "18px";
+                plusBtn.style.borderRadius = "4px";
+                plusBtn.style.display = "inline-flex";
+                plusBtn.style.alignItems = "center";
+                plusBtn.style.justifyContent = "center";
+                plusBtn.style.fontSize = "14px";
+                plusBtn.style.cursor = "pointer";
+
+                plusBtn.onpointerdown = (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+                };
+
+                plusBtn.onmousedown = (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+                };
+
+                plusBtn.onclick = (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+
+                    const sourceToggle = labelEl.closest(
+                        ".df-sidebar-source-toggle",
+                    ) as HTMLElement | null;
+
+                    if (!sourceToggle) return;
+
+                    sourceToggle.dispatchEvent(
+                        new MouseEvent("contextmenu", {
+                            bubbles: true,
+                            cancelable: true,
+                            view: window,
+                            button: 2,
+                            buttons: 2,
+                            clientX: -9999,
+                            clientY: -9999,
+                        }),
+                    );
+
+                    setTimeout(() => {
+                        const newCalendarItem = Array.from(
+                            document.querySelectorAll(".df-context-menu-item"),
+                        ).find((item) => item.textContent?.trim() === "New Calendar") as
+                            | HTMLElement
+                            | undefined;
+
+                        if (!newCalendarItem) return;
+
+                        newCalendarItem.click();
+
+                        setTimeout(() => {
+                            const input = document.getElementById(
+                                "blossom-calendar-name",
+                            ) as HTMLInputElement | null;
+
+                            if (!input) return;
+
+                            const groupName = labelEl.textContent?.replace("+", "").trim() ?? "";
+
+                            if (groupName) {
+                                input.placeholder = `e.g. ${groupName}/event`;
+                            }
+
+                            const interceptSubmit = () => {
+                                const rawName = input.value.trim();
+                                const parts = rawName.split("/").map((v) => v.trim()).filter(Boolean);
+
+                                let source: string;
+                                let calendarName: string;
+
+                                if (parts.length >= 2) {
+                                    source = parts[0];
+                                    calendarName = parts.slice(1).join("/");
+                                } else {
+                                    source = groupName;
+                                    calendarName = rawName;
+                                }
+
+                                const nativeSet = Object.getOwnPropertyDescriptor(
+                                    window.HTMLInputElement.prototype, "value"
+                                )?.set;
+
+                                if (nativeSet) {
+                                    nativeSet.call(input, calendarName);
+                                    input.dispatchEvent(new Event("input", { bubbles: true }));
+                                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                                }
+
+                                (window as any).__pendingCalendarSource = source;
+
+                                cleanup();
+                            };
+
+                            const handleKeydown = (e: KeyboardEvent) => {
+                                if (e.key === "Enter") interceptSubmit();
+                            };
+
+                            const submitBtn = input
+                                .closest("form, .df-create-calendar-dialog, [role='dialog']")
+                                ?.querySelector("button[type='submit'], button:not([type='button'])") as
+                                | HTMLElement | undefined;
+
+                            const cleanup = () => {
+                                input.removeEventListener("keydown", handleKeydown);
+                                submitBtn?.removeEventListener("click", interceptSubmit, { capture: true });
+                            };
+
+                            input.addEventListener("keydown", handleKeydown);
+                            submitBtn?.addEventListener("click", interceptSubmit, { capture: true });
+                        }, 50);
+                        requestAnimationFrame(() => {
+                            document
+                                .querySelectorAll(
+                                    ".df-context-menu, .df-portal:not(.df-create-calendar-dialog-backdrop)",
+                                )
+                                .forEach((el) => el.remove());
+                        });
+                    }, 50);
+                };
+                labelEl.appendChild(plusBtn);
+            });
+        };
+        addPlusButtons();
+
+        const observer = new MutationObserver(addPlusButtons);
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+
+        return () => observer.disconnect();
+    }, []);
 
     const calendar = useCalendarApp({
         views: [createDayView(), createWeekView(), createMonthView()],
@@ -157,10 +316,12 @@ export default function CalendarEventComponent({ allevents }: Props) {
                         };
 
                         await updateCalendarAction(eventId, payload);
+
                     } catch (err) {
                         console.error("Backend error during event update:", err);
                     }
                 });
+                console.log("update successfully:", eventId)
             },
 
             onEventDelete: async (eventId) => {
@@ -176,7 +337,6 @@ export default function CalendarEventComponent({ allevents }: Props) {
                 startTransition(async () => {
                     try {
                         deletingIds.current.add(resolvedId);
-                        //===>> Routed securely through Server Action
                         await deleteCalendarAction(resolvedId);
                     } catch (err) {
                         console.error("Error deleting event from backend database:", err);

@@ -29,4 +29,13 @@ type EventType = {
     }
 }
 
+type test = {
+    title: string,
+    description: string,
+
+}
+
+
+
+
 export type { EventType }
