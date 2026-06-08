@@ -44,10 +44,8 @@ export default function ReportClientPage({
 
   const [reports, setReports] = useState<Report[]>(initialReports);
 
-  const [summary, setSummary] =
-    useState<ReportSummary>(initialSummary);
+  const [summary, setSummary] = useState<ReportSummary>(initialSummary);
 
-  
   useEffect(() => {
     setReports(initialReports);
   }, [initialReports]);
@@ -73,10 +71,7 @@ export default function ReportClientPage({
       return;
     }
 
-    
-    setReports((prev) =>
-      prev.filter((r) => r.reportId !== reportId)
-    );
+    setReports((prev) => prev.filter((r) => r.reportId !== reportId));
 
     setSummary((prev) => ({
       ...prev,
@@ -99,50 +94,43 @@ export default function ReportClientPage({
 
   return (
     <div>
-      
-      <div className="flex justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[32px] font-medium">Report</p>
+          <p className="text-2xl md:text-[32px] font-medium">Report</p>
           <p className="text-foreground/50">
             Generate and review performance reports.
           </p>
         </div>
 
-        <PrimaryButton onClick={() => setIsModalOpen(true)} className="h-[45px]">
+        <PrimaryButton
+          onClick={() => setIsModalOpen(true)}
+          className="h-[45px] w-full sm:w-auto"
+        >
           Generate Report
         </PrimaryButton>
       </div>
 
-      
-      <div className="mt-5 grid grid-cols-4 gap-4">
+     <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {kpiCards.map((card) => (
-          <KpiCard
-            key={card.title}
-            title={card.title}
-            value={card.value}
-          />
+          <KpiCard key={card.title} title={card.title} value={card.value} />
         ))}
       </div>
 
-      
       <div className="mt-6 flex items-center justify-between">
         <p className="text-lg font-semibold">Your reports</p>
 
         <PrimaryTabs
           tabs={[
             { key: "All Reports", title: "All Reports" },
-            { key: "All Class", title: "All Class" },
+            // { key: "All Class", title: "All Class" },
             { key: "Class Based", title: "Class Based" },
             { key: "Task Based", title: "Task Based" },
           ]}
           selectedKey={activeTab}
-          onSelectionChange={(tab) =>
-            handleParamChange(tab, 1)
-          }
+          onSelectionChange={(tab) => handleParamChange(tab, 1)}
         />
       </div>
 
-      
       <div className="mt-4">
         <TableDataComponent
           reports={reports}
@@ -152,18 +140,14 @@ export default function ReportClientPage({
         />
       </div>
 
-      
       <PaginationBasic
         page={currentPage}
         totalPages={totalPages}
-        onPageChange={(p) =>
-          handleParamChange(activeTab, p)
-        }
+        onPageChange={(p) => handleParamChange(activeTab, p)}
       />
 
       <AiChatWrapper />
 
-      
       <GenerateReportModalComponent
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -52,7 +52,7 @@ export default function ClassSubmissionCard({
   const hideTooltip = () => setTooltip((t) => ({ ...t, visible: false }));
 
   return (
-    <div className="w-full h-auto rounded-xl border border-slate-100 bg-white p-6 shadow-sm">
+    <div className="w-full h-auto rounded-xl  border-slate-100 bg-white p-6 ">
       <h3 className="text-2xl font-semibold text-slate-800">{className}</h3>
       <div className="mt-2 h-px w-full bg-slate-100" />
       <div className="mt-4 flex items-end gap-1">

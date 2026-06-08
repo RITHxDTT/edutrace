@@ -26,7 +26,7 @@ export default async function ReportPage({ searchParams }: PageProps) {
     ),
     getClassRoom().catch(() => []),
   ]);
-
+  
   const reportsList: Report[] = reportData?.reports || [];
   const totalElements = reportData?.totalElements || 0;
   const totalPages = reportData?.totalPages || 1;

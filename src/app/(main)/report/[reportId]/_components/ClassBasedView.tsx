@@ -138,9 +138,10 @@ export default function ClassBasedView({
       {/* MULTI CLASS */}
 
       {isAllClasses && (
-        <section className="mt-6 grid grid-cols-1 xl:grid-cols-4 gap-4">
-          <div className="xl:col-span-3 flex flex-col gap-4">
-            <div className="bg-white rounded-2xl p-5 shadow">
+        <section
+          className={`grid grid-cols-1 xl:grid-cols-4 gap-4 ${isExportMode ? "mt-[180px] mb-[180px]" : "mt-6"}`}>
+          <div className={`xl:col-span-3 flex flex-col ${isExportMode ? " gap-15 " :"gap-4" }`}>
+            <div className="bg-white rounded-2xl p-5 ">
               <h3 className="text-xl font-semibold mb-4">
                 Submission Breakdown
               </h3>
@@ -148,7 +149,7 @@ export default function ClassBasedView({
               <BasicBars data={submissionBreakdown?.data ?? []} />
             </div>
 
-            <div className="bg-white rounded-2xl p-5 shadow">
+            <div className="bg-white rounded-2xl p-5  ">
               <h3 className="text-xl font-semibold mb-4">Score Analysis</h3>
 
               <HorizontalBars
@@ -167,7 +168,7 @@ export default function ClassBasedView({
             </div>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className={`flex flex-col ${isExportMode? "gap-12 mt-[190px]": "gap-4"}`}>
             {classComparison?.data?.map((cls: any) => (
               <ClassSubmissionCard
                 key={cls.classroomId}
@@ -221,7 +222,7 @@ export default function ClassBasedView({
             </div>
           )}
 
-          <div className="mt-6 bg-white rounded-2xl p-5 shadow border border-gray-50">
+          <div className="mt-6 bg-white rounded-2xl p-5   border-gray-50">
             <div className="mb-4">
               <h3 className="text-xl font-semibold">Student List</h3>
 
