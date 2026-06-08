@@ -12,6 +12,7 @@ import OrderedList from "@tiptap/extension-ordered-list";
 import ListItem from "@tiptap/extension-list-item";
 import Blockquote from "@tiptap/extension-blockquote";
 import Code from "@tiptap/extension-code";
+import Link from "@tiptap/extension-link";
 import styles from "./style.module.css";
 
 export default function DescriptionRender({ description }: { description?: string }) {
@@ -28,6 +29,7 @@ export default function DescriptionRender({ description }: { description?: strin
             OrderedList,
             ListItem,
             Blockquote,
+            Link.configure({ openOnClick: true, HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' } }),
         ],
         content: description || "<p>No description provided.</p>",
         editable: false,

@@ -9,9 +9,9 @@ import { Checkbox, CheckboxGroup } from "@heroui/checkbox";
 import { DatePicker, DateRangePicker } from "@heroui/date-picker";
 import { SelectItem } from "@heroui/select";
 import { useState, KeyboardEvent, useRef } from "react";
-import { File, Link, Paperclip, X } from "lucide-react";
+import { Link, Paperclip, X } from "lucide-react";
 import AttachmentCard from "./_components/FileCard";
-import { FolderOpen, Gallery } from "iconsax-react";
+import { formatFileSize, getFileColor, getFileIcon, getResourceFileName } from "@/utils/fileUtils";
 import { getLocalTimeZone, parseDate, today } from "@internationalized/date";
 import { CreateAssessmentFormErrors } from "../useCreateAssessmentForm";
 
@@ -52,53 +52,6 @@ function parseRubricInput(input: string): RubricBadge[] {
         .filter((b) => b.label && !isNaN(b.score));
 }
 
-function formatFileSize(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function formatResourceSize(bytes?: number): string {
-    if (!bytes) return "Existing file";
-    return formatFileSize(bytes);
-}
-
-function getFileNameFromResource(resource: AssessmentResource) {
-    if (resource.fileName) return resource.fileName;
-
-    try {
-        const url = new URL(resource.resourceUrl);
-        return url.pathname.split("/").filter(Boolean).at(-1) ?? resource.resourceUrl;
-    } catch {
-        return resource.resourceUrl;
-    }
-}
-
-function getFileIcon(name: string, color?: string) {
-    const ext = name.split(".").pop()?.toLowerCase();
-    if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext ?? "")) {
-        return <Gallery size={14} color={color} />;
-    }
-    if (["pdf", "zip", "doc", "docx", "txt"].includes(ext ?? "")) {
-        return <FolderOpen size={14} color={color} />;
-    }
-    return <File size={14} color={color} />;
-}
-
-function getFileColor(name: string) {
-    const ext = name.split(".").pop()?.toLowerCase();
-    if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext ?? "")) {
-        return { bgColor: "bg-light-green", iconColor: "#009F15" };
-    }
-    if (["doc", "docx", "txt", "pdf"].includes(ext ?? "")) {
-        return { bgColor: "bg-light-lavendar", iconColor: "#2E25C9" };
-    }
-    if (["zip"].includes(ext ?? "")) {
-        return { bgColor: "bg-lighter-orange", iconColor: "#DEA20A" };
-    }
-
-    return { bgColor: "bg-input-field", iconColor: "#111827" };
-}
 
 function getDateOnlyValue(value: string) {
     return parseDate(getLocalDateValue(value));
@@ -523,7 +476,7 @@ export default function StepAssessment({
 
                 <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
                     {existingResources.map((resource) => {
-                        const name = getFileNameFromResource(resource);
+                        const name = getResourceFileName(resource);
                         const colors = getFileColor(name);
 
                         return (
@@ -545,7 +498,7 @@ export default function StepAssessment({
                                         {name}
                                     </span>
                                     <span className="text-[10px] leading-tight text-tertiary">
-                                        {formatResourceSize(resource.fileSize)}
+                                        {formatFileSize(resource.fileSize)}
                                     </span>
                                 </div>
                             </a>

@@ -137,3 +137,14 @@
 .tiptap :global(.ProseMirror ul li::marker) {
   color: #5B5EDD;
 }
+
+.tiptap :global(a) {
+  color: #2E25C9;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.tiptap :global(a:hover) {
+  opacity: 0.75;
+}

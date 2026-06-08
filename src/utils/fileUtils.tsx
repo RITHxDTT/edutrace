@@ -42,6 +42,16 @@ export function getFileIcon(name: string, color?: string) {
 }
 
 export function getResourceFileName(resource: FileResourceBase): string {
+  if (resource.resourceType === "LINK") {
+    try {
+      const { hostname, pathname } = new URL(resource.resourceUrl);
+      const host = hostname.replace(/^www\./, "");
+      const path = pathname !== "/" ? pathname : "";
+      return `${host}${path}`;
+    } catch {
+      return resource.resourceUrl;
+    }
+  }
   if (resource.fileName) return resource.fileName;
   try {
     const url = new URL(resource.resourceUrl);

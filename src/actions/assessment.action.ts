@@ -306,6 +306,8 @@ export const updateAssessmentAction = async (
   assessmentId: string,
   data: CreateAssessmentForm,
 ) => {
+  console.log(data)
+  console.log(assessmentId)
   try {
     const result = await updateAssessmentService(assessmentId, data);
     if (!result.success) {
