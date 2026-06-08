@@ -2,17 +2,15 @@
 
 import { SidebarTrigger } from "../ui/sidebar";
 import { useNavbar } from "@/context/NavbarContext";
-import { ProfileData } from "@/types/user";
-import { Session } from "next-auth";
 import NotificationBell from "../notifications/NotificationBell";
-import ProfileFormClient from "@/app/(main)/profile/_components/ProfileFormClient";
 import UserProfile from "@/app/(main)/profile/_components/UserProfile";
 
+
 export default function AppNavbar() {
-  const { title } = useNavbar();
+  const { title, isSticky } = useNavbar();
 
   return (
-    <header className="sticky top-0 z-50 bg-transparent">
+    <header className={`${isSticky ? "sticky top-0" : ""} z-50 bg-transparent`}>
       <nav className="py-3 sm:py-5 px-4 sm:px-5">
         <div className="flex justify-between items-center gap-2">
           <div className="flex items-center gap-2 sm:gap-5 min-w-0">

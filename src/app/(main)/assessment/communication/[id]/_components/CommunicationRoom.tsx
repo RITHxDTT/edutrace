@@ -104,7 +104,7 @@ export default function CommunicationRoom({
 
   if (!session) {
     return (
-      <div className="flex h-[calc(100vh-116px)] items-center justify-center rounded-2xl bg-[#0c0c14] text-sm text-white/40">
+      <div className="flex h-[calc(100vh-40px)] items-center justify-center rounded-2xl bg-[#0c0c14] text-sm text-white/40">
         Loading…
       </div>
     );
@@ -112,7 +112,7 @@ export default function CommunicationRoom({
 
   if (readOnly) {
     return (
-      <div className="flex h-[calc(100vh-116px)] flex-col overflow-hidden rounded-2xl bg-[#0c0c14]">
+      <div className="flex h-[calc(100vh-40px)] flex-col overflow-hidden rounded-2xl bg-[#0c0c14]">
         <div className="flex items-center gap-3 border-b border-white/10 bg-[#16161f] px-5 py-4">
           <div>
             <p className="text-sm font-semibold text-white/80">
@@ -143,7 +143,7 @@ export default function CommunicationRoom({
 
   if (!joined) {
     return (
-      <div className="h-[calc(100vh-116px)] overflow-hidden rounded-2xl">
+      <div className="h-[calc(100vh-40px)] overflow-hidden rounded-2xl">
         <PreJoinLobby
           userName={userName}
           profileImageUrl={profileImageUrl}
@@ -158,7 +158,7 @@ export default function CommunicationRoom({
   }
 
   return (
-    <div className="relative flex h-[calc(100vh-116px)] flex-col overflow-hidden rounded-2xl bg-[#0c0c14]">
+    <div className="relative flex h-[calc(100vh-40px)] flex-col overflow-hidden rounded-2xl bg-[#0c0c14]">
       {/* Video area */}
       <div className="relative flex flex-1 min-h-0 overflow-hidden">
         <VideoGrid
@@ -175,7 +175,7 @@ export default function CommunicationRoom({
 
         {/* Chat panel — glass overlay on the right */}
         <div
-          className={`absolute right-0 top-0 z-20 h-full transition-all duration-300 ease-in-out ${
+          className={`absolute right-0 top-0 z-20 h-[calc(100vh-40px)] transition-all duration-300 ease-in-out ${
             chatPanelOpen
               ? "w-[320px] opacity-100"
               : "pointer-events-none w-0 opacity-0 overflow-hidden"
@@ -195,7 +195,7 @@ export default function CommunicationRoom({
 
         {/* Participants panel — glass overlay on the right */}
         <div
-          className={`absolute right-0 top-0 z-20 h-full transition-all duration-300 ease-in-out ${
+          className={`absolute right-0 top-0 z-20 h-[calc(100vh-40px)] transition-all duration-300 ease-in-out ${
             participantsPanelOpen
               ? "w-[320px] opacity-100"
               : "pointer-events-none w-0 opacity-0 overflow-hidden"

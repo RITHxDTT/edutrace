@@ -7,6 +7,7 @@ import { getRoute } from "@/utils/getRouteLabel";
 type NavbarContextType = {
   title: string;
   setTitle: (value: string, override?: boolean) => void;
+  isSticky: boolean;
 };
 
 const NavbarContext = createContext<NavbarContextType | null>(null);
@@ -17,6 +18,9 @@ export function NavbarProvider({ children }: { children: React.ReactNode }) {
 
   const [title, setTitleState] = useState(route ?? "Not Found");
   const [locked, setLocked] = useState(false);
+
+  // Not sticky on /assessment/:id (detail page only — not list, not sub-routes)
+  const isSticky = !/^\/assessment\/[^/]+$/.test(pathname);
 
   const setTitle = (value: string, override = false) => {
     if (override) {
@@ -34,7 +38,7 @@ export function NavbarProvider({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   return (
-    <NavbarContext.Provider value={{ title, setTitle }}>
+    <NavbarContext.Provider value={{ title, setTitle, isSticky }}>
       {children}
     </NavbarContext.Provider>
   );
