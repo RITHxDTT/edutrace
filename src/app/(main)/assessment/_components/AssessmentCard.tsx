@@ -99,11 +99,11 @@ export default function AssessmentCard({
 
   return (
     <div
-      className="relative w-full min-h-95 min-[1024px]:min-h-72 min-[1480px]:min-h-95 h-full cursor-pointer"
+      className="relative w-full max-w-[400px] mx-auto min-[1024px]:max-w-[480px] min-h-56 sm:min-h-80 min-[1024px]:min-h-72 min-[1480px]:min-h-70 cursor-pointer"
       onClick={() => router.push(`/assessment/${assessmentId}`)}
     >
       <BackgroundCard />
-      <div className="relative z-10 px-2 py-5 flex flex-col h-full min-h-95 min-[1024px]:min-h-72 min-[1480px]:min-h-95">
+      <div className="relative z-10 px-2 py-5 flex flex-col h-full min-h-56 sm:min-h-80 min-[1024px]:min-h-72 min-[1480px]:min-h-70">
         <div className="flex flex-col flex-1 p-3 sm:p-4 md:p-2">
           {/* Top meta */}
           <div className="flex flex-col flex-1 gap-3 md:gap-5 px-3 md:px-5 pb-2 pt-1">

@@ -50,7 +50,7 @@ export default function CommunicationRoom({
   const [joined, setJoined] = useState(false);
   const [preferredCamOn, setPreferredCamOn] = useState(true);
   const [preferredMicOn, setPreferredMicOn] = useState(true);
-
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   // PiP state
   const [pipDismissed, setPipDismissed] = useState(false);
   const [isBrowser, setIsBrowser] = useState(false);
@@ -169,12 +169,15 @@ export default function CommunicationRoom({
     };
   }, [reset]);
 
-  function handleLeave() {
+  function handleLeave(action: "back" | "disconnect") {
+    setShowLeaveDialog(false);
     reset();
-    if (onLeave) {
+    if (action === "disconnect") {
+      setJoined(false);
+    } else if (onLeave) {
       onLeave();
     } else {
-      router.push("/assessment");
+      router.back();
     }
   }
 
@@ -293,8 +296,46 @@ export default function CommunicationRoom({
         onToggleCam={toggleCam}
         onToggleScreen={toggleScreen}
         onToggleRaiseHand={toggleRaiseHand}
-        onLeave={handleLeave}
+        onLeave={() => setShowLeaveDialog(true)}
       />
+
+      {showLeaveDialog && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-[#16161f] p-6 shadow-2xl ring-1 ring-white/10">
+            <h2 className="text-base font-semibold text-white">Leave the call?</h2>
+            <p className="mt-1.5 text-sm text-white/50">Choose where you want to go after leaving.</p>
+
+            <div className="mt-5 flex flex-col gap-3">
+              <button
+                onClick={() => handleLeave("back")}
+                className="flex items-center gap-3 rounded-xl bg-white/5 px-4 py-3.5 text-left transition-colors hover:bg-white/10 active:bg-white/15"
+              >
+                <div>
+                  <p className="text-sm font-medium text-white">Back to Assessment</p>
+                  <p className="text-xs text-white/40">Leave the call and return to the assessment page</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleLeave("disconnect")}
+                className="flex items-center gap-3 rounded-xl bg-red-500/10 px-4 py-3.5 text-left transition-colors hover:bg-red-500/20 active:bg-red-500/25"
+              >
+                <div>
+                  <p className="text-sm font-medium text-red-400">Leave Call</p>
+                  <p className="text-xs text-white/40">Disconnect without leaving this page</p>
+                </div>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setShowLeaveDialog(false)}
+              className="mt-4 w-full rounded-xl py-2.5 text-sm text-white/40 transition-colors hover:text-white/70"
+            >
+              Stay in call
+            </button>
+          </div>
+        </div>
+      )}
 
       {/*
        * Tiny hidden video rendered at body level via portal.
