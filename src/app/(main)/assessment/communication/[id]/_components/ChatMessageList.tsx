@@ -89,6 +89,28 @@ export default function ChatMessageList({
   const loadingRef = useRef(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const initialScrollDoneRef = useRef(false);
+  const lastMessageIdRef = useRef<string | null>(null);
+  const soundInitializedRef = useRef(false);
+
+  // Play notification sound when a new message from another user arrives
+  useEffect(() => {
+    const lastMsg = visibleMessages[visibleMessages.length - 1];
+    if (!lastMsg) return;
+
+    if (!soundInitializedRef.current) {
+      lastMessageIdRef.current = lastMsg.chatMessageId;
+      soundInitializedRef.current = true;
+      return;
+    }
+
+    if (lastMsg.chatMessageId !== lastMessageIdRef.current) {
+      lastMessageIdRef.current = lastMsg.chatMessageId;
+      if (lastMsg.senderUserId !== currentUserId) {
+        const audio = new Audio("/audios/soundeffects/meet-message-sound-1.mp3");
+        audio.play().catch(() => {});
+      }
+    }
+  }, [visibleMessages, currentUserId]);
 
   // Initial scroll to bottom
   useEffect(() => {
