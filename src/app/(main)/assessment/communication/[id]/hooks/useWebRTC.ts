@@ -35,9 +35,7 @@ interface UseWebRTCOptions {
   userId: string;
   accessToken: string;
   profileImageUrl?: string;
-  /** User's pre-join preference — applied once on the first init. Defaults to true. */
   initialCamOn?: boolean;
-  /** User's pre-join preference — applied once on the first init. Defaults to true. */
   initialMicOn?: boolean;
 }
 
