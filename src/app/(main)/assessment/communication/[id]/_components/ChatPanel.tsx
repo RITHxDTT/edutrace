@@ -199,7 +199,7 @@ export default function ChatPanel({
 
       {/* Input */}
       {!readOnly && (!searchOpen || !searchQuery.trim()) && (
-        <ChatInput onSend={onSend} disabled={!isConnected} />
+        <ChatInput onSend={onSend} />
       )}
       {readOnly && (
         <div className="border-t border-white/10 px-4 py-3 text-center text-xs text-white/40">

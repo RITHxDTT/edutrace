@@ -34,8 +34,8 @@ export default function StudentWorkStats({
   onStatusFilterChange,
 }: Props) {
   return (
-    <div className="flex items-center justify-between gap-5 rounded-[20px] bg-white px-7.5 py-5">
-      <div className="flex items-center gap-3">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-[20px] bg-white px-7.5 py-5">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2">
           {STATUS_FILTERS.map((f) => (
             <button
@@ -76,7 +76,7 @@ export default function StudentWorkStats({
         )}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-3 rounded-[12px] border border-[lab(90.952% -.0000596046 0)] px-4 py-3">
           <div className="rounded-full bg-light-green p-2.5">
             <TickCircle size={20} color="#009F15" />

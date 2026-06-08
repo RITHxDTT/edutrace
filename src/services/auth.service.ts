@@ -18,6 +18,8 @@ export const loginService = async (
     password: req?.password,
   };
 
+  console.log(formData)
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
     {
@@ -28,7 +30,7 @@ export const loginService = async (
       body: JSON.stringify(formData),
     }
   );
-
+  console.log(res)
   if (!res.ok) {
 
     let errorPayload: ApiErrorResponse | null = null;
@@ -50,8 +52,6 @@ export const loginService = async (
 export const registerService = async (
   data: RegisterFormData
 ) => {
-
-  console.log(data)
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/register`,

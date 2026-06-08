@@ -31,7 +31,7 @@ export default function TrackSessionCard({
   return (
     <div className="rounded-[20px] bg-white p-7.5 flex flex-col justify-between">
       <div>
-        <div className="mb-6 flex items-start justify-between gap-4">
+        <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="text-[24px] font-semibold text-primary">
               Student Work

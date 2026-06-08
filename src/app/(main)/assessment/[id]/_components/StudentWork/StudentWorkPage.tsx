@@ -175,7 +175,7 @@ export default function StudentWorkPage({ assessment }: Props) {
         }}
       />
 
-      <div className="grid grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {studentItems.length === 0 ? (
           <div className="col-span-3 rounded-[20px] bg-white px-7.5 py-10 text-center text-tertiary">
             No students match the current filter.

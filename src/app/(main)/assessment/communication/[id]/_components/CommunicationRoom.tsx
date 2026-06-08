@@ -173,9 +173,8 @@ export default function CommunicationRoom({
           profileImageUrl={profileImageUrl}
         />
 
-        {/* Chat panel — glass overlay on the right */}
         <div
-          className={`absolute right-0 top-0 z-20 h-[calc(100vh-40px)] transition-all duration-300 ease-in-out ${
+          className={`absolute right-0 top-0 z-20 h-full transition-all duration-300 ease-in-out ${
             chatPanelOpen
               ? "w-[320px] opacity-100"
               : "pointer-events-none w-0 opacity-0 overflow-hidden"
@@ -195,7 +194,7 @@ export default function CommunicationRoom({
 
         {/* Participants panel — glass overlay on the right */}
         <div
-          className={`absolute right-0 top-0 z-20 h-[calc(100vh-40px)] transition-all duration-300 ease-in-out ${
+          className={`absolute right-0 top-0 z-20 h-full transition-all duration-300 ease-in-out ${
             participantsPanelOpen
               ? "w-[320px] opacity-100"
               : "pointer-events-none w-0 opacity-0 overflow-hidden"

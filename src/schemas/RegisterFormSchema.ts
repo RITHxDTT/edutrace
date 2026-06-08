@@ -74,7 +74,9 @@ export const RegisterFormSchema = z.object({
           "Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and special character (#@$!%*?&)",
       }
     ),
-  // gender: z.string().min(0, ''),
+  gender: z.enum(["MALE", "FEMALE"], {
+    message: "Please select a gender.",
+  }),
 });
 
 export type RegisterFormData = z.infer<typeof RegisterFormSchema>;

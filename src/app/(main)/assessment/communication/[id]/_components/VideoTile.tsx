@@ -96,7 +96,7 @@ export default function VideoTile({
         autoPlay
         playsInline
         muted={muted}
-        className={`h-full w-full ${isScreenShare ? "object-contain" : "object-cover"} ${showAvatar ? "invisible" : ""}`}
+        className={`h-full w-full scale-x-[-1] ${isScreenShare ? "object-contain" : "object-cover"} ${showAvatar ? "invisible" : ""}`}
       />
 
       {showAvatar && (

@@ -9,12 +9,12 @@ import { forgotPasswordService, registerService, resendOtpCodeService, resetPass
  */
 export async function loginAction(data: LoginFormData) {
     try {
-        await signIn("credentials", {
+        const res = await signIn("credentials", {
             email: data.email,
             password: data.password,
             redirect: false
         });
-        return { success: true, error: null };
+        return { success: true, error: null, message: res.message, };
     } catch (err) {
         return { success: false, error: "Invalid Credentials." };
     }
@@ -27,7 +27,7 @@ export async function registerAction(
     // data: Omit<RegisterFormData, "birthdate"> & {
     //     birthdate?: string;
     // }
-       data: RegisterFormData
+    data: RegisterFormData
 ) {
     try {
         const res = await registerService(data)

@@ -12,6 +12,7 @@ import { loginAction } from '@/actions/auth.action';
 import { LoginFormData } from '@/types/auth';
 import ServerError from '../../_components/ServerError';
 import { useRouter } from 'next/navigation';
+import { sileo } from 'sileo';
 
 export default function LoginForm() {
   const [isVisible, setVisible] = useState(false);
@@ -40,6 +41,7 @@ export default function LoginForm() {
         setServerError(res.error);
         return;
       }
+      sileo.success({ title: "Login Successfully", description: res.message });
       router.push("/dashboard");
     } catch (error) {
       setServerError("An unexpected error occurred. Please try again.");
