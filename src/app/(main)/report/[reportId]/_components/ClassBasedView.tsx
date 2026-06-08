@@ -10,13 +10,14 @@ import AiChatWrapper from "../../AI/AiChatWrapper";
 import TableStudent from "./TableStudent";
 import { SubmissionDonutChart } from "../../_components/_taskBase/SubmissionDonutChart";
 import TickPlacementBars from "../../_components/_taskBase/BarChart";
+
 import useSWR from "swr";
 import { getReportDetail } from "@/services/report.service";
 import { ReportDetailResponse } from "@/types/report";
 
 interface Props {
   report: ReportDetailResponse;
-  isExportMode?: boolean; 
+  isExportMode?: boolean;
 }
 
 type ReportMode = "ALL_CLASSES" | "SINGLE_CLASS" | "TASK";
@@ -26,9 +27,9 @@ function getReportMode(report: ReportDetailResponse): ReportMode {
     return "TASK";
   }
 
-  const classroom = report.reportData.classroom;
+  const classrooms = report.reportData.classrooms;
 
-  if (!classroom || !("classroomId" in classroom)) {
+  if (classrooms && classrooms.length > 1) {
     return "ALL_CLASSES";
   }
 
@@ -39,24 +40,22 @@ export default function ClassBasedView({
   report,
   isExportMode = false,
 }: Props) {
-  
-  
-  const { data: reports, error } = useSWR(
+  useSWR(
     !isExportMode && report.reportId ? report.reportId : null,
     getReportDetail,
   );
 
   const summary = report.reportData.summary;
   const classroom = report.reportData.classroom;
+  const classrooms = report.reportData.classrooms ?? [];
   const students = report.reportData.students?.data ?? [];
-  const submission = report.reportData.submission;
+  const classComparison = report.reportData.classComparison;
+  const scoreAnalysis = report.reportData.scoreAnalysis;
+  const submissionBreakdown = report.reportData.submissionBreakdownByClass;
   const scoreDistribution = report.reportData.scoreDistribution;
-
   const mode = getReportMode(report);
-
   const isAllClasses = mode === "ALL_CLASSES";
   const isSingleClass = mode === "SINGLE_CLASS";
-
   const displayPeriod = new Date(report.generatedAt).toLocaleDateString(
     "en-US",
     {
@@ -66,17 +65,36 @@ export default function ClassBasedView({
   );
 
   const kpiCards = [
-    { title: "Total Submitted", value: summary.totalSubmitted },
-    { title: "Submission Rate", value: `${summary.totalSubmissionRate}%` },
-    { title: "Avg. Score", value: `${summary.averageScore}%` },
-    { title: "On-Time", value: summary.onTime },
-    { title: "Late", value: summary.late },
-    { title: "Missing", value: summary.missing },
+    {
+      title: "Total Submitted",
+      value: summary.totalSubmitted ?? 0,
+    },
+    {
+      title: "Submission Rate",
+      value: `${summary.totalSubmissionRate ?? 0}%`,
+    },
+    {
+      title: "Avg. Score",
+      value: `${summary.averageScore ?? 0}%`,
+    },
+    {
+      title: "On-Time",
+      value: summary.onTime ?? 0,
+    },
+    {
+      title: "Late",
+      value: summary.late ?? 0,
+    },
+    {
+      title: "Missing",
+      value: summary.missing ?? 0,
+    },
   ];
 
   return (
-    <div className={`${isExportMode ? "pb-4 px-2" : "pb-20 px-4 md:px-6"}`}>
+    <div className={isExportMode ? "pb-4 px-2" : "pb-20 px-4 md:px-6"}>
       {/* HEADER */}
+
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold">{report.reportName}</h1>
@@ -92,7 +110,8 @@ export default function ClassBasedView({
         {!isExportMode && <AllClassesActions reportId={report.reportId} />}
       </div>
 
-      {/* KPI Section */}
+      {/* KPI */}
+
       <div className="mt-6 flex flex-col xl:flex-row gap-4">
         <div className="w-full xl:w-[340px]">
           <KpiCardTaskBased
@@ -116,65 +135,108 @@ export default function ClassBasedView({
         </div>
       </div>
 
-      {/* Charts / Layout */}
+      {/* MULTI CLASS */}
+
       {isAllClasses && (
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-4 mt-6">
+        <section className="mt-6 grid grid-cols-1 xl:grid-cols-4 gap-4">
           <div className="xl:col-span-3 flex flex-col gap-4">
-            <div className="bg-white rounded-2xl p-5 shadow border border-gray-0">
+            <div className="bg-white rounded-2xl p-5 shadow">
+              <h3 className="text-xl font-semibold mb-4">
+                Submission Breakdown
+              </h3>
+
+              <BasicBars data={submissionBreakdown?.data ?? []} />
+            </div>
+
+            <div className="bg-white rounded-2xl p-5 shadow">
               <h3 className="text-xl font-semibold mb-4">Score Analysis</h3>
 
               <HorizontalBars
-                data={[
-                  {
-                    className: classroom?.className,
-                    averageScore: summary.averageScore,
-                    classroomAbbre: classroom?.classroomAbbre,
-                    secondAverageScore: summary.totalSubmissionRate,
-                  },
-                ]}
+                data={
+                  scoreAnalysis?.data?.map((item: any) => ({
+                    className: item.className,
+
+                    classroomAbbre: item.classroomAbbre,
+
+                    averageScore: item.averageScore,
+
+                    secondAverageScore: item.submissionRate,
+                  })) ?? []
+                }
               />
             </div>
           </div>
 
-          <div>
-            <ClassSubmissionCard
-              lateSubmission={summary.late}
-              submitted={summary.totalSubmitted}
-              total={summary.totalStudents}
-              className={classroom?.className ?? "Class"}
-            />
+          <div className="flex flex-col gap-4">
+            {classComparison?.data?.map((cls: any) => (
+              <ClassSubmissionCard
+                key={cls.classroomId}
+                lateSubmission={cls.late}
+                submitted={cls.submitted}
+                total={cls.totalStudents}
+                className={cls.className}
+              />
+            ))}
           </div>
-        </div>
+        </section>
       )}
 
-      {/* Average Performance Section */}
-      <div className="mt-6 grid grid-cols-2 gap-4 break-inside-avoid">
-        <div className="p-5 bg-white rounded-2xl shadow border border-gray-55">
-          <h3 className="font-medium mb-2">Average Scores</h3>
-          <TickPlacementBars data={scoreDistribution?.data ?? []} />
-        </div>
-        <div className="h-full">
-          <SubmissionDonutChart
-            onTime={summary.onTime}
-            late={summary.late}
-            missing={summary.missing}
-            total={summary.totalStudents}
-          />
-        </div>
-      </div>
+      {/* SINGLE CLASS */}
 
-      {/* Table Section */}
-      <div className="mt-6 bg-white rounded-2xl p-5 shadow border border-gray-50 break-inside-avoid">
-        <div className="mb-4">
-          <h3 className="text-xl font-semibold">Student List</h3>
-          <p className="text-sm text-gray-500">{students.length} Students</p>
-        </div>
+      {isSingleClass && (
+        <>
+          {isExportMode ? (
+            <div className="mt-6 flex flex-col gap-4">
+              <div className="p-5 bg-white rounded-2xl">
+                <h3 className="font-medium mb-2">Average Scores</h3>
 
-        <TableStudent
-          students={students}
-          classroomAbbre={classroom?.classroomAbbre}
-        />
-      </div>
+                <TickPlacementBars data={scoreDistribution?.data ?? []} />
+              </div>
+
+              <div className="bg-white rounded-2xl">
+                <SubmissionDonutChart
+                  onTime={summary.onTime}
+                  late={summary.late}
+                  missing={summary.missing}
+                  total={summary.totalStudents}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <div className="p-5 bg-white rounded-2xl">
+                <h3 className="font-medium mb-2">Average Scores</h3>
+
+                <TickPlacementBars data={scoreDistribution?.data ?? []} />
+              </div>
+
+              <div className="bg-white rounded-2xl">
+                <SubmissionDonutChart
+                  onTime={summary.onTime}
+                  late={summary.late}
+                  missing={summary.missing}
+                  total={summary.totalStudents}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 bg-white rounded-2xl p-5 shadow border border-gray-50">
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold">Student List</h3>
+
+              <p className="text-sm text-gray-500">
+                {students.length} Students
+              </p>
+            </div>
+
+            <TableStudent
+              students={students}
+              classroomAbbre={classroom?.classroomAbbre}
+            />
+          </div>
+        </>
+      )}
 
       {!isExportMode && (
         <div className="fixed bottom-0 right-0 z-50">

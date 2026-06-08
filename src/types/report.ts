@@ -77,16 +77,22 @@ export interface ScoreDistribution {
 }
 
 export interface StudentProps {
-  
   fullName: string;
   gender: string;
   email: string;
   dob: string | null;
   profileImage?: string | null;
-  className:string,
-  classroomAbbre:string,
-  submissionStatus:string,
-  averageScore: number,
+  className: string;
+  classroomAbbre: string;
+  submissionStatus: string;
+  averageScore: number;
+}
+
+export interface ClassroomItem {
+  classroomId: string;
+  className: string;
+  classroomAbbre: string;
+  totalStudents: number;
 }
 
 export interface ReportDetailResponse {
@@ -97,6 +103,7 @@ export interface ReportDetailResponse {
 
   reportData: {
     viewingLabel: string;
+
     scoreDistribution: ScoreDistribution;
 
     summary: {
@@ -109,18 +116,12 @@ export interface ReportDetailResponse {
       totalSubmissionRate: number;
     };
 
-    classroom?: {
-      classroomId: string;
-      className: string;
-      classroomAbbre: string;
-    };
+    classroom?: ClassroomItem;
 
     students?: {
       title: string;
       total: number;
-
-      data: StudentProps[];  
-
+      data: StudentProps[];
     };
 
     submission?: {
@@ -128,25 +129,58 @@ export interface ReportDetailResponse {
       onTime: number;
       missing: number;
     };
+
+    classrooms?: ClassroomItem[];
+
+    classComparison?: {
+      title?: string;
+      data: Array<{
+        classroomId: string;
+        className: string;
+        classroomAbbre: string;
+        totalStudents: number;
+        submitted: number;
+        late: number;
+        onTime: number;
+        missing: number;
+        submissionRate: number;
+        averageScore: number;
+      }>;
+    };
+
+    scoreAnalysis?: {
+      title?: string;
+      data: Array<{
+        classroomId: string;
+        className: string;
+        classroomAbbre: string;
+        averageScore: number;
+        submissionRate: number;
+      }>;
+    };
+
+    submissionBreakdownByClass?: {
+      title?: string;
+      data: Array<{
+        classroomId: string;
+        className: string;
+        classroomAbbre: string;
+        late: number;
+        onTime: number;
+        missing: number;
+      }>;
+    };
   };
 }
 
 export interface Student {
   studentId: string;
-
   fullName: string;
-
   email: string;
-
   gender: string | null;
-
   dob: string | null;
-
   averageScore: number;
-
   profileImage?: string | null;
-
   classroomAbbre: string;
-
   submissionStatus: string;
 }

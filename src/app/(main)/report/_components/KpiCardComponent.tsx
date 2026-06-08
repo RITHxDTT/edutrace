@@ -33,7 +33,7 @@ export default function KpiCard({
 
       <div className="relative w-full">
         <div
-          className="w-full shadow-sm"
+          className="w-full "
           style={{
             aspectRatio: "7/4",
             clipPath: "url('#clipPath')",
