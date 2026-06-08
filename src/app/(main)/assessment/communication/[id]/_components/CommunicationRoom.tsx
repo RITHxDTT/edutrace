@@ -2,7 +2,8 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
 import { useWebRTC } from "../hooks/useWebRTC";
 import { useStompChat } from "../hooks/useStompChat";
@@ -12,17 +13,20 @@ import MeetingToolbar from "./MeetingToolbar";
 import ChatPanel from "./ChatPanel";
 import ParticipantsPanel from "./ParticipantsPanel";
 import PreJoinLobby from "./PreJoinLobby";
+import PipTile from "./PipTile";
 
 interface CommunicationRoomProps {
   meetingRoomId: string;
   onLeave?: () => void;
   readOnly?: boolean;
+  enablePip?: boolean;
 }
 
 export default function CommunicationRoom({
   meetingRoomId,
   onLeave,
   readOnly = false,
+  enablePip = false,
 }: CommunicationRoomProps) {
   const router = useRouter();
   const { data: session } = useSession();
@@ -46,6 +50,15 @@ export default function CommunicationRoom({
   const [preferredCamOn, setPreferredCamOn] = useState(true);
   const [preferredMicOn, setPreferredMicOn] = useState(true);
 
+  // PiP state
+  const [pipDismissed, setPipDismissed] = useState(false);
+  const [isBrowser, setIsBrowser] = useState(false);
+  const nativePipVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    setIsBrowser(true);
+  }, []);
+
   // Delay WebRTC initialization until the user explicitly joins.
   // In read-only mode WebRTC never initializes; STOMP chat connects immediately.
   const effectiveToken = joined && accessToken ? accessToken : "";
@@ -58,6 +71,7 @@ export default function CommunicationRoom({
     camOn,
     handRaised,
     screenSharing,
+    communicationTabActive,
     reset,
   } = useMeetingRoomStore();
 
@@ -87,6 +101,51 @@ export default function CommunicationRoom({
     accessToken: effectiveToken,
   });
 
+  // Attach local stream to the hidden native PiP video element
+  useEffect(() => {
+    const video = nativePipVideoRef.current;
+    if (!video) return;
+    video.srcObject = localStream ?? null;
+    if (localStream) video.play().catch(() => {});
+  }, [localStream]);
+
+  // Reset pipDismissed each time the user comes back to the communication tab
+  useEffect(() => {
+    if (communicationTabActive) setPipDismissed(false);
+  }, [communicationTabActive]);
+
+  // Native browser PiP: trigger when the browser tab/window is hidden
+  useEffect(() => {
+    if (!enablePip || !joined) return;
+
+    const handleVisibilityChange = async () => {
+      const video = nativePipVideoRef.current;
+      if (!video) return;
+
+      if (document.visibilityState === "hidden") {
+        const pipEnabled =
+          "pictureInPictureEnabled" in document && document.pictureInPictureEnabled;
+        if (pipEnabled && !document.pictureInPictureElement) {
+          try {
+            await video.requestPictureInPicture();
+          } catch {
+            // Browser may deny PiP (no prior interaction, policy, etc.) — fail silently
+          }
+        }
+      } else {
+        if (document.pictureInPictureElement === video) {
+          try {
+            await document.exitPictureInPicture();
+          } catch {}
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [enablePip, joined]);
+
   useEffect(() => {
     return () => {
       reset();
@@ -101,6 +160,10 @@ export default function CommunicationRoom({
       router.push("/assessment");
     }
   }
+
+  // Custom PiP tile: show when the student has joined but is on another tab
+  const showCustomPip =
+    enablePip && joined && !communicationTabActive && !pipDismissed && !!localStream;
 
   if (!session) {
     return (
@@ -160,7 +223,7 @@ export default function CommunicationRoom({
   return (
     <div className="relative flex h-[calc(100vh-40px)] flex-col overflow-hidden rounded-2xl bg-[#0c0c14]">
       {/* Video area */}
-      <div className="relative flex flex-1 min-h-0 overflow-hidden">
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
         <VideoGrid
           localStream={localStream}
           screenStream={screenStream}
@@ -177,7 +240,7 @@ export default function CommunicationRoom({
           className={`absolute right-0 top-0 z-20 h-full transition-all duration-300 ease-in-out ${
             chatPanelOpen
               ? "w-[320px] opacity-100"
-              : "pointer-events-none w-0 opacity-0 overflow-hidden"
+              : "pointer-events-none w-0 overflow-hidden opacity-0"
           }`}
         >
           <ChatPanel
@@ -197,7 +260,7 @@ export default function CommunicationRoom({
           className={`absolute right-0 top-0 z-20 h-full transition-all duration-300 ease-in-out ${
             participantsPanelOpen
               ? "w-[320px] opacity-100"
-              : "pointer-events-none w-0 opacity-0 overflow-hidden"
+              : "pointer-events-none w-0 overflow-hidden opacity-0"
           }`}
         >
           <ParticipantsPanel participants={participants} />
@@ -211,6 +274,51 @@ export default function CommunicationRoom({
         onToggleRaiseHand={toggleRaiseHand}
         onLeave={handleLeave}
       />
+
+      {/*
+       * Tiny hidden video rendered at body level via portal.
+       * Stays accessible for requestPictureInPicture() even when the
+       * communication tab wrapper is scrolled/hidden by CSS.
+       */}
+      {enablePip && isBrowser &&
+        createPortal(
+          <video
+            ref={nativePipVideoRef}
+            autoPlay
+            playsInline
+            muted
+            aria-hidden="true"
+            style={{
+              position: "fixed",
+              width: 2,
+              height: 2,
+              bottom: 0,
+              right: 0,
+              opacity: 0,
+              pointerEvents: "none",
+              zIndex: -1,
+            }}
+          />,
+          document.body,
+        )}
+
+      {/* Custom floating PiP overlay — shows when off the communication tab.
+          When screen sharing, prefer the screen stream over the camera stream. */}
+      {showCustomPip && (
+        <PipTile
+          stream={screenSharing && screenStream ? screenStream : localStream}
+          isScreenShare={screenSharing && !!screenStream}
+          userName={screenSharing && screenStream ? `${userName}'s screen` : `${userName} (You)`}
+          isMicOn={micOn}
+          isCamOn={screenSharing && !!screenStream ? true : camOn}
+          isScreenSharing={screenSharing}
+          profileImageUrl={profileImageUrl}
+          onClose={() => setPipDismissed(true)}
+          onToggleMic={screenSharing && screenStream ? undefined : toggleMic}
+          onToggleCam={screenSharing && screenStream ? undefined : toggleCam}
+          onToggleScreen={toggleScreen}
+        />
+      )}
     </div>
   );
 }

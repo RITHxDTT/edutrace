@@ -25,6 +25,7 @@ import SubmitAssignmentPage from "./SubmitAssignment/SubmitAssignmentPage";
 import MyStudentWorkPage, {
   isActiveWorkSession,
 } from "./StudentWork/MyStudentWorkPage";
+import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
 
 const pendingEndTimers = new Map<string, number>();
 
@@ -74,6 +75,13 @@ function hasSubmittedWork(status?: string) {
   );
 }
 
+const TAB_HEADERS = [
+  { key: "instruction", title: "Instruction" },
+  { key: "communication", title: "Communication" },
+  { key: "submit-assignment", title: "Submit Assignment" },
+  { key: "student-work", title: "Student Work" },
+];
+
 export default function StudentAssessmentTabs({
   assessment,
   instruction,
@@ -99,6 +107,16 @@ export default function StudentAssessmentTabs({
   const shouldStopTracking = hasSubmittedWork(
     assessment.currentSubmissionStatus,
   );
+
+  const { setCommunicationTabActive } = useMeetingRoomStore();
+
+  // Keep store in sync with the selected tab so CommunicationRoom can show PiP
+  useEffect(() => {
+    setCommunicationTabActive(selectedTab === "communication");
+    return () => {
+      setCommunicationTabActive(false);
+    };
+  }, [selectedTab, setCommunicationTabActive]);
 
   const refreshSessions = useCallback(async () => {
     const result = await getMyWorkSessionsAction(assessment.assessmentId);
@@ -213,32 +231,44 @@ export default function StudentAssessmentTabs({
     };
   }, [assessment.assessmentId, refreshSessions, shouldStopTracking]);
 
-  const tabs = [
-    {
-      key: "instruction",
-      title: "Instruction",
-      content: instruction,
-    },
-    {
-      key: "communication",
-      title: "Communication",
-      content: communication,
-    },
-    {
-      key: "submit-assignment",
-      title: "Submit Assignment",
-      content: (
+  return (
+    <div>
+      {/* Tab headers only — content is managed manually below */}
+      <PrimaryTabs
+        tabs={TAB_HEADERS}
+        colors="primary"
+        selectedKey={selectedTab}
+        onSelectionChange={setSelectedTab}
+        hidePanel
+      />
+
+      {selectedTab === "instruction" && instruction}
+
+      {/*
+       * Communication tab content is ALWAYS mounted so that the WebRTC
+       * connection and local stream stay alive when the user switches tabs.
+       * CSS hides it (without display:none) so the stream remains active
+       * and PipTile (rendered via portal) can still display.
+       */}
+      <div
+        className={
+          selectedTab === "communication"
+            ? ""
+            : "pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0"
+        }
+      >
+        {communication}
+      </div>
+
+      {selectedTab === "submit-assignment" && (
         <SubmitAssignmentPage
           assessment={assessment}
           mySubmissions={mySubmissions}
           onGoToStudentWork={() => setSelectedTab("student-work")}
         />
-      ),
-    },
-    {
-      key: "student-work",
-      title: "Student Work",
-      content: (
+      )}
+
+      {selectedTab === "student-work" && (
         <MyStudentWorkPage
           assessment={assessment}
           sessions={sessions}
@@ -248,16 +278,7 @@ export default function StudentAssessmentTabs({
           isPending={isPending}
           mySubmissions={mySubmissions}
         />
-      ),
-    },
-  ];
-
-  return (
-    <PrimaryTabs
-      tabs={tabs}
-      colors="primary"
-      selectedKey={selectedTab}
-      onSelectionChange={setSelectedTab}
-    />
+      )}
+    </div>
   );
 }

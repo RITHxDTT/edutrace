@@ -101,6 +101,7 @@ export default async function page({ params }: PageProps) {
         <CommunicationRoom
           meetingRoomId={meetingRoomId}
           readOnly={isAssessmentClosed}
+          enablePip={isStudent}
         />
       ) : (
         <p className="text-gray-600">
