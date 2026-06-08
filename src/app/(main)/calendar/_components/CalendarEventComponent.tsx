@@ -14,7 +14,6 @@ import {
 import { createDragPlugin } from "@dayflow/plugin-drag";
 import { createSidebarPlugin } from "@dayflow/plugin-sidebar";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-// ALWAYS route data mutations through actions in client components!
 import {
     createCalendarAction,
     deleteCalendarAction,
@@ -136,30 +135,6 @@ export default function CalendarEventComponent({ allevents }: Props) {
                 setCustomCalendars((prev) => [...prev, { ...newCalendar, source }]);
             },
 
-            // onEventUpdate: async (event) => {
-            //     startTransition(async () => {
-            //         try {
-            //             const normalizedStart = normalizeEventDate(event.start);
-            //             const normalizedEnd = normalizeEventDate(event.end);
-            //             const eventId = resolveEventId(event.id);
-
-            //             const payload = {
-            //                 title: event.title,
-            //                 description: event.description || "",
-            //                 startAt: normalizedStart.toISOString(),
-            //                 endAt: normalizedEnd.toISOString(),
-            //                 assessmentId: (event as any).assessmentId || null,
-            //                 categoryId: isUuid(event.calendarId) ? event.calendarId : null,
-            //             };
-
-            //             // Routed securely through Server Action
-            //             await updateCalendarAction(eventId, payload);
-            //         } catch (err) {
-            //             console.error("Backend error during event update:", err);
-            //         }
-            //     });
-            // },
-
             onEventUpdate: async (event) => {
                 const eventId = resolveEventId(event.id);
 
@@ -201,7 +176,7 @@ export default function CalendarEventComponent({ allevents }: Props) {
                 startTransition(async () => {
                     try {
                         deletingIds.current.add(resolvedId);
-                        // Routed securely through Server Action
+                        //===>> Routed securely through Server Action
                         await deleteCalendarAction(resolvedId);
                     } catch (err) {
                         console.error("Error deleting event from backend database:", err);
