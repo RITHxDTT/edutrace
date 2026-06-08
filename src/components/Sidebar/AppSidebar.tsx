@@ -8,8 +8,8 @@ import {
   SidebarMenuItem,
 } from "../ui/sidebar";
 import Image from "next/image";
-import { SignOut } from "../AuthComponents";
 import SidebarTitle from "./_components/SidebarTitle";
+import LogoutButton from "./_components/LogoutButton";
 
 export default function AppSidebar() {
 
@@ -33,7 +33,7 @@ export default function AppSidebar() {
           <SidebarTitle />
         </SidebarMenu>
         <SidebarFooter className="w-full px-5">
-          <SignOut />
+          <LogoutButton />
         </SidebarFooter>
       </SidebarContent>
     </Sidebar>

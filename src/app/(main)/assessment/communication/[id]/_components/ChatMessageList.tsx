@@ -230,8 +230,8 @@ export default function ChatMessageList({
                 <div
                   className={`px-3 py-2 text-[13px] leading-relaxed ${bubbleCorners(position, isMe)} ${
                     isMe
-                      ? "bg-gradient-to-br from-[#241cab] to-[#5d53f9] text-white"
-                      : "bg-white/10 text-white"
+                      ? "bg-gradient-to-br from-[#241cab] to-[#5d53f9] text-white w-fit"
+                      : "bg-white/10 text-white w-fit"
                   }`}
                 >
                   <p className="whitespace-pre-wrap break-words">
