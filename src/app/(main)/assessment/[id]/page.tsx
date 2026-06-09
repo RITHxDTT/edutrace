@@ -1,7 +1,7 @@
 import {
   getAssessmentByIdAction,
-  getAssessmentSubmissionsAction,
   getMyAssessmentsAction,
+  getMySubmissionsAction,
   getMyWorkSessionsAction,
 } from "@/actions/assessment.action";
 import { getAllSubjectAction } from "@/actions/subject.action";
@@ -12,9 +12,8 @@ import { BookOpenIcon } from "lucide-react";
 import CommunicationRoom from "../communication/[id]/_components/CommunicationRoom";
 
 import {
-  AssessmentSubmission,
-  AssessmentSubmissionPayload,
   AssessmentType,
+  StudentOwnSubmission,
   WorkSession,
   WorkSessionPayload,
 } from "@/types/assessment";
@@ -35,11 +34,6 @@ type PageProps = {
   }>;
 };
 
-type SubmissionData =
-  | AssessmentSubmissionPayload
-  | AssessmentSubmission[]
-  | undefined;
-
 type WorkSessionData = WorkSessionPayload | WorkSession[] | undefined;
 
 type MyAssessmentData =
@@ -47,9 +41,7 @@ type MyAssessmentData =
   | { content?: AssessmentType[] }
   | undefined;
 
-type MeetingRoomResult = {
-  meetingRoomId?: string;
-} | null | undefined;
+type MeetingRoomResult = { meetingRoomId?: string } | null | undefined;
 
 function normalizeMyAssessments(assessments: MyAssessmentData) {
   if (Array.isArray(assessments)) return assessments;
@@ -69,20 +61,25 @@ export default async function page({ params }: PageProps) {
 
   const meetingRoomId = meetingRoomResult?.meetingRoomId;
 
-  const [assessmentResult, subjects, submissions, workSessions, myAssessments] =
-    (await Promise.all([
-      getAssessmentByIdAction(id),
-      isTeacher ? getAllSubjectAction() : Promise.resolve([]),
-      isTeacher ? getAssessmentSubmissionsAction(id) : Promise.resolve(undefined),
-      isStudent ? getMyWorkSessionsAction(id) : Promise.resolve(undefined),
-      isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
-    ])) as [
-      AssessmentType,
-      SubjectType[],
-      SubmissionData,
-      WorkSessionData,
-      MyAssessmentData,
-    ];
+  const [
+    assessmentResult,
+    subjects,
+    workSessions,
+    myAssessments,
+    mySubmissions,
+  ] = (await Promise.all([
+    getAssessmentByIdAction(id),
+    isTeacher ? getAllSubjectAction() : Promise.resolve([]),
+    isStudent ? getMyWorkSessionsAction(id) : Promise.resolve(undefined),
+    isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
+    isStudent ? getMySubmissionsAction(id) : Promise.resolve(undefined),
+  ])) as [
+    AssessmentType,
+    SubjectType[],
+    WorkSessionData,
+    MyAssessmentData,
+    StudentOwnSubmission[] | undefined,
+  ];
 
   const myAssessment = normalizeMyAssessments(myAssessments).find(
     (item) => item.assessmentId === id,
@@ -92,10 +89,20 @@ export default async function page({ params }: PageProps) {
 
   const instructionContent = <InstructionDetailPage assessment={assessment} />;
 
+  const now = Date.now();
+  const isAssessmentClosed =
+    assessment.status === "CLOSED" ||
+    assessment.status === "ARCHIVED" ||
+    (!!assessment.dueAt && new Date(assessment.dueAt).getTime() < now);
+
   const communicationContent = (
     <div className="py-4">
       {meetingRoomId ? (
-        <CommunicationRoom meetingRoomId={meetingRoomId} />
+        <CommunicationRoom
+          meetingRoomId={meetingRoomId}
+          readOnly={isAssessmentClosed}
+          enablePip={isStudent}
+        />
       ) : (
         <p className="text-gray-600">
           No communication room available for this assessment.
@@ -103,8 +110,6 @@ export default async function page({ params }: PageProps) {
       )}
     </div>
   );
-
-  console.log(session?.access_token);
 
   const assessmentTabs = [
     {
@@ -115,30 +120,14 @@ export default async function page({ params }: PageProps) {
     {
       key: "communication",
       title: "Communication",
-      content: (
-        <div className="py-4">
-          {meetingRoomId ? (
-            <CommunicationRoom meetingRoomId={meetingRoomId} />
-          ) : (
-            <p className="text-gray-600">
-              No communication room available for this assessment.
-            </p>
-          )}
-        </div>
-      ),
+      content: communicationContent,
     },
     {
       key: "student-work",
       title: "Student Work",
-      content: (
-        <StudentWorkPage
-          assessment={assessment}
-          submissions={submissions}
-        />
-      ),
+      content: <StudentWorkPage assessment={assessment} />,
     },
   ];
-
   return (
     <div className="flex flex-col gap-5">
       <PrimaryBreadcrumbs
@@ -211,14 +200,20 @@ export default async function page({ params }: PageProps) {
             </div>
           </div>
         </div>
-
-        {isTeacher && (
-          <AssessmentHeaderActions
-            assessment={assessment}
-            assessmentId={id}
-            subjects={subjects}
-          />
-        )}
+        <div className="flex flex-col gap-2.5">
+          <div className="inline-flex min-w-0 items-center justify-between gap-2 rounded-[6px]  text-sm font-medium">
+            <span className="shrink-0 rounded bg-light-lavendar px-2 py-1 font-medium text-menta">
+              {assessment.maxScore} pts
+            </span>
+          </div>
+          {isTeacher && (
+            <AssessmentHeaderActions
+              assessment={assessment}
+              assessmentId={id}
+              subjects={subjects}
+            />
+          )}
+        </div>
       </div>
 
       <div className="w-full">
@@ -228,6 +223,9 @@ export default async function page({ params }: PageProps) {
             instruction={instructionContent}
             communication={communicationContent}
             workSessions={workSessions}
+            mySubmissions={
+              Array.isArray(mySubmissions) ? mySubmissions : undefined
+            }
           />
         ) : (
           <PrimaryTabs tabs={assessmentTabs} colors="primary" />

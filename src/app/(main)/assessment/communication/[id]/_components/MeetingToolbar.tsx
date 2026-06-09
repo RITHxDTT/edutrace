@@ -52,7 +52,7 @@ function ToolBtn({
           ? "bg-red-500 text-white hover:bg-red-600"
           : active
             ? "text-white hover:opacity-90"
-            : "bg-[#E9F6FF] text-gray-700 hover:bg-[#dff2ff]"
+            : "bg-white/10 text-white hover:bg-white/20"
       }`}
     >
       {children}
@@ -86,7 +86,7 @@ export default function MeetingToolbar({
   } = useMeetingRoomStore();
 
   return (
-    <div className="flex items-center justify-center gap-3 px-6 py-3">
+    <div className="flex items-center justify-center gap-3 border-t border-white/10 bg-black/20 px-6 py-3">
       <ToolBtn
         active={micOn}
         onClick={onToggleMic}
@@ -120,7 +120,7 @@ export default function MeetingToolbar({
       </ToolBtn>
 
 
-      <div className="mx-1 h-8 w-px bg-gray-300" />
+      <div className="mx-1 h-8 w-px bg-white/15" />
 
       <ToolBtn
         active={chatPanelOpen}
@@ -140,7 +140,7 @@ export default function MeetingToolbar({
         <Users size={20} />
       </ToolBtn>
 
-      <div className="mx-1 h-8 w-px bg-gray-300" />
+      <div className="mx-1 h-8 w-px bg-white/15" />
 
       <ToolBtn danger onClick={onLeave} title="Leave meeting">
         <PhoneOff size={20} />

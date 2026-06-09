@@ -71,6 +71,8 @@ export interface RemoteParticipant {
   userName: string;
   userId?: string;
   stream: MediaStream | null;
+  /** Separate stream delivered via a dedicated screen-share call. */
+  screenStream?: MediaStream | null;
   isMuted?: boolean;
   isCamOff?: boolean;
   isHandRaised?: boolean;

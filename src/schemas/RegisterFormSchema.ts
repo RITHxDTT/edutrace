@@ -56,25 +56,27 @@
 //     });
 // };
 
-import { z } from 'zod';
+import { z } from "zod";
 
 export const RegisterFormSchema = z.object({
-  firstName: z
-    .string()
-    .min(1, 'First name is required'),
+  firstName: z.string().min(1, "First name is required"),
 
-  lastName: z
-    .string()
-    .min(1, 'Last name is required'),
+  lastName: z.string().min(1, "Last name is required"),
 
-  email: z
-    .string()
-    .email('Invalid email address'),
+  email: z.string().email("Invalid email address"),
 
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters'),
-    // gender: z.string().min(0, ''),
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d#@$!%*?&]{8,}$/,
+      {
+        message:
+          "Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and special character (#@$!%*?&)",
+      }
+    ),
+  gender: z.enum(["MALE", "FEMALE"], {
+    message: "Please select a gender.",
+  }),
 });
 
 export type RegisterFormData = z.infer<typeof RegisterFormSchema>;

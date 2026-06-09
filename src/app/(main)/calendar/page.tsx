@@ -1,11 +1,15 @@
 import NavbarTitle from '@/components/Topbar/NavbarTitle'
 import CalendarEventComponent from './_components/CalendarEventComponent'
+import { getMyCalendarAction } from '@/actions/calendar.action';
+import { EventType } from '@/types/calendar';
 
-export default function page() {
+export default async function page() {
+  const allevents: EventType[] = await getMyCalendarAction();
+
   return (
     <div>
       <NavbarTitle title="Calendar" override />
-      <CalendarEventComponent />
+      <CalendarEventComponent allevents={allevents} />
     </div>
   )
 }

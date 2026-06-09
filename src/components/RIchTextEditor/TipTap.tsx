@@ -10,7 +10,9 @@ import OrderedList from '@tiptap/extension-ordered-list'
 import ListItem from '@tiptap/extension-list-item'
 import Blockquote from '@tiptap/extension-blockquote'
 import Code from '@tiptap/extension-code'
+import Link from '@tiptap/extension-link'
 import { useEffect } from 'react'
+import { Link2, Unlink } from 'lucide-react'
 import styles from './style.module.css'
 
 // Define the props for the RichTextEditor
@@ -55,6 +57,7 @@ export default function RichTextEditor({ label, value = '', onChange }: RichText
       OrderedList,
       ListItem,
       Blockquote,
+      Link.configure({ openOnClick: false, HTMLAttributes: { rel: 'noopener noreferrer', target: '_blank' } }),
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -158,6 +161,32 @@ export default function RichTextEditor({ label, value = '', onChange }: RichText
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
         >
           &quot;
+        </ToolbarButton>
+
+        <div className={styles.divider} />
+
+        {/* Link */}
+        <ToolbarButton
+          title="Set link"
+          isActive={editor.isActive('link')}
+          onClick={() => {
+            const prev = editor.getAttributes('link').href ?? ''
+            const url = window.prompt('Enter URL', prev || 'https://')
+            if (url === null) return
+            if (url === '') {
+              editor.chain().focus().unsetLink().run()
+            } else {
+              editor.chain().focus().setLink({ href: url }).run()
+            }
+          }}
+        >
+          <Link2 size={14} />
+        </ToolbarButton>
+        <ToolbarButton
+          title="Remove link"
+          onClick={() => editor.chain().focus().unsetLink().run()}
+        >
+          <Unlink size={14} />
         </ToolbarButton>
       </div>
     </div>

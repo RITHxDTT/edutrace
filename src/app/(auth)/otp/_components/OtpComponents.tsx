@@ -168,8 +168,7 @@ export default function OTPForm() {
           onClick={async () => {
 
             const res = await resendEmailAction(
-              email,
-              "REGISTRATION"
+              email
             );
 
             if (res.error) {

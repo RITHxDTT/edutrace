@@ -1,77 +1,13 @@
 import { AssessmentResource } from "@/types/assessment";
-import { FolderOpen, Gallery, Paperclip2 } from "iconsax-react";
+import { Paperclip2 } from "iconsax-react";
 import AssessmentSectionCard from "../AssessmentSectionCard";
 import Link from "next/link";
-import { Download, Eye, File } from "lucide-react";
+import { Download, Eye } from "lucide-react";
+import { formatFileSize, getFileColor, getFileIcon, getResourceFileName, isViewableFile } from "@/utils/fileUtils";
 
 type Props = {
     resources: AssessmentResource[];
 };
-
-function formatFileSize(bytes?: number) {
-    if (!bytes) return "Unknown size";
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function getResourceLabel(resource: AssessmentResource) {
-    if (resource.fileName) return resource.fileName;
-
-    try {
-        return new URL(resource.resourceUrl).hostname;
-    } catch {
-        return resource.resourceUrl;
-    }
-}
-
-function getResourceFileName(resource: AssessmentResource) {
-    const label = getResourceLabel(resource);
-
-    try {
-        const url = new URL(resource.resourceUrl);
-        const pathName = url.pathname.split("/").filter(Boolean).at(-1);
-        return resource.fileName || pathName || label;
-    } catch {
-        return label;
-    }
-}
-
-function getFileIcon(name: string, color?: string) {
-    const ext = name.split(".").pop()?.toLowerCase();
-    if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext ?? "")) {
-        return <Gallery size={14} color={color} />;
-    }
-    if (["pdf", "zip", "doc", "docx", "txt"].includes(ext ?? "")) {
-        return <FolderOpen size={14} color={color} />;
-    }
-    return <File size={14} color={color} />;
-}
-
-function getFileColor(name: string) {
-    const ext = name.split(".").pop()?.toLowerCase();
-    if (["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext ?? "")) {
-        return { bgColor: "bg-light-green", iconColor: "#009F15" };
-    }
-    if (["doc", "docx", "txt", "pdf"].includes(ext ?? "")) {
-        return { bgColor: "bg-light-lavendar", iconColor: "#2E25C9" };
-    }
-    if (["zip"].includes(ext ?? "")) {
-        return { bgColor: "bg-lighter-orange", iconColor: "#DEA20A" };
-    }
-
-    return { bgColor: "bg-input-field", iconColor: "#111827" };
-}
-
-function isViewable(resource: AssessmentResource) {
-    const mimeType = resource.mimeType?.toLowerCase() ?? "";
-    return (
-        resource.resourceType === "LINK" ||
-        mimeType.startsWith("image/") ||
-        mimeType === "application/pdf" ||
-        mimeType.startsWith("text/")
-    );
-}
 
 export default function AttachmentDetailPage({ resources }: Props) {
     return (
@@ -103,7 +39,7 @@ export default function AttachmentDetailPage({ resources }: Props) {
                                     </div>
                                 </div>
                                 <div className="flex shrink-0 items-center gap-3">
-                                    {isViewable(resource) ? (
+                                    {isViewableFile(resource) ? (
                                         <Link
                                             href={resource.resourceUrl}
                                             target="_blank"

@@ -1,17 +1,75 @@
-import { AssessmentProps } from '@/types/assessment'
-import AssessmentCard from './AssessmentCard'
+import { ClipboardText } from "iconsax-react";
+import { AssessmentProps } from "@/types/assessment";
+import AssessmentCard from "./AssessmentCard";
 
-export default function AssessmentList({ assessments }: AssessmentProps) {
-    if (!assessments) return <div><p>No Assessment</p></div>
-    
+type Props = {
+    assessments: AssessmentProps["assessments"];
+    role?: "teacher" | "student";
+}
+
+export default function AssessmentList({ assessments, role }: Props) {
+
+    // For Student
+    if (assessments.length === 0 && role === "student") {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="mb-4 rounded-full bg-light-lavendar p-5">
+                    <ClipboardText
+                        size={48}
+                        color="white"
+                    />
+                </div>
+
+                <h3 className="text-xl font-semibold text-gray-800">
+                    No Assessments Yet
+                </h3>
+
+                <p className="mt-2 max-w-md text-sm text-gray-500">
+                    There are currently no assessments available. Once your teacher
+                    creates and assigns assessments, they will appear here.
+                </p>
+            </div>
+        );
+    }
+
+    // For Teacher
+    if (assessments.length === 0 && role === "teacher") {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="mb-4 rounded-full bg-light-lavendar p-5">
+                    <ClipboardText
+                        size={48}
+                        color="white"
+                    />
+                </div>
+
+                <h3 className="text-xl font-semibold text-gray-800">
+                    No Assessments Yet
+                </h3>
+
+                <p className="mt-2 max-w-md text-sm text-gray-500">
+                    There are currently no assessments available. Once other teachers
+                    creates and assigns assessments, they will appear here.
+                </p>
+            </div>
+        );
+    }
 
     return (
-        <div className='grid grid-cols-3'>
-            {assessments.map((assessment) => {
-                return (
-                    <AssessmentCard key={assessment.assessmentId} assessmentId={assessment.assessmentId} title={assessment.title} description={assessment.description} subject={assessment.subject} status={assessment.status} startAt={assessment.startAt} dueAt={assessment.dueAt} assignedBy={assessment.assignedBy}  />
-                )
-            })}
+        <div className="grid grid-cols-1 min-[1024px]:grid-cols-2 min-[1480px]:grid-cols-3 gap-4 md:gap-5 min-[1480px]:gap-6">
+            {assessments.map((assessment) => (
+                <AssessmentCard
+                    key={assessment.assessmentId}
+                    assessmentId={assessment.assessmentId}
+                    title={assessment.title}
+                    description={assessment.description}
+                    subject={assessment.subject}
+                    status={assessment.status}
+                    startAt={assessment.startAt}
+                    dueAt={assessment.dueAt}
+                    assignedBy={assessment.assignedBy}
+                />
+            ))}
         </div>
-    )
+    );
 }

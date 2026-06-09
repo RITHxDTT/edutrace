@@ -8,15 +8,21 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import { ChartsAxisData, LineItemIdentifier } from '@mui/x-charts/models';
 import { SubmissionTrend, ScoreTrend } from '@/types/dashboard';
 import { useTrendData } from './useTrendData';
-import {useState} from "react";
+import { useState } from "react";
 
 export default function SubmissionTrendComponent(
   { role, data }: { role: 'student' | 'teacher', data?: SubmissionTrend | ScoreTrend }
 ) {
   const { xAxisData, series } = useTrendData(role, data);
+  const [mounted, setMounted] = React.useState(false);
 
   const [itemData, setItemData] = useState<LineItemIdentifier>();
   const [axisData, setAxisData] = useState<ChartsAxisData | null>();
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
 
   const lineChartsParams = {
     series: series,
@@ -36,6 +42,7 @@ export default function SubmissionTrendComponent(
     ],
     height: 200,
   };
+
 
   if (!data || !data.data || data.data.length === 0) {
     return (

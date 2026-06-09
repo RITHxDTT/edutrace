@@ -5,12 +5,22 @@ export const forgotPasswordFormSchema = z.object({
     code: z.string().length(6, "OTP code must be 6 digits."),
     newPassword: z
         .string()
-        .min(8, { message: "Password must be at least 8 characters long." })
-        .regex(/[a-zA-Z]/, { message: "Must contain at least one letter." })
-        .regex(/[0-9]/, { message: "Must contain at least one number." })
-        .regex(/[^a-zA-Z0-9]/, { message: "Must contain at least one special character." })
-        .trim(),
-    confirmNewPassword: z.string().min(8, "Password must be at least 8 characters."),
+        .regex(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d#@$!%*?&]{8,}$/,
+            {
+                message:
+                    "Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and special character (#@$!%*?&)",
+            }
+        ),
+    confirmNewPassword: z
+        .string()
+        .regex(
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#@$!%*?&])[A-Za-z\d#@$!%*?&]{8,}$/,
+            {
+                message:
+                    "Password must be at least 8 characters and contain an uppercase letter, lowercase letter, number, and special character (#@$!%*?&)",
+            }
+        ),
 }).refine((data) => data.newPassword === data.confirmNewPassword, {
     path: ["confirmNewPassword"],
     message: "Passwords do not match.",

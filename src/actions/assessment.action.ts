@@ -2,18 +2,25 @@
 import {
   createAssessmentService,
   endWorkSessionService,
+  gradeSubmissionService,
   getAllAssessementService,
+  getAssessmentWorkSessionsService,
   getAssessmentByIdService,
   getAssessmentSubmissionsService,
   getMyAssessmentsService,
+  getMySubmissionsService,
   getMyWorkSessionsService,
+  getSubmissionByIdService,
   startWorkSessionService,
   submitAssignmentService,
   updateAssessmentService,
+  getAllMyAssessmentService,
 } from "@/services/assessment.service";
 import {
   CreateAssessmentForm,
+  GradeSubmissionForm,
   GetAssessmentParams,
+  StudentOwnSubmission,
   SubmitAssignmentForm,
 } from "@/types/assessment";
 
@@ -54,6 +61,15 @@ export const getMyAssessmentsAction = async () => {
   return result.payload;
 };
 
+export const getAllMyAssessmentAction = async (params?: GetAssessmentParams) => {
+  const result = await getAllMyAssessmentService(params);
+  if (!result.success) {
+    return { error: result.message };
+  }
+
+  return result.payload;
+}
+
 export const getAssessmentByIdAction = async (assessmentId: string) => {
   const result = await getAssessmentByIdService(assessmentId);
   if (!result.success) {
@@ -65,14 +81,62 @@ export const getAssessmentByIdAction = async (assessmentId: string) => {
 
 export const getAssessmentSubmissionsAction = async (
   assessmentId: string,
-  classroomId?: string,
 ) => {
-  const result = await getAssessmentSubmissionsService(assessmentId, classroomId);
+  const result = await getAssessmentSubmissionsService(assessmentId);
   if (!result.success) {
     return { error: result.message };
   }
-
   return result.payload;
+};
+
+export const getSubmissionByIdAction = async (submissionId: string) => {
+  try {
+    const result = await getSubmissionByIdService(submissionId);
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: result.data,
+    };
+  } catch (error) {
+    console.error("Get submission details error:", error);
+
+    return {
+      success: false,
+      error: "Something went wrong while getting submission details.",
+    };
+  }
+};
+
+export const gradeSubmissionAction = async (data: GradeSubmissionForm) => {
+  try {
+    const result = await gradeSubmissionService(data);
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: result.data,
+    };
+  } catch (error) {
+    console.error("Grade submission error:", error);
+
+    return {
+      success: false,
+      error: "Something went wrong while grading submission.",
+    };
+  }
 };
 
 export const submitAssignmentAction = async (
@@ -107,6 +171,21 @@ export const submitAssignmentAction = async (
   }
 };
 
+export const getMySubmissionsAction = async (assessmentId: string): Promise<StudentOwnSubmission[] | { error: string }> => {
+  const result = await getMySubmissionsService(assessmentId);
+  if (!result.success) {
+    return { error: result.message };
+  }
+
+  const payload = (result.payload ?? []) as Array<StudentOwnSubmission & { grade?: { grader?: { fullName?: string }; graderName?: string } }>;
+  return payload.map((item) => ({
+    ...item,
+    grade: item.grade
+      ? { ...item.grade, graderName: item.grade.graderName ?? item.grade.grader?.fullName }
+      : undefined,
+  }));
+};
+
 export const getMyWorkSessionsAction = async (assessmentId: string) => {
   const result = await getMyWorkSessionsService(assessmentId);
   if (!result.success) {
@@ -114,6 +193,35 @@ export const getMyWorkSessionsAction = async (assessmentId: string) => {
   }
 
   return result.payload;
+};
+
+export const getAssessmentWorkSessionsAction = async (
+  assessmentId: string,
+  page = 1,
+  size = 10,
+) => {
+  try {
+    const result = await getAssessmentWorkSessionsService(assessmentId, page, size);
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: result.data,
+    };
+  } catch (error) {
+    console.error("Get assessment work sessions error:", error);
+
+    return {
+      success: false,
+      error: "Something went wrong while getting assessment work sessions.",
+    };
+  }
 };
 
 export const startWorkSessionAction = async (assessmentId: string) => {
@@ -198,6 +306,8 @@ export const updateAssessmentAction = async (
   assessmentId: string,
   data: CreateAssessmentForm,
 ) => {
+  console.log(data)
+  console.log(assessmentId)
   try {
     const result = await updateAssessmentService(assessmentId, data);
     if (!result.success) {

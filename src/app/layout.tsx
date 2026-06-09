@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("h-full", "antialiased", fredoka.variable)}>
+    <html lang="en" className={cn("min-h-full", "antialiased", fredoka.variable)}>
       <body className="min-h-full flex flex-col">
         <HeroUIProvider>
           <main className="flex-1">{children}</main>

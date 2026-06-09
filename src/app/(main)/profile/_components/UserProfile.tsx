@@ -39,7 +39,7 @@ export default function UserProfile() {
       </div>
 
       {/* Name & Email */}
-      <div className="flex flex-col leading-tight">
+      <div className="hidden sm:flex flex-col leading-tight">
         <span className="text-sm font-semibold text-gray-800">
           {isLoading ? "Loading..." : fullName}
         </span>

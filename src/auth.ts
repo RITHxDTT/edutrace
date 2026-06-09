@@ -87,35 +87,36 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           },
         );
 
-                const data = await res.json();
-                const profile = data.payload;
-                const role = profile.role;
+        const data = await res.json();
+        const profile = data.payload;
+        const role = profile.role;
 
-                const isTeacher = role === "teacher";
-                const taughtSubjects = isTeacher ? (profile.taughtSubjects ?? []) : null;
-                const taughtClassrooms = isTeacher ? (profile.taughtClassrooms ?? []) : null;
+        const isTeacher = role === "teacher";
+        const taughtSubjects = isTeacher ? (profile.taughtSubjects ?? []) : null;
+        const taughtClassrooms = isTeacher ? (profile.taughtClassrooms ?? []) : null;
 
-                return {
-                    ...token,
-                    access_token: accessToken,
-                    refresh_token: user.payload.refreshToken,
-                    expires_at: Math.floor(Date.now() / 1000) + user.payload.expiresIn,
-                    role: role,
-                    firstName: profile.firstName,
-                    lastName: profile.lastName,
-                    fullName: profile.fullName,
-                    username: profile.username,
-                    gender: profile.gender,
-                    birthdate: profile.birthdate,
-                    email: profile.email,
-                    profileImageUrl: profile.profileImageUrl,
-                    address: profile.address,
-                    userId: profile.userId,
-                    classroomAbbre: profile.classroom?.classroomAbbre ?? null,
-                    taughtSubjects,
-                    taughtClassrooms,
-                };
-            }
+        return {
+          ...token,
+          access_token: accessToken,
+          refresh_token: user.payload.refreshToken,
+          expires_at: Math.floor(Date.now() / 1000) + user.payload.expiresIn,
+          role: role,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          fullName: profile.fullName,
+          username: profile.username,
+          gender: profile.gender,
+          birthdate: profile.birthdate,
+          email: profile.email,
+          profileImageUrl: profile.profileImageUrl,
+          address: profile.address,
+          userId: profile.userId,
+          classroomAbbre: profile.classroom?.classroomAbbre ?? null,
+          taughtSubjects,
+          taughtClassrooms,
+          generation: profile.generation,
+        };
+      }
 
       if (Date.now() / 1000 >= (token.expires_at as number) - 10) {
         token = await refreshAccessToken(token);
@@ -134,23 +135,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       session.access_token = token.access_token;
 
-            session.user = {
-                ...session.user,
-                userId: token.userId,
-                role: token.role,
-                firstName: token.firstName,
-                lastName: token.lastName,
-                fullName: token.fullName,
-                username: token.username,
-                gender: token.gender,
-                birthdate: token.birthdate,
-                email: token.email,
-                profileImageUrl: token.profileImageUrl as string,
-                address: token.address as string,
-                classroomAbbre: token.classroomAbbre,
-                taughtSubjects: token.taughtSubjects,
-                taughtClassrooms: token.taughtClassrooms,
-            };
+      session.user = {
+        ...session.user,
+        userId: token.userId,
+        role: token.role,
+        firstName: token.firstName,
+        lastName: token.lastName,
+        fullName: token.fullName,
+        username: token.username,
+        gender: token.gender,
+        birthdate: token.birthdate,
+        email: token.email,
+        profileImageUrl: token.profileImageUrl as string,
+        address: token.address as string,
+        classroomAbbre: token.classroomAbbre,
+        taughtSubjects: token.taughtSubjects,
+        taughtClassrooms: token.taughtClassrooms,
+        generation: token.generation
+      };
 
       if (token.error) {
         session.error = token.error;

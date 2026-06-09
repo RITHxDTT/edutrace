@@ -28,7 +28,7 @@ export default function FeatureCards() {
     <section className="w-full max-w-[1254px] flex flex-col items-center gap-12 mt-20 px-4">
       
       {/* Changed from 'flex' to 'grid' to prevent horizontal squeezing distortion */}
-      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-[87px]">
+      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
         {cardData.map((card, idx) => (
           <div key={idx} className="flex flex-col items-center justify-center p-5 bg-white rounded-[20px] h-[213px] shadow-[0px_0px_5px_rgba(0,0,0,0.1)] hover:shadow-md transition-shadow text-center gap-2.5">
             

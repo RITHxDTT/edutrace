@@ -9,6 +9,5 @@ export const getMeetingRoomByAssessmentIdAction = async (assessmentId: string) =
     if (!result.success) {
         return { error: result.error || "Failed to fetch meeting room ID" };
     }
-    console.log(result.payload);
     return result.payload;
 }

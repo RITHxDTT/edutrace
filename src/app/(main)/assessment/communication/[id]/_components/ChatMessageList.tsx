@@ -89,6 +89,28 @@ export default function ChatMessageList({
   const loadingRef = useRef(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const initialScrollDoneRef = useRef(false);
+  const lastMessageIdRef = useRef<string | null>(null);
+  const soundInitializedRef = useRef(false);
+
+  // Play notification sound when a new message from another user arrives
+  useEffect(() => {
+    const lastMsg = visibleMessages[visibleMessages.length - 1];
+    if (!lastMsg) return;
+
+    if (!soundInitializedRef.current) {
+      lastMessageIdRef.current = lastMsg.chatMessageId;
+      soundInitializedRef.current = true;
+      return;
+    }
+
+    if (lastMsg.chatMessageId !== lastMessageIdRef.current) {
+      lastMessageIdRef.current = lastMsg.chatMessageId;
+      if (lastMsg.senderUserId !== currentUserId) {
+        const audio = new Audio("/audios/soundeffects/meet-message-sound-1.mp3");
+        audio.play().catch(() => {});
+      }
+    }
+  }, [visibleMessages, currentUserId]);
 
   // Initial scroll to bottom
   useEffect(() => {
@@ -159,7 +181,7 @@ export default function ChatMessageList({
     <div
       ref={containerRef}
       onScroll={handleScroll}
-      className="flex-1 overflow-y-auto px-3 py-3 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300"
+      className="flex-1 overflow-y-auto px-3 py-3 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/20"
     >
       <div ref={sentinelRef} className="h-1" />
 
@@ -170,7 +192,7 @@ export default function ChatMessageList({
       )}
 
       {visibleMessages.length === 0 && !isLoadingMore && (
-        <div className="flex h-full items-center justify-center text-sm text-gray-400">
+        <div className="flex h-full items-center justify-center text-sm text-white/40">
           No messages yet
         </div>
       )}
@@ -222,7 +244,7 @@ export default function ChatMessageList({
               {/* Message content */}
               <div className={isMe ? "flex flex-col items-end" : ""}>
                 {isFirst && !isMe && (
-                  <p className="mb-0.5 ml-1 text-[11px] font-medium text-gray-500">
+                  <p className="mb-0.5 ml-1 text-[11px] font-medium text-white/50">
                     {senderName}
                   </p>
                 )}
@@ -230,8 +252,8 @@ export default function ChatMessageList({
                 <div
                   className={`px-3 py-2 text-[13px] leading-relaxed ${bubbleCorners(position, isMe)} ${
                     isMe
-                      ? "bg-gradient-to-br from-[#241cab] to-[#5d53f9] text-white"
-                      : "bg-[#f0f0f0] text-gray-900"
+                      ? "bg-gradient-to-br from-[#241cab] to-[#5d53f9] text-white w-fit"
+                      : "bg-white/10 text-white w-fit"
                   }`}
                 >
                   <p className="whitespace-pre-wrap break-words">
@@ -241,7 +263,7 @@ export default function ChatMessageList({
 
                 {isLast && (
                   <p
-                    className={`mt-0.5 text-[10px] text-gray-400 ${
+                    className={`mt-0.5 text-[10px] text-white/40 ${
                       isMe ? "mr-1" : "ml-1"
                     }`}
                   >

@@ -1,19 +1,40 @@
-import { AssessmentSubmission } from "@/types/assessment";
+"use client"
+
+import { SubmittedStudent, UnsubmittedStudent } from "@/types/assessment";
+import { getStudentInitials, getSubmittedLabel } from "@/utils/studentWorkUtils";
 import { Clock, DocumentText } from "iconsax-react";
-import { getStudentInitials, getSubmittedLabel } from "./studentWorkUtils";
+import Image from "next/image";
+
+type AnyStudent = SubmittedStudent | UnsubmittedStudent;
 
 type Props = {
-  submission: AssessmentSubmission;
+  student: AnyStudent;
+  classroomName: string;
   isSelected: boolean;
   onClick: () => void;
 };
 
+function getStatusBadge(status?: string | null) {
+  if (!status) {
+    return { label: "NOT SUBMITTED", className: "bg-input-field text-tertiary" };
+  }
+  const s = status.toUpperCase();
+  if (s === "GRADED") return { label: "GRADED", className: "bg-accent-sand text-[#DEA20A]" };
+  if (s === "RESUBMITTED") return { label: "RESUBMITTED", className: "bg-light-green text-[#009F15]" };
+  if (s === "SUBMITTED") return { label: "SUBMITTED", className: "bg-light-green text-[#009F15]" };
+  if (s === "LATE") return { label: "LATE", className: "bg-[#FCD3D3] text-error" };
+  return { label: s, className: "bg-input-field text-tertiary" };
+}
+
 export default function StudentSubmissionCard({
-  submission,
+  student,
+  classroomName,
   isSelected,
   onClick,
 }: Props) {
-  const resourceCount = submission.submissionResources?.length ?? 0;
+  const submission = student.latestSubmission;
+  const resourceCount = submission?.submissionResources?.length ?? 0;
+  const badge = getStatusBadge(submission?.status);
 
   return (
     <button
@@ -27,20 +48,28 @@ export default function StudentSubmissionCard({
     >
       <div className="flex items-start gap-3">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-light-lavendar text-sm font-semibold text-menta">
-          {getStudentInitials(submission.studentName)}
+          {student.profileImageUrl ? (
+            <Image
+              src={student.profileImageUrl}
+              alt={student.fullName}
+              width={48}
+              height={48}
+              className="h-full w-full rounded-full object-cover"
+            />
+          ) : (
+            getStudentInitials(student.fullName)
+          )}
         </div>
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-[18px] font-medium text-primary">
-            {submission.studentName ?? "Unnamed Student"}
+            {student.fullName}
           </p>
-          <p className="truncate text-sm text-tertiary">
-            {submission.classroomName ?? submission.classroomAbbre ?? "No class"}
-          </p>
+          <p className="truncate text-sm text-tertiary">{classroomName}</p>
         </div>
 
-        <span className="rounded-full bg-light-green px-3 py-1 text-xs font-medium text-[#009F15]">
-          {submission.status ?? "SUBMITTED"}
+        <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${badge.className}`}>
+          {badge.label}
         </span>
       </div>
 
@@ -58,7 +87,7 @@ export default function StudentSubmissionCard({
           <div className="min-w-0">
             <p className="text-xs text-tertiary">Submitted</p>
             <p className="truncate text-sm font-medium text-primary">
-              {getSubmittedLabel(submission)}
+              {submission ? getSubmittedLabel(submission) : "Not submitted"}
             </p>
           </div>
         </div>

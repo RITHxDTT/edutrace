@@ -1,0 +1,2 @@
+- [User Profile](user-profile.md) — Vuththana is primary dev of EduTrace LMS, works with AI-generated + collaborator code, wants maintainability-focused reviews
+- [Assessment Feature Patterns](project-assessment-patterns.md) — Key patterns, anti-patterns, and fragile areas found in the assessment directory (2026-06-06)

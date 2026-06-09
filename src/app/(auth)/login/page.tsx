@@ -3,7 +3,7 @@ import LoginForm from "./_components/SignInForm";
 
 export default function page() {
   return (
-    <div className="flex flex-col justify-center items-center w-full lg:w-[45%] bg-white px-6">
+    <div className="flex flex-col justify-center items-center w-full xl:w-[45%] bg-white px-6">
       <div className="w-full max-w-xl py-8 flex flex-col gap-8">
 
         <div>

@@ -6,7 +6,34 @@ import {
   UpdateUserPayload,
   updateUserService,
   verifyPasswordService,
+  getUserByIdService,
 } from "@/services/user.service";
+
+export const getUserByIdAction = async (userId: string) => {
+  try {
+    const result = await getUserByIdService(userId);
+    console.log(result)
+
+    if (!result.success) {
+      return {
+        success: false,
+        error: result.error,
+      };
+    }
+
+    return {
+      success: true,
+      data: result.data,
+    };
+  } catch (error) {
+    console.error("Get user profile error:", error);
+
+    return {
+      success: false,
+      error: "Something went wrong while getting user profile.",
+    };
+  }
+};
 
 export const updateUserAction = async (payload: UpdateUserPayload) => {
   try {
@@ -118,4 +145,4 @@ export const changePasswordAction = async (
       error: "Something went wrong while changing password.",
     };
   }
-};
+  };

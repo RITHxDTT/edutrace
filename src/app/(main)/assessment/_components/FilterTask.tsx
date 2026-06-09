@@ -26,13 +26,13 @@ export default function FilterTask({
   const role = session?.user?.role;
 
   return (
-    <div className="flex bg-white items-center rounded-[20px] px-7.5 py-5 gap-5">
-      <div className="flex gap-2.5">
+    <div className="flex flex-col sm:flex-row bg-white sm:items-center rounded-[20px] px-7.5 py-5 gap-4 sm:gap-5">
+      <div className="flex gap-2.5 shrink-0">
         <FilterIcon size={24} color="black" />
         <p>Filter</p>
       </div>
 
-      <div className="w-full grid grid-cols-4 gap-5">
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         <div>
           <PrimarySelect
             label=""

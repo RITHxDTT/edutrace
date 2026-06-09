@@ -1,32 +1,18 @@
 import { createAssessmentAction, updateAssessmentAction } from "@/actions/assessment.action";
 import { AssessmentType, CreateAssessmentForm } from "@/types/assessment";
 import { ClassroomType } from "@/types/classroom";
-import { useMemo, useState } from "react";
-import { z } from "zod";
+import { assessmentFormSchema } from "@/schemas/AssessmentFormSchema";
+import { useEffect, useMemo, useState } from "react";
 
 type CreateAssessmentFormErrors = Partial<
   Record<keyof CreateAssessmentForm, string>
 >;
 
-const assessmentFormSchema = z.object({
-  title: z.string().trim().min(4, "Title must be at least 4 characters."),
-  description: z.string(),
-  assessmentType: z.enum(["ASSIGNMENT", "PRACTICE", "HOMEWORK", "MINI_PROJECT"], {
-    message: "Please select an assessment type.",
-  }),
-  subjectId: z.string().trim().min(1, "Please select a topic."),
-  classroomIds: z.array(z.string()).min(1, "Please select at least one classroom."),
-  startAt: z.string().trim().min(1, "Please select an assessment date range."),
-  dueAt: z.string().trim().min(1, "Please select an assessment date range."),
-  maxScore: z.number().min(1, "Set point must be greater than 0."),
-  requiredDailyMinutes: z
-    .number()
-    .min(1, "Daily required minutes must be greater than 0."),
-  allowLateSubmissions: z.boolean(),
-  gradingRubric: z.string(),
-  files: z.array(z.instanceof(File)),
-  createdTimeZone: z.string(),
-});
+const STEP_FIELDS: Record<number, (keyof CreateAssessmentForm)[]> = {
+  0: ["title", "assessmentType"],
+  1: ["subjectId", "classroomIds", "startAt", "dueAt", "maxScore", "requiredDailyMinutes"],
+};
+
 
 const defaultForm: CreateAssessmentForm = {
   title: "",
@@ -40,6 +26,7 @@ const defaultForm: CreateAssessmentForm = {
   requiredDailyMinutes: 5,
   allowLateSubmissions: false,
   gradingRubric: "",
+  resourceLink: [],
   files: [],
   createdTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 };
@@ -120,10 +107,11 @@ function toAssessmentForm(
     dueAt: assessment.dueAt ?? "",
     maxScore: assessment.maxScore ?? 10,
     requiredDailyMinutes: assessment.requiredDailyMinutes ?? 5,
-    allowLateSubmissions: false,
+    allowLateSubmissions: assessment.isResubmission ?? false,
     gradingRubric: Array.isArray(assessment.gradingRubric)
       ? assessment.gradingRubric.join(";")
       : assessment.gradingRubric ?? "",
+    resourceLink: [],
     files: [],
     createdTimeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   };
@@ -150,6 +138,13 @@ export function useCreateAssessment({
   );
   const [form, setForm] = useState<CreateAssessmentForm>(initialForm);
   const [errors, setErrors] = useState<CreateAssessmentFormErrors>({});
+
+  // Re-sync when switching to a different assessment (e.g., edit modal opens for a new assessment,
+  // or when taughtClassrooms loads async after initial mount)
+  useEffect(() => {
+    setForm(initialForm);
+    setErrors({});
+  }, [initialForm]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -165,6 +160,27 @@ export function useCreateAssessment({
       delete next[key];
       return next;
     });
+  };
+
+  const validateStep = (step: number) => {
+    const fields = STEP_FIELDS[step] ?? [];
+    const result = assessmentFormSchema.safeParse(form);
+    const stepErrors: CreateAssessmentFormErrors = {};
+
+    if (!result.success) {
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof CreateAssessmentForm | undefined;
+        if (field && fields.includes(field) && !stepErrors[field]) {
+          stepErrors[field] = issue.message;
+        }
+      });
+    }
+
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors((prev) => ({ ...prev, ...stepErrors }));
+      return stepErrors;
+    }
+    return null;
   };
 
   const reset = () => {
@@ -222,7 +238,7 @@ export function useCreateAssessment({
     }
   };
 
-  return { form, errors, handleChange, submit, reset, loading, error };
+  return { form, errors, handleChange, submit, reset, loading, error, validateStep };
 }
 
 export type { CreateAssessmentFormErrors };

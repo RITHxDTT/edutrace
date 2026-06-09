@@ -7,6 +7,7 @@ interface MeetingRoomStore {
   camOn: boolean;
   screenSharing: boolean;
   handRaised: boolean;
+  communicationTabActive: boolean;
   participantCount: number;
   unreadMessageCount: number;
 
@@ -16,6 +17,7 @@ interface MeetingRoomStore {
   setCamOn: (v: boolean) => void;
   setScreenSharing: (v: boolean) => void;
   setHandRaised: (v: boolean) => void;
+  setCommunicationTabActive: (v: boolean) => void;
   setParticipantCount: (n: number) => void;
   incrementUnread: () => void;
   resetUnread: () => void;
@@ -29,6 +31,7 @@ export const useMeetingRoomStore = create<MeetingRoomStore>((set) => ({
   camOn: true,
   screenSharing: false,
   handRaised: false,
+  communicationTabActive: false,
   participantCount: 0,
   unreadMessageCount: 0,
 
@@ -49,6 +52,7 @@ export const useMeetingRoomStore = create<MeetingRoomStore>((set) => ({
   setCamOn: (v) => set({ camOn: v }),
   setScreenSharing: (v) => set({ screenSharing: v }),
   setHandRaised: (v) => set({ handRaised: v }),
+  setCommunicationTabActive: (v) => set({ communicationTabActive: v }),
   setParticipantCount: (n) => set({ participantCount: n }),
   incrementUnread: () =>
     set((s) => ({ unreadMessageCount: s.unreadMessageCount + 1 })),
@@ -61,6 +65,7 @@ export const useMeetingRoomStore = create<MeetingRoomStore>((set) => ({
       camOn: true,
       screenSharing: false,
       handRaised: false,
+      communicationTabActive: false,
       participantCount: 0,
       unreadMessageCount: 0,
     }),

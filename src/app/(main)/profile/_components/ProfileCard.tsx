@@ -42,7 +42,6 @@ export default function ProfileCard() {
 
     setIsSubmitting(true);
     setError(null);
-
     try {
       const res = await changeProfileImageAction(selectedFile);
 
@@ -77,13 +76,13 @@ export default function ProfileCard() {
     setSelectedFile(null);
     setError(null);
   };
-
+  console.log(user)
   return (
     <>
       {/* Blur Background Modal */}
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/20">
-          <div className="w-100 bg-white rounded-2xl p-6">
+          <div className="w-[90vw] max-w-[400px] bg-white rounded-2xl p-6">
             <h2 className="text-xl font-semibold mb-5">
               Update Profile Picture
             </h2>
@@ -151,7 +150,7 @@ export default function ProfileCard() {
       )}
 
       {/* Profile Card */}
-      <div className="flex items-center gap-6 bg-white rounded-2xl shadow-sm border p-6">
+      <div className="flex flex-col sm:flex-row items-center gap-6 bg-white rounded-2xl shadow-sm border p-6">
         <div className="relative">
           <div className="w-35 h-35 rounded-full flex items-center justify-center bg-gray-100 text-gray-500 overflow-hidden">
             {avatar ? (
@@ -178,19 +177,21 @@ export default function ProfileCard() {
           </button>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 items-center sm:items-start text-center sm:text-left">
           <h1 className="text-2xl font-semibold">{user?.fullName}</h1>
 
           <p className="text-gray-500">{user?.email}</p>
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-3 bg-calendar text-ai px-3 py-1 rounded-full">
-              <IdCard size={20} />
-              {user?.role === "teacher" ? (
+          <div className="flex flex-wrap justify-center sm:justify-start items-center gap-3">
+
+            {user?.role === "teacher" ? (
+              <div className="flex items-center gap-3 bg-calendar text-ai px-3 py-1 rounded-full">
+                <IdCard size={20} />
                 <p className="font-medium">{user?.generation}th Gen</p>
-              ) : (
-                <p className="font-medium">{user?.className}</p>
-              )}
-            </div>
+              </div>
+
+            ) : (
+              <p className="font-medium">{user?.className}</p>
+            )}
             {user?.taughtSubjects?.map((subject) => (
               <div
                 key={subject.subjectId}
@@ -201,7 +202,7 @@ export default function ProfileCard() {
               </div>
             ))}
           </div>
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex justify-center sm:justify-start items-center gap-2 mt-2">
             {classroomAbbrev && (
               <div className="flex items-center gap-2 bg-indigo-50 px-3 py-1 rounded-full">
                 <span className="text-xs text-indigo-600">

@@ -15,6 +15,7 @@ type tabs = {
     variant?: "underlined";
     selectedKey?: string;
     onSelectionChange?: (key: string) => void;
+    hidePanel?: boolean;
 }
 
 const tabVariant = tv({
@@ -54,7 +55,7 @@ const tabVariant = tv({
     },
 });
 
-export default function PrimaryTabs({ tabs, colors = "secondary", selectedKey, onSelectionChange }: tabs) {
+export default function PrimaryTabs({ tabs, colors = "secondary", selectedKey, onSelectionChange, hidePanel }: tabs) {
 
     const styles = tabVariant({ color: colors });
     return (
@@ -68,6 +69,7 @@ export default function PrimaryTabs({ tabs, colors = "secondary", selectedKey, o
                 cursor: styles.cursor(),
                 tab: styles.tab(),
                 tabContent: styles.tabContent(),
+                ...(hidePanel && { panel: "hidden" }),
             }}>
             {tabs.map((item) => (
                 <Tab key={item?.key} title={item?.title}>

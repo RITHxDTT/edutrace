@@ -18,6 +18,8 @@ export const loginService = async (
     password: req?.password,
   };
 
+  console.log(formData)
+
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/login`,
     {
@@ -28,7 +30,7 @@ export const loginService = async (
       body: JSON.stringify(formData),
     }
   );
-
+  console.log(res)
   if (!res.ok) {
 
     let errorPayload: ApiErrorResponse | null = null;
@@ -61,6 +63,8 @@ export const registerService = async (
       body: JSON.stringify(data),
     }
   );
+
+  console.log(res)
 
   const result = await res.json().catch(() => null);
 
@@ -159,11 +163,11 @@ export const resetPasswordService = async (
 
 export const resendOtpCodeService = async (
   email: string,
-  action: "REGISTRATION" | "FORGOT_PASSWORD"
 ) => {
 
+
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/otp/resend`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/otp/send`,
     {
       method: "POST",
       headers: {
@@ -171,10 +175,11 @@ export const resendOtpCodeService = async (
       },
       body: JSON.stringify({
         email,
-        action
       }),
     }
   );
+  console.log(res)
+
 
   const data = await res.json().catch(() => null);
 
@@ -187,4 +192,3 @@ export const resendOtpCodeService = async (
 
   return data;
 };
-
