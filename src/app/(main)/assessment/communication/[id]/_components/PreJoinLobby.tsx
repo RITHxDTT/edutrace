@@ -117,7 +117,7 @@ export default function PreJoinLobby({
           autoPlay
           muted
           playsInline
-          className={`h-full w-full object-cover ${showVideo ? "" : "hidden"}`}
+          className={`h-full w-full object-cover scale-x-[-1] ${showVideo ? "" : "hidden"}`}
         />
 
         {!showVideo && (
