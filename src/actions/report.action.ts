@@ -4,8 +4,6 @@ import { auth } from "@/auth";
 import { taskBaseReport as taskBaseReportDto } from "@/types/report";
 import { deleteReport, getUserProfile } from "@/services/report.service";
 import { revalidatePath } from "next/cache";
-import { getReportDetail, getTeacherSubject } from "@/services/report.service";
-
 // import { getTeacherAssessments } from "@/services/assessment.service";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
