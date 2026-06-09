@@ -22,7 +22,6 @@ export default function AppNavbar() {
           {/* Profile Info */}
           <div className="flex items-center gap-2 sm:gap-5 justify-end shrink-0">
             <NotificationBell />
-            {/* user profile  */}
             <UserProfile />
           </div>
         </div>
