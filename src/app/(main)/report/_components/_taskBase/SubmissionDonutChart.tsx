@@ -116,7 +116,7 @@ export function SubmissionDonutChart({
         </div>
 
         <div className="w-full lg:w-auto">
-          <p className="text-lg sm:text-4xl font-medium text-gray-900 tracking-tight mb-4 sm:mb-5">
+          <p className="text-lg sm:text-2xl font-medium text-gray-900 tracking-tight mb-4 sm:mb-5">
             Submission
           </p>
 
@@ -127,8 +127,8 @@ export function SubmissionDonutChart({
                   className="w-4 h-4 rounded-full shrink-0"
                   style={{ background: progressColor }}
                 />
-                <span className="text-2xl text-gray-700 flex-1">{label}</span>
-                <span className="text-2xl font-medium text-gray-900">
+                <span className="text-[18px] text-gray-700 flex-1">{label}</span>
+                <span className="text-[18px] font-medium text-gray-900">
                   {count}
                 </span>
               </div>

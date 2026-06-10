@@ -113,7 +113,7 @@ export default function ClassBasedView({
       {/* KPI */}
 
       <div className="mt-6 flex flex-col xl:flex-row gap-4">
-        <div className="w-full xl:w-[400px]">
+        <div className="w-full xl:w-[400px] xl:flex-shrink-0">
           <KpiCardTaskBased
             totalStudents={summary.totalStudents}
             className={
