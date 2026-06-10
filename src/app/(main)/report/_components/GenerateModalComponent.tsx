@@ -4,7 +4,13 @@ import { useState, useRef, useEffect } from "react";
 import useSWR from "swr";
 import { z } from "zod";
 import { generateReportSchema } from "@/zod/generateReportSchema";
-import { GenerateReportModalProps, Classroom, Subject } from "@/types/classroom";
+import { DatePicker } from "@heroui/date-picker";
+import { parseDate, CalendarDate } from "@internationalized/date";
+import {
+  GenerateReportModalProps,
+  Classroom,
+  Subject,
+} from "@/types/classroom";
 
 import { PrimaryButton } from "@/components/Buttons/PrimaryButton";
 import {
@@ -22,9 +28,6 @@ import {
   Search,
   CheckCircle2,
 } from "lucide-react";
-
-
-
 
 const classReportSchema = generateReportSchema.extend({
   selectedClasses: z.array(z.string()).min(1, "Select at least one class"),
@@ -44,8 +47,10 @@ export default function GenerateReportModalComponent({
   const [reportName, setReportName] = useState("");
   const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+
+  const [startDate, setStartDate] = useState<CalendarDate | null>(null);
+  const [endDate, setEndDate] = useState<CalendarDate | null>(null);
+
   const [taskDropdownOpen, setTaskDropdownOpen] = useState(false);
   const [selectedTask, setSelectedTask] = useState("");
   const [taskSearch, setTaskSearch] = useState("");
@@ -99,8 +104,8 @@ export default function GenerateReportModalComponent({
     setReportName("");
     setSelectedClasses([]);
     setSelectedSubjects([]);
-    setStartDate("");
-    setEndDate("");
+    setStartDate(null);
+    setEndDate(null);
     setSelectedTask("");
     setTaskSearch("");
     setTaskDropdownOpen(false);
@@ -141,9 +146,9 @@ export default function GenerateReportModalComponent({
 
   async function handleFormSubmit() {
     const formData = {
-      reportName: reportName.trim(),
-      startDate,
-      endDate,
+      eportName: reportName.trim(),
+      startDate: startDate?.toString() ?? "",
+      endDate: endDate?.toString() ?? "",
       ...(activeTab === "class"
         ? { selectedClasses, selectedSubjects }
         : { selectedTask }),
@@ -176,16 +181,16 @@ export default function GenerateReportModalComponent({
         await taskBaseReport({
           title: reportName,
           assessmentId: selectedTask,
-          startDate,
-          endDate,
+          startDate: startDate?.toString() ?? "",
+          endDate: endDate?.toString() ?? "",
         });
       } else {
         await createClassReport({
           title: reportName,
           subjectIds: selectedSubjects,
           classroomIds: selectedClasses.includes("ALL") ? [] : selectedClasses,
-          startDate,
-          endDate,
+          startDate: startDate?.toString() ?? "",
+          endDate: endDate?.toString() ?? "",
         });
       }
 
@@ -335,7 +340,7 @@ export default function GenerateReportModalComponent({
                     </span>
                   ) : (
                     <>
-                      <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-700 select-none">
+                      {/* <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-700 select-none">
                         <input
                           type="checkbox"
                           className="rounded text-blue-600 border-gray-300 w-4 h-4 focus:ring-blue-500"
@@ -343,7 +348,7 @@ export default function GenerateReportModalComponent({
                           onChange={() => toggleClass("ALL")}
                         />
                         All Classes
-                      </label>
+                      </label> */}
 
                       {classrooms.map((cls) => (
                         <label
@@ -445,48 +450,53 @@ export default function GenerateReportModalComponent({
           )}
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-3">
               Analysis Window
             </label>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <input
-                  type="date"
+                <DatePicker
+                  label="Start Date"
                   value={startDate}
-                  onChange={(e) => {
-                    setStartDate(e.target.value);
-                    if (errors.startDate)
-                      setErrors({ ...errors, startDate: "" });
+                  onChange={(value) => {
+                    setStartDate(value);
+
+                    if (errors.startDate) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        startDate: "",
+                      }));
+                    }
                   }}
-                  className={`w-full border rounded-xl p-3 text-sm outline-none transition-colors ${
-                    errors.startDate
-                      ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                      : "focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-gray-700"
-                  }`}
+                  variant="bordered"
+                  radius="lg"
+                  showMonthAndYearPickers
+                  className="w-full"
+                  isInvalid={!!errors.startDate}
+                  errorMessage={errors.startDate}
                 />
-                {errors.startDate && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.startDate}
-                  </p>
-                )}
               </div>
               <div>
-                <input
-                  type="date"
+                <DatePicker
+                  label="End Date"
                   value={endDate}
-                  onChange={(e) => {
-                    setEndDate(e.target.value);
-                    if (errors.endDate) setErrors({ ...errors, endDate: "" });
+                  onChange={(value) => {
+                    setEndDate(value);
+
+                    if (errors.endDate) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        endDate: "",
+                      }));
+                    }
                   }}
-                  className={`w-full border rounded-xl p-3 text-sm outline-none transition-colors ${
-                    errors.endDate
-                      ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                      : "focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-gray-700"
-                  }`}
+                  variant="bordered"
+                  radius="lg"
+                  showMonthAndYearPickers
+                  className="w-full"
+                  isInvalid={!!errors.endDate}
+                  errorMessage={errors.endDate}
                 />
-                {errors.endDate && (
-                  <p className="text-red-500 text-xs mt-1">{errors.endDate}</p>
-                )}
               </div>
             </div>
           </div>
