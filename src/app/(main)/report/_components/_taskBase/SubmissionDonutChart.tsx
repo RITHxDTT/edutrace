@@ -94,7 +94,7 @@ export function SubmissionDonutChart({
 
   return (
     <div
-  className={`w-full${isExportMode ? " h-[160px]" : "p-2 sm:p-6"}`}>
+  className={`w-full ${isExportMode ? " h-[160px]" : "p-2 sm:p-6"}`}>
       <p className="text-sm sm:text-md font-medium text-gray-400 uppercase tracking-widest mb-1">
         Submission Behavior
       </p>
@@ -103,7 +103,7 @@ export function SubmissionDonutChart({
         On-Time, Late, and Missing Submission
       </p>
 
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
+      <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10 p-10">
         <div className="w-full max-w-[260px] sm:max-w-[300px] lg:max-w-[320px]">
           <svg
             viewBox={`0 0 ${VIEWBOX_SIZE} ${VIEWBOX_SIZE}`}

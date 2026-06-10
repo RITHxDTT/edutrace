@@ -2,6 +2,7 @@ import { getMyReports } from "@/services/report.service";
 import { getClassRoom } from "../../../services/classroom.service";
 import ReportClientPage from "./_components/ReportClient";
 import { Report } from "../../../types/report";
+import NavbarTitle from "@/components/Topbar/NavbarTitle";
 
 interface PageProps {
   searchParams: Promise<{

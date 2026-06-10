@@ -18,7 +18,7 @@ export default function KpiCardTaskBased({
   const formattedTotalStudents = String(totalStudents).padStart(2, "0");
 
   return (
-    <section className="w-full h-full">
+    <section className="w-full ">
       {/* mobile view */}
       <div className="block md:hidden relative w-full h-full">
         <svg
@@ -37,7 +37,7 @@ export default function KpiCardTaskBased({
         <div
           className="w-full shadow-sm"
           style={{
-            aspectRatio: "8 / 4",
+            aspectRatio: "12 / 4",
             clipPath: "url('#clipPathTaskBased')",
             backgroundColor: "white",
           }}
@@ -83,9 +83,9 @@ export default function KpiCardTaskBased({
       {/* desktop version */}
       <div className="hidden md:block relative">
         <div
-          className="relative w-full p-[10px]"
+          className="relative w-full  "
           style={{
-            aspectRatio: "402 / 460",
+            aspectRatio: "470 / 550",
           }}
         >
           <TaskBase
@@ -94,6 +94,7 @@ export default function KpiCardTaskBased({
               inset-0
               w-full
               h-full
+            
             "
           />
 

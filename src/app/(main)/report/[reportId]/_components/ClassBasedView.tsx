@@ -95,7 +95,7 @@ export default function ClassBasedView({
     <div className={isExportMode ? "pb-4 px-2" : "pb-20 px-4 md:px-6"}>
       {/* HEADER */}
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 ">
         <div>
           <h1 className="text-2xl font-semibold">{report.reportName}</h1>
 
@@ -113,7 +113,7 @@ export default function ClassBasedView({
       {/* KPI */}
 
       <div className="mt-6 flex flex-col xl:flex-row gap-4">
-        <div className="w-full xl:w-[340px]">
+        <div className="w-full xl:w-[410px]">
           <KpiCardTaskBased
             totalStudents={summary.totalStudents}
             className={
@@ -139,7 +139,7 @@ export default function ClassBasedView({
 
       {isAllClasses && (
         <section
-          className={`grid grid-cols-1 xl:grid-cols-4 gap-4 ${isExportMode ? "mt-[180px] mb-[180px]" : "mt-6"}`}>
+          className={`grid grid-cols-1 xl:grid-cols-4 gap-4  ${isExportMode ? "mt-[180px] mb-[180px]" : "mt-6"}`}>
           <div className={`xl:col-span-3 flex flex-col ${isExportMode ? " gap-15 " :"gap-4" }`}>
             <div className="bg-white rounded-2xl p-5 ">
               <h3 className="text-xl font-semibold mb-4">

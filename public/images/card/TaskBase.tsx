@@ -4,15 +4,14 @@ type Props = {
   className?: string;
 };
 
-export default function TaskBase({ className }: Props) {
+export default function TaskBase({ className = "" }: Props) {
   return (
     <svg
       className={className}
-      width="402"
-      height="480"
       viewBox="0 0 402 480"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      preserveAspectRatio="xMidYMid meet"
     >
       <g filter="url(#filter0_d_56157_40165)">
         <path
@@ -27,7 +26,7 @@ export default function TaskBase({ className }: Props) {
           x="0"
           y="0"
           width="402"
-          height="480"
+          height="580"
           filterUnits="userSpaceOnUse"
           colorInterpolationFilters="sRGB"
         >
