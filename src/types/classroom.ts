@@ -34,4 +34,21 @@ export interface ClassroomProps {
     classrooms: ClassroomType[]
 }
 
-export type { ClassroomType }
+interface Classroom {
+  classroomId: string;
+  className: string;
+  classroomAbbre: string;
+}
+
+interface Subject {
+  subjectId: string;
+  subjectName: string;
+}
+
+interface GenerateReportModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onGenerateSuccess?: () => void;
+}
+
+export type { ClassroomType, Classroom, Subject, GenerateReportModalProps }
