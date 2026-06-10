@@ -3,15 +3,18 @@
 import { useSyncExternalStore } from "react";
 import { parseAbsoluteToLocal } from "@internationalized/date";
 
+let currentTimeSnapshot = Date.now();
+
 const timeStore = {
   subscribe(cb: () => void) {
     const interval = setInterval(() => {
+      currentTimeSnapshot = Date.now();
       cb();
     }, 60000); 
     return () => clearInterval(interval);
   },
   getSnapshot() {
-    return Date.now(); 
+    return currentTimeSnapshot; 
   },
   getServerSnapshot() {
     return null;
