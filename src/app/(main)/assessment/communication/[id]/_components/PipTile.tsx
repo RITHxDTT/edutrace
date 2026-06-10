@@ -151,7 +151,7 @@ export default function PipTile({
         autoPlay
         playsInline
         muted
-        className={`h-full w-full ${isScreenShare ? "object-contain" : "scale-x-[-1] object-cover"} ${showAvatar ? "invisible" : ""}`}
+        className={`h-full w-full ${isScreenShare ? "object-contain" : "object-cover scale-x-[-1] "} ${showAvatar ? "invisible" : ""}`}
       />
 
       {/* Avatar fallback */}
