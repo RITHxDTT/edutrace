@@ -6,6 +6,8 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Microphone, MicrophoneSlash, Video, VideoSlash } from "iconsax-react";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
+import { getMembers } from "@/services/meeting-room.service";
+import type { MeetingMember } from "@/types/meeting-room";
 import { useWebRTC } from "../hooks/useWebRTC";
 import { useStompChat } from "../hooks/useStompChat";
 import { useMeetingParticipants } from "../hooks/useMeetingParticipants";
@@ -50,6 +52,7 @@ export default function CommunicationRoom({
   const [joined, setJoined] = useState(false);
   const [preferredCamOn, setPreferredCamOn] = useState(true);
   const [preferredMicOn, setPreferredMicOn] = useState(true);
+  const [members, setMembers] = useState<MeetingMember[]>([]);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   // PiP state
   const [pipDismissed, setPipDismissed] = useState(false);
@@ -59,6 +62,13 @@ export default function CommunicationRoom({
   useEffect(() => {
     setIsBrowser(true);
   }, []);
+
+  useEffect(() => {
+    if (!accessToken || readOnly) return;
+    getMembers(meetingRoomId, accessToken)
+      .then(setMembers)
+      .catch(() => {});
+  }, [meetingRoomId, accessToken, readOnly]);
 
   // Delay WebRTC initialization until the user explicitly joins.
   // In read-only mode WebRTC never initializes; STOMP chat connects immediately.
@@ -219,6 +229,7 @@ export default function CommunicationRoom({
             isConnected={isConnected}
             meetingRoomId={meetingRoomId}
             accessToken={accessToken}
+            members={[]}
             onLoadMore={loadMore}
             onSend={() => {}}
             readOnly
@@ -274,6 +285,7 @@ export default function CommunicationRoom({
             isConnected={isConnected}
             meetingRoomId={meetingRoomId}
             accessToken={accessToken}
+            members={members}
             onLoadMore={loadMore}
             onSend={sendMessage}
           />

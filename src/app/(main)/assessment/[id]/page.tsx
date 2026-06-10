@@ -25,6 +25,7 @@ import AssessmentHeaderActions from "./_components/AssessmentHeaderActions";
 import StudentWorkPage from "./_components/StudentWork/StudentWorkPage";
 import StudentAssessmentTabs from "./_components/StudentAssessmentTabs";
 import TeacherAssessmentTabs from "./_components/TeacherAssessmentTabs";
+import AssessmentPresenceTracker from "./_components/AssessmentPresenceTracker";
 import { getMeetingRoomByAssessmentIdAction } from "@/actions/meeting.action";
 
 type PageProps = {
@@ -109,8 +110,6 @@ export default async function page({ params }: PageProps) {
       )}
     </div>
   );
-
-  console.log(meetingRoomId)
 
   return (
     <div className="flex flex-col gap-5">
@@ -199,6 +198,13 @@ export default async function page({ params }: PageProps) {
           )}
         </div>
       </div>
+
+      {meetingRoomId && !isAssessmentClosed && (
+        <AssessmentPresenceTracker
+          meetingRoomId={meetingRoomId}
+          isTeacher={isTeacher ?? false}
+        />
+      )}
 
       <div className="w-full">
         {isStudent ? (
