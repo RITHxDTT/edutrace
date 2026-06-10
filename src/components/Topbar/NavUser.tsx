@@ -10,93 +10,105 @@ import {
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
-} from "@/components/ui/sidebar"
+import { useSidebar } from "@/components/ui/sidebar"
 import LogoutButton from "../Sidebar/_components/LogoutButton"
-import { CreditCard, MoreVerticalIcon, UserCircle } from "lucide-react"
-import { Notification } from "iconsax-react"
+import { ArrowSwapVertical, ProfileCircle } from "iconsax-react"
 import { Session } from "next-auth"
+import { useRouter } from "next/navigation"
 
 type NavUserProps = {
     session: Session;
 }
 
+function getInitials(fullName?: string | null) {
+    if (!fullName) return "U"
+    return fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+}
+
 export function NavUser({ session }: NavUserProps) {
-    const user = session.user;
+    const router = useRouter()
+    const user = session.user
     const { isMobile } = useSidebar()
+    const initials = getInitials(user?.fullName)
 
     return (
-        <SidebarMenu>
-            <SidebarMenuItem>
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <SidebarMenuButton
-                            size="lg"
-                            className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                        >
-                            <Avatar className="h-8 w-8 rounded-lg grayscale">
-                                <AvatarImage src={user?.profileImageUrl} alt={user?.fullName} />
-                                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                            </Avatar>
-                            <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-medium">{user?.fullName}</span>
-                                <span className="truncate text-xs text-muted-foreground">
-                                    {user?.email}
-                                </span>
-                            </div>
-                            <MoreVerticalIcon className="ml-auto size-4" />
-                        </SidebarMenuButton>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-                        side={isMobile ? "bottom" : "right"}
-                        align="end"
-                        sideOffset={4}
+        <DropdownMenu>
+            <DropdownMenuTrigger className="flex w-full items-center gap-2.5 rounded-xl px-2 py-2 outline-none hover:bg-[#EEEFFF] transition-colors cursor-pointer">
+                <Avatar className="h-9 w-9 shrink-0 rounded-xl">
+                    <AvatarImage src={user?.profileImageUrl} alt={user?.fullName} />
+                    <AvatarFallback
+                        className="rounded-xl text-sm font-semibold text-white"
+                        style={{ background: "linear-gradient(to bottom, #241cab 37%, #5d53f9 82%)" }}
                     >
-                        <DropdownMenuLabel className="p-0 font-normal">
-                            <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                <Avatar className="h-8 w-8 rounded-lg">
-                                    <AvatarImage src={user?.profileImageUrl} alt={user?.fullName} />
-                                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                                </Avatar>
-                                <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-medium">{user?.name}</span>
-                                    <span className="truncate text-xs text-muted-foreground">
-                                        {user?.email}
-                                    </span>
-                                </div>
-                            </div>
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                <UserCircle />
-                                Account
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <CreditCard />
-                                Billing
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Notification />
-                                Notifications
-                            </DropdownMenuItem>
-                        </DropdownMenuGroup>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <LogoutButton />
+                        {initials}
+                    </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1 text-left">
+                    <p className="truncate text-sm font-semibold leading-tight text-gray-800">
+                        {user?.fullName}
+                    </p>
+                    <p className="truncate text-xs leading-tight text-gray-500">
+                        {user?.email}
+                    </p>
+                </div>
+                <ArrowSwapVertical size={16} className="shrink-0 text-gray-400" />
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent
+                className="min-w-64 overflow-hidden rounded-xl border border-gray-100 p-0 shadow-lg"
+                side={isMobile ? "bottom" : "right"}
+                align="end"
+                sideOffset={8}
+            >
+                {/* Gradient header */}
+                <div
+                    className="flex items-center gap-3 px-4 py-3.5"
+                >
+                    <Avatar className="h-10 w-10 shrink-0 rounded-xl border-2 border-white/30">
+                        <AvatarImage src={user?.profileImageUrl} alt={user?.fullName} />
+                        <AvatarFallback className="rounded-xl bg-white/20 font-semibold ">
+                            {initials}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold leading-tight ">
+                            {user?.fullName}
+                        </p>
+                        <p className="truncate text-xs leading-tight">
+                            {user?.email}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Menu items */}
+                <div className="p-1.5">
+                    <DropdownMenuGroup>
+                        <DropdownMenuItem
+                            onClick={() => router.push("/profile")}
+                            className="flex items-center px-4 py-1 gap-5 cursor-pointer rounded-lg"
+                        >
+                            <ProfileCircle size={20} color="#6B7280" />
+                            <span>View Profile</span>
                         </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </SidebarMenuItem>
-        </SidebarMenu>
+                    </DropdownMenuGroup>
+                </div>
+
+                <DropdownMenuSeparator className="my-0" />
+
+                <div className="p-1.5">
+                    <div className="w-full rounded-lg hover:bg-red-50 transition-colors">
+                        <LogoutButton />
+                    </div>
+                </div>
+            </DropdownMenuContent>
+        </DropdownMenu>
     )
 }

@@ -113,11 +113,11 @@ export default function AssessmentCard({
               </span>
             </div>
             <div className="flex flex-col flex-1 min-w-0">
-              <h2 className="text-sm sm:text-base md:text-[17px] font-semibold text-linear-main line-clamp-2">
+              <h2 className="text-[18px] sm:text-md md:text-[20px] font-semibold text-linear-main line-clamp-2">
                 {title}
               </h2>
               <span
-                className={`${styles.tiptapPreview} text-xs md:text-sm text-primary leading-snug line-clamp-2`}
+                className={`${styles.tiptapPreview} text-xs mt-5 md:text-sm text-primary leading-snug line-clamp-1 md:line-clamp-2`}
                 dangerouslySetInnerHTML={{ __html: description ?? "" }}
               />
               <div className="mt-auto flex flex-wrap justify-between items-center border-b py-3 gap-2">
@@ -137,14 +137,14 @@ export default function AssessmentCard({
                 </span>
                 <Link
                   href={`/assessment/${assessmentId}`}
-                  className="flex items-center gap-1.5 font-medium text-[#0948F7] text-xs md:text-sm hover:underline transition-all shrink-0"
+                  className="flex items-center gap-1.5 font-medium text-[#0948F7] text-sm md:text-sm hover:underline transition-all shrink-0"
                   onClick={(e) => e.stopPropagation()}
                 >
                   View Details <ArrowRight2 size={14} color="black" />
                 </Link>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:justify-between gap-1.5 text-xs text-border-focus pt-3">
+              <div className="flex justify-between sm:flex-row sm:justify-between gap-1.5 text-xs text-border-focus pt-3">
                 <span className="flex items-center gap-1">
                   <Calendar2 size={14} color="#6B7280" /> Start:{" "}
                   {startAt ? new Date(startAt).toLocaleDateString("en-GB") : "N/A"}

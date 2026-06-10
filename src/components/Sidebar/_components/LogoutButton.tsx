@@ -18,7 +18,7 @@ export default function LogoutButton() {
       <button
         type="button"
         onClick={onOpen}
-        className="flex items-center px-4 gap-5"
+        className="flex w-full items-center px-4 py-1 gap-5"
       >
         <LogoutCurve color="#E62020" size={20} />
         <span className="text-red">Logout</span>

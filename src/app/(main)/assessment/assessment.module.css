@@ -1,18 +1,34 @@
 :root {
     /* BADGE BACKGROUND COLORS */
+    --badge-color-not-yet: #F3F4F6;
     --badge-color-is-progress: #E5EEFE;
-    --badge-color-completed: #E3F5EE --badge-color-soon: #F8EDEA;
-    --badge-color-closed: #;
+    --badge-color-scheduled: #FFF8E1;
+    --badge-color-completed: #E3F5EE;
+    --badge-color-soon: #F8EDEA;
+    --badge-color-closed: #FEE2E2;
 
     /* BADGE TEXT COLORS */
+    --badge-text-color-not-yet: #6B7280;
     --badge-text-color-is-progress: #0B52F7;
+    --badge-text-color-scheduled: #D97706;
     --badge-text-color-completed: #127338;
     --badge-text-color-soon: #E75D21;
+    --badge-text-color-closed: #DC2626;
+}
+
+.badgeNotYet {
+    background-color: var(--badge-color-not-yet);
+    color: var(--badge-text-color-not-yet);
 }
 
 .badgeInProgress {
     background-color: var(--badge-color-is-progress);
     color: var(--badge-text-color-is-progress);
+}
+
+.badgeScheduled {
+    background-color: var(--badge-color-scheduled);
+    color: var(--badge-text-color-scheduled);
 }
 
 .badgeCompleted {
@@ -23,6 +39,11 @@
 .badgeSoon {
     background-color: var(--badge-color-soon);
     color: var(--badge-text-color-soon);
+}
+
+.badgeClosed {
+    background-color: var(--badge-color-closed);
+    color: var(--badge-text-color-closed);
 }
 
 .tiptapPreview {

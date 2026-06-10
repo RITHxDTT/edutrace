@@ -966,6 +966,9 @@ export function useWebRTC({
       screenStreamRef.current?.getTracks().forEach((t) => t.stop());
       placeholderVideoTrackRef.current?.stop();
       placeholderVideoTrackRef.current = null;
+      localStreamRef.current = null;
+      setLocalStream(null);
+      setScreenStream(null);
 
       if (joinedRef.current) {
         joinedRef.current = false;
