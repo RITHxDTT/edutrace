@@ -99,7 +99,7 @@ export default function TaskBasedView({
         {/* KPI */}
 
         <div className="mt-6 flex flex-col xl:flex-row gap-4 ">
-          <div className="w-full xl:w-[340px]">
+          <div className="w-full xl:w-[420px]">
             <KpiCardTaskBased
               totalStudents={totalStudents}
               className="Active Classroom"
@@ -119,12 +119,7 @@ export default function TaskBasedView({
 
         {/* CHARTS */}
 
-      <div
-  className={`
-grid grid-cols-1 xl:grid-cols-2 gap-4
-${isExportMode ? "mt-[280px] p-5" : "mt-6"}
-`}
->
+      <div className={`grid grid-cols-1 xl:grid-cols-2 gap-4 ${isExportMode ? "mt-[280px] p-5" : "mt-6"}`}>
           <div
             className="bg-white rounded-2xl p-2  flex flex-col">
             <h3 className="font-medium mb-2">Average Scores</h3>

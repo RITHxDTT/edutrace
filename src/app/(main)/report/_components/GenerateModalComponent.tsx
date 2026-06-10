@@ -146,7 +146,7 @@ export default function GenerateReportModalComponent({
 
   async function handleFormSubmit() {
     const formData = {
-      eportName: reportName.trim(),
+      reportName: reportName.trim(),
       startDate: startDate?.toString() ?? "",
       endDate: endDate?.toString() ?? "",
       ...(activeTab === "class"

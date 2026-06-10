@@ -113,7 +113,7 @@ export default function ClassBasedView({
       {/* KPI */}
 
       <div className="mt-6 flex flex-col xl:flex-row gap-4">
-        <div className="w-full xl:w-[410px]">
+        <div className="w-full xl:w-[400px]">
           <KpiCardTaskBased
             totalStudents={summary.totalStudents}
             className={
@@ -187,8 +187,8 @@ export default function ClassBasedView({
       {isSingleClass && (
         <>
           {isExportMode ? (
-            <div className="mt-6 flex flex-col gap-4">
-              <div className="p-5 bg-white rounded-2xl">
+            <div className="mt-6 flex flex-col gap-4 ">
+              <div className="p-10 bg-white rounded-2xl">
                 <h3 className="font-medium mb-2">Average Scores</h3>
 
                 <TickPlacementBars data={scoreDistribution?.data ?? []} />
@@ -204,9 +204,9 @@ export default function ClassBasedView({
               </div>
             </div>
           ) : (
-            <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div className="p-5 bg-white rounded-2xl">
-                <h3 className="font-medium mb-2">Average Scores</h3>
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 p-10">
+              <div className="p-10 bg-white rounded-2xl ">
+                <h3 className="font-medium mb-2 ">Average Scores</h3>
 
                 <TickPlacementBars data={scoreDistribution?.data ?? []} />
               </div>

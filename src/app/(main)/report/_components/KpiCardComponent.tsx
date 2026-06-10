@@ -49,7 +49,7 @@ export default function KpiCard({
               </h2>
             </div>
 
-            <p className="text-xs md:text-sm text-indigo-500">{subtitle}</p>
+            <p className="text-2xl md:text-sm text-indigo-500">{subtitle}</p>
           </div>
         </div>
 

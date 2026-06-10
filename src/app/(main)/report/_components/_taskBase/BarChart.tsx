@@ -16,7 +16,7 @@ export default function TickPlacementBars({ data }: Props) {
   }));
 
   return (
-    <div className="w-full max-w-[600px]">
+    <div className="w-full max-w-[700px]">
       <BarChart
         dataset={dataset}
         xAxis={[
@@ -36,7 +36,7 @@ export default function TickPlacementBars({ data }: Props) {
           },
         ]}
         
-        height={380}
+        height={450}
         margin={{ left: 10, right: 10, top: 10, bottom: 30 }}
         borderRadius={16}
       />

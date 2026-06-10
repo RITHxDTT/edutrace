@@ -35,9 +35,9 @@ export default function KpiCardTaskBased({
         </svg>
 
         <div
-          className="w-full shadow-sm"
+          className="w-full "
           style={{
-            aspectRatio: "12 / 4",
+            aspectRatio: "12 / 7",
             clipPath: "url('#clipPathTaskBased')",
             backgroundColor: "white",
           }}
