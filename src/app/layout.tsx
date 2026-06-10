@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import { cn } from "@/lib/utils";
 import { HeroUIProvider } from "@heroui/system";
 
+
 const fredoka = Fredoka({
   variable: "--font-fredoka-sans",
   subsets: ["latin"],

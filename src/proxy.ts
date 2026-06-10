@@ -5,9 +5,14 @@ import { NextAuthRequest } from "next-auth";
 export default async function proxy(req: NextAuthRequest) {
   const session = await auth();
   const { nextUrl } = req;
-  const role = session?.user?.role;
 
   const isAuthenticated = !!session;
+
+  
+  if (nextUrl.pathname.startsWith("/report/print/")) {
+    return NextResponse.next();
+  }
+
   const isAuthPage =
     nextUrl.pathname === "/login" ||
     nextUrl.pathname === "/register" ||
@@ -27,7 +32,6 @@ export default async function proxy(req: NextAuthRequest) {
 
 export const config = {
   matcher: [
-    "//:path*",
     "/dashboard/:path*",
     "/assessment/:path*",
     "/report/:path*",
@@ -35,5 +39,3 @@ export const config = {
     "/profile/:path*"
   ],
 };
-
-
