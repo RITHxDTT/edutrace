@@ -5,10 +5,10 @@ import { ClipboardText } from "iconsax-react";
 import { MappedNotification, resolveNotificationPath } from "@/components/notifications/notification.utils";
 import { Notification } from "@/components/notifications/notification.types";
 import RelativeTime from "./RelativeTime";
-import { useRouter } from "next/navigation";
 
 interface NotificationItemProps {
   notification: MappedNotification;
+  // Parent (NotificationDropdown) owns navigation — item just reports the click
   onClick: (notification: MappedNotification) => void;
 }
 
@@ -19,49 +19,73 @@ type IconConfig = {
 };
 
 const TYPE_ICON_MAP: Record<Notification["type"], IconConfig> = {
-  ASSESSMENT_ASSIGNED: { icon: ClipboardText, bg: "bg-accent-lavender", color: "#2E25C9" },
-  ASSESSMENT_DUE: { icon: Clock, bg: "bg-accent-sand", color: "#DEA20A" },
-  SUBMISSION_GRADED: { icon: CheckCircle, bg: "bg-[#E8F8F4]", color: "#10B981" },
-  MEETING_STARTED: { icon: Video, bg: "bg-accent-ice", color: "#35b9ec" },
-  MENTION: { icon: AtSign, bg: "bg-[#FFF0F0]", color: "#e62020" },
-  SUBMISSION_RECEIVED: { icon: Upload, bg: "bg-accent-sand", color: "#DEA20A" },
+  ASSESSMENT_ASSIGNED: { icon: ClipboardText, bg: "bg-accent-lavender", color: "#5D53F9" },
+  ASSESSMENT_DUE:      { icon: Clock,          bg: "bg-accent-sand",     color: "#DEA20A" },
+  SUBMISSION_GRADED:   { icon: CheckCircle,    bg: "bg-[#E8F8F4]",       color: "#10B981" },
+  MEETING_STARTED:     { icon: Video,          bg: "bg-accent-ice",      color: "#35b9ec" },
+  MENTION:             { icon: AtSign,         bg: "bg-[#FFF0F0]",       color: "#e62020" },
+  SUBMISSION_RECEIVED: { icon: Upload,         bg: "bg-accent-sand",     color: "#DEA20A" },
 };
 
 export default function NotificationItem({ notification, onClick }: NotificationItemProps) {
-  const router = useRouter();
-
-  const handleClick = () => {
-    onClick(notification);
-    const path = resolveNotificationPath(notification);
-    if (path) router.push(path);
-  };
-
-  const { icon: Icon, bg, color } = TYPE_ICON_MAP[notification.type] ?? {
-    icon: Bell,
-    bg: "bg-[#E8F8F4]",
-    color: "#10B981",
-  };
+  const hasLink = !!resolveNotificationPath(notification);
+  const stateClasses = notification.isRead
+    ? "bg-white hover:bg-gray-50/80"
+    : "bg-[#F8F7FF] hover:bg-[#F0EDFF]";
 
   return (
-    <div
-      onClick={handleClick}
-      className={`flex items-start gap-4 px-6 py-3.5 hover:bg-slate-50/50 transition-colors cursor-pointer ${!notification.isRead ? "bg-slate-50/10 font-semibold" : "opacity-80"
-        }`}
+    <button
+      type="button"
+      onClick={() => onClick(notification)}
+      className={`group flex w-full items-start gap-3 rounded-[18px] px-4 py-3 text-left ring-1 ring-gray-100 transition-colors sm:gap-4 sm:px-5 sm:py-4 ${stateClasses}
+        ${hasLink ? "cursor-pointer" : "cursor-default"}`}
+      aria-label={hasLink ? `Open notification: ${notification.title}` : notification.title}
     >
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${bg}`}>
-        <Icon className="w-5 h-5" size={20} color={color} strokeWidth={2.5} />
+      <div
+        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ring-1 transition-transform group-hover:scale-[1.02] sm:h-12 sm:w-12 ${
+          notification.isRead
+            ? `${(TYPE_ICON_MAP[notification.type] ?? { bg: "bg-[#E8F8F4]" }).bg} ring-gray-100`
+            : "bg-white ring-[#DED9FF]"
+        }`}
+      >
+        {(() => {
+          const { icon: Icon, color } = TYPE_ICON_MAP[notification.type] ?? {
+            icon: Bell,
+            color: "#10B981",
+          };
+          return <Icon className="h-5 w-5" size={20} color={color} strokeWidth={2.5} />;
+        })()}
       </div>
 
-      <div className="flex-1 min-w-0 pt-0.5">
-        <h3 className={`text-[15px] leading-snug ${!notification.isRead ? "font-bold text-gray-950" : "font-medium text-gray-700"}`}>
-          {notification.title}
-        </h3>
-        <p className={`text-[13px] mt-0.5 line-clamp-1 ${!notification.isRead ? "font-semibold text-gray-600" : "font-normal text-gray-400"}`}>
+      <div className="min-w-0 flex-1 pt-0.5">
+        <div className="flex min-w-0 items-start gap-2">
+          {!notification.isRead && (
+            <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#5D53F9]" />
+          )}
+          <h3
+            className={`line-clamp-2 text-[14px] leading-snug sm:text-[15px] ${
+              !notification.isRead
+                ? "font-bold text-[#111827]"
+                : "font-semibold text-[#4B5563]"
+            }`}
+          >
+            {notification.title}
+          </h3>
+        </div>
+        <p
+          className={`mt-0.5 line-clamp-2 text-[12px] sm:text-[13px] ${
+            !notification.isRead
+              ? "font-medium text-[#4B5563]"
+              : "font-normal text-[#9CA3AF]"
+          }`}
+        >
           {notification.content}
         </p>
       </div>
 
-      <RelativeTime createdAt={notification.createdAt} />
-    </div>
+      <div className="shrink-0 pt-0.5">
+        <RelativeTime createdAt={notification.createdAt} isRead={notification.isRead} />
+      </div>
+    </button>
   );
 }

@@ -18,21 +18,33 @@ const timeStore = {
   }
 };
 
-export default function RelativeTime({ createdAt }: { createdAt: string }) {
-  const now = useSyncExternalStore(timeStore.subscribe, timeStore.getSnapshot, timeStore.getServerSnapshot);
+type RelativeTimeProps = {
+  createdAt: string;
+  isRead?: boolean;
+};
 
-  if (!now) return <span className="text-[13px] font-medium text-gray-400">...</span>;
+function timeClassName(isRead?: boolean) {
+  return `whitespace-nowrap text-[11px] font-medium sm:text-[13px] ${
+    isRead ? "text-[#9CA3AF]" : "text-[#5D53F9]"
+  }`;
+}
+
+export default function RelativeTime({ createdAt, isRead }: RelativeTimeProps) {
+  const now = useSyncExternalStore(timeStore.subscribe, timeStore.getSnapshot, timeStore.getServerSnapshot);
+  const className = timeClassName(isRead);
+
+  if (!now) return <span className={className}>...</span>;
 
   let created: number;
   try {
     created = parseAbsoluteToLocal(createdAt).toDate().getTime();
-  } catch (e) {
+  } catch {
     const d = new Date(createdAt);
     created = d.getTime();
   }
 
   if (isNaN(created)) {
-    return <div className="text-[13px] font-medium text-disabled whitespace-nowrap pl-2 pt-1 self-start">Invalid date</div>;
+    return <div className={className}>Invalid date</div>;
   }
 
   const diffInMs = created - now;
@@ -41,7 +53,7 @@ export default function RelativeTime({ createdAt }: { createdAt: string }) {
 
   if (absSeconds < 60) {
     return (
-      <div className="text-[13px] font-medium text-disabled whitespace-nowrap pl-2 pt-1 self-start">
+      <div className={className}>
         just now
       </div>
     );
@@ -56,7 +68,7 @@ export default function RelativeTime({ createdAt }: { createdAt: string }) {
   const absMinutes = Math.abs(diffInMinutes);
   if (absMinutes < 60) {
     return (
-      <div className="text-[13px] font-medium text-disabled whitespace-nowrap pl-2 pt-1 self-start">
+      <div className={className}>
         {rtf.format(diffInMinutes, "minute")}
       </div>
     );
@@ -66,7 +78,7 @@ export default function RelativeTime({ createdAt }: { createdAt: string }) {
   const absHours = Math.abs(diffInHours);
   if (absHours < 24) {
     return (
-      <div className="text-[13px] font-medium text-disabled whitespace-nowrap pl-2 pt-1 self-start">
+      <div className={className}>
         {rtf.format(diffInHours, "hour")}
       </div>
     );
@@ -76,7 +88,7 @@ export default function RelativeTime({ createdAt }: { createdAt: string }) {
   const absDays = Math.abs(diffInDays);
   if (absDays < 7) {
     return (
-      <div className="text-[13px] font-medium text-disabled whitespace-nowrap pl-2 pt-1 self-start">
+      <div className={className}>
         {rtf.format(diffInDays, "day")}
       </div>
     );
@@ -84,7 +96,7 @@ export default function RelativeTime({ createdAt }: { createdAt: string }) {
 
   const diffInWeeks = Math.trunc(diffInDays / 7);
   return (
-    <div className="text-[13px] font-medium text-disabled whitespace-nowrap pl-2 pt-1 self-start">
+    <div className={className}>
       {rtf.format(diffInWeeks, "week")}
     </div>
   );

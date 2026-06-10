@@ -5,14 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="62495669-76ac-4f43-953c-f5dab3f93f86" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.env.example" beforeDir="false" afterPath="$PROJECT_DIR$/.env.example" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/(main)/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/(main)/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/KnockProviderWrapper.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/KnockProviderWrapper.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/notifications/NotificationBell.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/NotificationBell.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/notifications/NotificationDropdown.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/NotificationDropdown.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/notifications/NotificationItem.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/NotificationItem.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/NotificationListener.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/NotificationListener.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/PushNotificationInitializer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/PushNotificationInitializer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/RelativeTime.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/RelativeTime.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/notification.types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/notification.types.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/notifications/notification.utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/notification.utils.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/useAppNotifications.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/useAppNotifications.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/useNotificationStore.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/useNotificationStore.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/notifications/usePushNotification.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/notifications/usePushNotification.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,12 +25,23 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="244" />
-    <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
+    <option name="cachedIndexableFilesCount" value="330" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "HornVanhong"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/14th-Gen-Basic-Course-Final-Project/HRD-Room-UI.git",
+    "accountId": "8d5bdd08-543e-4447-bcff-87676620b43e"
+  }
+}]]></component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -112,12 +128,12 @@
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "full.screen.before.presentation.mode": "false",
-    "git-widget-placeholder": "feature-notification",
+    "git-widget-placeholder": "fix-notification",
     "javascript.preferred.runtime.type.id": "node",
     "js.debugger.nextJs.config.created.client": "true",
     "js.debugger.nextJs.config.created.server": "true",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "D:/HRD-Room-Project/GrowthyFlow/HRD-Room-UI",
+    "last_opened_file_path": "/Users/themacstore/WebstormProjects/HRD-Room-UI",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -125,7 +141,7 @@
     "nodejs_package_manager_path": "npm",
     "npm.Next.js: server-side.executor": "Run",
     "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "/home/yannvanneth/Documents/KSHRD/HRDRoom/HRD-Room-UI/node_modules/typescript/lib",
+    "ts.external.directory.path": "/Users/themacstore/WebstormProjects/HRD-Room-UI/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -147,7 +163,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.24374.125" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.25134.101" />
       </set>
     </attachedChunks>
   </component>
@@ -160,6 +176,7 @@
       <updated>1779177586697</updated>
       <workItem from="1779177588654" duration="20142000" />
       <workItem from="1780408817389" duration="4741000" />
+      <workItem from="1781053894593" duration="336000" />
     </task>
     <servers />
   </component>

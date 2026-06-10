@@ -1,0 +1,58 @@
+import { Notification } from "./notification.types";
+
+export const mockNotifications: Notification[] = [
+  {
+    notificationId: crypto.randomUUID(),
+    title: "New Assignment Published",
+    content: "UI Design Systems - Module 4",
+    type: "ASSESSMENT_ASSIGNED",
+    isRead: false,
+    createdAt: "2026-05-24T13:18:36.532Z",
+    link: "/assessment/mock-assessment-001",
+  },
+  {
+    notificationId: crypto.randomUUID(),
+    title: "Meeting Started",
+    content: "Advanced UX Research room is live.",
+    type: "MEETING_STARTED",
+    isRead: false,
+    createdAt: "2026-05-24T12:00:00.000Z",
+    link: "/assessment/communication/mock-room-002",
+  },
+  {
+    notificationId: crypto.randomUUID(),
+    title: "Instructor Feedback",
+    content: "Your Data Structure submission was reviewed.",
+    type: "SUBMISSION_GRADED",
+    isRead: true,
+    createdAt: "2026-05-24T12:18:36.532Z",
+    link: "/assessment/mock-assessment-003",
+  },
+  {
+    notificationId: crypto.randomUUID(),
+    title: "Assessment Due Soon",
+    content: "Advanced UX Research is due tomorrow.",
+    type: "ASSESSMENT_DUE",
+    isRead: false,
+    createdAt: "2026-05-21T09:00:00.000Z",
+    link: "/assessment/mock-assessment-004",
+  },
+  {
+    notificationId: crypto.randomUUID(),
+    title: "New Submission Received",
+    content: "Alex submitted Module 3 assignment.",
+    type: "SUBMISSION_RECEIVED",
+    isRead: true,
+    createdAt: "2026-05-20T15:30:22.000Z",
+    link: "/assessment/mock-assessment-005",
+  },
+  {
+    notificationId: crypto.randomUUID(),
+    title: "You Were Mentioned",
+    content: "Alex mentioned you in a comment.",
+    type: "MENTION",
+    isRead: false,
+    createdAt: "2026-05-20T11:15:00.000Z",
+    link: "/dashboard?mention=mock-msg-006",
+  },
+];
