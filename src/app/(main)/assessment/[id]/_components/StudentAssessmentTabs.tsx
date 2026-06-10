@@ -101,6 +101,7 @@ export default function StudentAssessmentTabs({
   const [now, setNow] = useState(0);
   const [message, setMessage] = useState("");
   const [selectedTab, setSelectedTab] = useState("instruction");
+  const [hasCommunicationMounted, setHasCommunicationMounted] = useState(false);
   const [isPending, startTransition] = useTransition();
   const activeSessionRef = useRef<WorkSession | null>(activeSession);
   const hasPostedEndOnPageExitRef = useRef(false);
@@ -238,7 +239,10 @@ export default function StudentAssessmentTabs({
         tabs={TAB_HEADERS}
         colors="primary"
         selectedKey={selectedTab}
-        onSelectionChange={setSelectedTab}
+        onSelectionChange={(key) => {
+          setSelectedTab(key);
+          if (key === "communication") setHasCommunicationMounted(true);
+        }}
         hidePanel
       />
 
@@ -250,15 +254,17 @@ export default function StudentAssessmentTabs({
        * CSS hides it (without display:none) so the stream remains active
        * and PipTile (rendered via portal) can still display.
        */}
-      <div
-        className={
-          selectedTab === "communication"
-            ? ""
-            : "pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0"
-        }
-      >
-        {communication}
-      </div>
+      {hasCommunicationMounted && (
+        <div
+          className={
+            selectedTab === "communication"
+              ? ""
+              : "pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0"
+          }
+        >
+          {communication}
+        </div>
+      )}
 
       {selectedTab === "submit-assignment" && (
         <SubmitAssignmentPage

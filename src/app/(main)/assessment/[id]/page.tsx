@@ -6,8 +6,6 @@ import {
 } from "@/actions/assessment.action";
 import { getAllSubjectAction } from "@/actions/subject.action";
 import { auth } from "@/auth";
-import PrimaryTabs from "@/components/Tabs/PrimaryTabs";
-
 import { BookOpenIcon } from "lucide-react";
 import CommunicationRoom from "../communication/[id]/_components/CommunicationRoom";
 
@@ -26,6 +24,8 @@ import InstructionDetailPage from "./_components/InstructionDetails/InstructionD
 import AssessmentHeaderActions from "./_components/AssessmentHeaderActions";
 import StudentWorkPage from "./_components/StudentWork/StudentWorkPage";
 import StudentAssessmentTabs from "./_components/StudentAssessmentTabs";
+import TeacherAssessmentTabs from "./_components/TeacherAssessmentTabs";
+import AssessmentPresenceTracker from "./_components/AssessmentPresenceTracker";
 import { getMeetingRoomByAssessmentIdAction } from "@/actions/meeting.action";
 
 type PageProps = {
@@ -74,12 +74,12 @@ export default async function page({ params }: PageProps) {
     isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
     isStudent ? getMySubmissionsAction(id) : Promise.resolve(undefined),
   ])) as [
-    AssessmentType,
-    SubjectType[],
-    WorkSessionData,
-    MyAssessmentData,
-    StudentOwnSubmission[] | undefined,
-  ];
+      AssessmentType,
+      SubjectType[],
+      WorkSessionData,
+      MyAssessmentData,
+      StudentOwnSubmission[] | undefined,
+    ];
 
   const myAssessment = normalizeMyAssessments(myAssessments).find(
     (item) => item.assessmentId === id,
@@ -101,7 +101,7 @@ export default async function page({ params }: PageProps) {
         <CommunicationRoom
           meetingRoomId={meetingRoomId}
           readOnly={isAssessmentClosed}
-          enablePip={isStudent}
+          enablePip={isStudent || isTeacher}
         />
       ) : (
         <p className="text-gray-600">
@@ -111,23 +111,6 @@ export default async function page({ params }: PageProps) {
     </div>
   );
 
-  const assessmentTabs = [
-    {
-      key: "instruction",
-      title: "Instruction",
-      content: instructionContent,
-    },
-    {
-      key: "communication",
-      title: "Communication",
-      content: communicationContent,
-    },
-    {
-      key: "student-work",
-      title: "Student Work",
-      content: <StudentWorkPage assessment={assessment} />,
-    },
-  ];
   return (
     <div className="flex flex-col gap-5">
       <PrimaryBreadcrumbs
@@ -216,6 +199,13 @@ export default async function page({ params }: PageProps) {
         </div>
       </div>
 
+      {meetingRoomId && !isAssessmentClosed && (
+        <AssessmentPresenceTracker
+          meetingRoomId={meetingRoomId}
+          isTeacher={isTeacher ?? false}
+        />
+      )}
+
       <div className="w-full">
         {isStudent ? (
           <StudentAssessmentTabs
@@ -228,7 +218,11 @@ export default async function page({ params }: PageProps) {
             }
           />
         ) : (
-          <PrimaryTabs tabs={assessmentTabs} colors="primary" />
+          <TeacherAssessmentTabs
+            instruction={instructionContent}
+            communication={communicationContent}
+            studentWork={<StudentWorkPage assessment={assessment} />}
+          />
         )}
       </div>
     </div>

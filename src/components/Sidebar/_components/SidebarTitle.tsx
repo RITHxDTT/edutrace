@@ -10,6 +10,7 @@ import {
 } from "iconsax-react"
 import { SidebarMenuItem } from "@/components/ui/sidebar"
 import { useSession } from "next-auth/react"
+import { motion } from "framer-motion"
 
 const menuItems = [
     {
@@ -58,14 +59,21 @@ export default function SidebarTitle() {
                     <SidebarMenuItem className="w-full" key={menuItem.href}>
                         <Link
                             href={menuItem.href}
-                            className={`flex items-center gap-5 px-4 py-2 text-primary 
-              ${isActive
-                                    ? "bg-linear-purple rounded-[10px] text-white"
-                                    : "hover:bg-gray rounded-[10px]"
-                                }`}
+                            className={`relative flex items-center gap-5 px-4 py-2 rounded-[10px] overflow-hidden ${
+                                isActive ? "text-white" : "text-primary hover:bg-gray"
+                            }`}
                         >
-                            <Icon color={isActive ? "white" : "black"} size={20} />
-                            <span>{menuItem.title}</span>
+                            {isActive && (
+                                <motion.div
+                                    layoutId="sidebar-active-indicator"
+                                    className="absolute inset-0 bg-linear-purple rounded-[10px]"
+                                    transition={{ type: "spring", stiffness: 400, damping: 35 }}
+                                />
+                            )}
+                            <span className="relative z-10">
+                                <Icon color={isActive ? "white" : "black"} size={20} />
+                            </span>
+                            <span className="relative z-10">{menuItem.title}</span>
                         </Link>
                     </SidebarMenuItem>
                 )

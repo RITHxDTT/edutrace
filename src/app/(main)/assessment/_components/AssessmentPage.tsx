@@ -63,6 +63,7 @@ export default function AssessmentPage({ assessments, metaData, role, subjects }
 
   const session = useSession();
   const pageFromUrl = Math.max(Number(searchParams.get("page")) || 1, 1);
+  const notificationTitle = searchParams.get("notificationTitle")?.toLowerCase().trim() ?? "";
 
   // Teachers: filters live in the URL so server-side pagination stays in sync.
   // Students: filters are local state (all data fetched at once).
@@ -107,6 +108,11 @@ export default function AssessmentPage({ assessments, metaData, role, subjects }
         .filter((a) => (filters.status ? a.status === filters.status : true))
         .filter((a) =>
           filters.subject ? a.subject.subjectId === filters.subject : true,
+        )
+        .filter((a) =>
+          notificationTitle
+            ? a.title.toLowerCase().includes(notificationTitle)
+            : true,
         )
         .sort((a, b) => {
           if (filters.sortBy === "STATUS") return a.status.localeCompare(b.status);

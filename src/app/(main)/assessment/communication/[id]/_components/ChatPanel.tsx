@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import type { ChatMessageResponse } from "@/types/messageRespone";
+import type { MeetingMember } from "@/types/meeting-room";
 import { searchChatMessages } from "@/services/chat.service";
 import { useMeetingRoomStore } from "@/stores/useMeetingRoomStore";
 import ChatMessageList from "./ChatMessageList";
@@ -15,8 +16,9 @@ interface ChatPanelProps {
   isConnected: boolean;
   meetingRoomId: string;
   accessToken: string;
+  members: MeetingMember[];
   onLoadMore: () => void;
-  onSend: (content: string) => void;
+  onSend: (content: string, mentionUserIds: string[]) => void;
   readOnly?: boolean;
 }
 
@@ -32,6 +34,7 @@ export default function ChatPanel({
   isConnected,
   meetingRoomId,
   accessToken,
+  members,
   onLoadMore,
   onSend,
   readOnly = false,
@@ -199,7 +202,7 @@ export default function ChatPanel({
 
       {/* Input */}
       {!readOnly && (!searchOpen || !searchQuery.trim()) && (
-        <ChatInput onSend={onSend} />
+        <ChatInput members={members} onSend={onSend} />
       )}
       {readOnly && (
         <div className="border-t border-white/10 px-4 py-3 text-center text-xs text-white/40">
