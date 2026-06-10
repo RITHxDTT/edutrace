@@ -3,7 +3,6 @@
 import { SidebarTrigger } from "../ui/sidebar";
 import { useNavbar } from "@/context/NavbarContext";
 import NotificationBell from "../notifications/NotificationBell";
-import UserProfile from "@/app/(main)/profile/_components/UserProfile";
 
 
 export default function AppNavbar() {
@@ -22,7 +21,6 @@ export default function AppNavbar() {
           {/* Profile Info */}
           <div className="flex items-center gap-2 sm:gap-5 justify-end shrink-0">
             <NotificationBell />
-            <UserProfile />
           </div>
         </div>
       </nav>

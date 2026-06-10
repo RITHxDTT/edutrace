@@ -1,17 +1,17 @@
-
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuItem,
 } from "../ui/sidebar";
 import Image from "next/image";
 import SidebarTitle from "./_components/SidebarTitle";
-import LogoutButton from "./_components/LogoutButton";
+import { NavUser } from "@/components/Topbar/NavUser";
+import { auth } from "@/auth";
 
-export default function AppSidebar() {
+export default async function AppSidebar() {
+  const session = await auth();
 
   return (
     <Sidebar>
@@ -32,10 +32,10 @@ export default function AppSidebar() {
         <SidebarMenu className="flex flex-col items-center gap-5.25 px-5">
           <SidebarTitle />
         </SidebarMenu>
-        <SidebarFooter className="w-full px-5">
-          <LogoutButton />
-        </SidebarFooter>
       </SidebarContent>
+      <SidebarFooter className="px-2 pb-3">
+        {session && <NavUser session={session} />}
+      </SidebarFooter>
     </Sidebar>
   );
 }

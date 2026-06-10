@@ -73,12 +73,12 @@ export default async function page({ params }: PageProps) {
     isStudent ? getMyAssessmentsAction() : Promise.resolve(undefined),
     isStudent ? getMySubmissionsAction(id) : Promise.resolve(undefined),
   ])) as [
-    AssessmentType,
-    SubjectType[],
-    WorkSessionData,
-    MyAssessmentData,
-    StudentOwnSubmission[] | undefined,
-  ];
+      AssessmentType,
+      SubjectType[],
+      WorkSessionData,
+      MyAssessmentData,
+      StudentOwnSubmission[] | undefined,
+    ];
 
   const myAssessment = normalizeMyAssessments(myAssessments).find(
     (item) => item.assessmentId === id,
@@ -109,6 +109,8 @@ export default async function page({ params }: PageProps) {
       )}
     </div>
   );
+
+  console.log(meetingRoomId)
 
   return (
     <div className="flex flex-col gap-5">

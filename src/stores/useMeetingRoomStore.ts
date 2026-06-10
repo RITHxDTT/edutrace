@@ -65,7 +65,9 @@ export const useMeetingRoomStore = create<MeetingRoomStore>((set) => ({
       camOn: true,
       screenSharing: false,
       handRaised: false,
-      communicationTabActive: false,
+      // communicationTabActive is owned by the tab wrapper components
+      // (StudentAssessmentTabs / TeacherAssessmentTabs) — do not reset it here
+      // or rejoining while still on the Communication tab will trigger PiP.
       participantCount: 0,
       unreadMessageCount: 0,
     }),

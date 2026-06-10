@@ -22,6 +22,7 @@ export default function TeacherAssessmentTabs({
   studentWork,
 }: Props) {
   const [selectedTab, setSelectedTab] = useState("instruction");
+  const [hasCommunicationMounted, setHasCommunicationMounted] = useState(false);
   const { setCommunicationTabActive } = useMeetingRoomStore();
 
   useEffect(() => {
@@ -37,7 +38,10 @@ export default function TeacherAssessmentTabs({
         tabs={TAB_HEADERS}
         colors="primary"
         selectedKey={selectedTab}
-        onSelectionChange={setSelectedTab}
+        onSelectionChange={(key) => {
+          setSelectedTab(key);
+          if (key === "communication") setHasCommunicationMounted(true);
+        }}
         hidePanel
       />
 
@@ -49,15 +53,17 @@ export default function TeacherAssessmentTabs({
        * CSS hides it without unmounting so the stream remains active
        * and PipTile (rendered via portal) can still display.
        */}
-      <div
-        className={
-          selectedTab === "communication"
-            ? ""
-            : "pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0"
-        }
-      >
-        {communication}
-      </div>
+      {hasCommunicationMounted && (
+        <div
+          className={
+            selectedTab === "communication"
+              ? ""
+              : "pointer-events-none absolute h-0 w-0 overflow-hidden opacity-0"
+          }
+        >
+          {communication}
+        </div>
+      )}
 
       {selectedTab === "student-work" && studentWork}
     </div>
