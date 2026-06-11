@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { PrimaryButton } from '@/components/Buttons/PrimaryButton';
 import PrimaryInput from '@/components/Inputs/PrimaryInputField';
+import PrimarySelect from '@/components/Selects/PrimarySelect';
+import { SelectItem } from '@heroui/select';
 
 import {
   Eye,
@@ -23,7 +25,7 @@ import { RegisterFormData } from '@/types/auth';
 
 import ServerError from '../../_components/ServerError';
 
-export default function SignUpForm({ classrooms }: ClassroomProps) {
+export default function SignUpForm() {
 
   const [isVisible, setVisible] = useState(false);
   const [serverError, setServerError] = useState("");
@@ -34,6 +36,7 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
@@ -43,7 +46,7 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
       lastName: '',
       email: '',
       password: '',
-      // gender: 'MALE',
+      gender: undefined,
     },
     mode: "onTouched",
   });
@@ -115,6 +118,27 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
 
           </div>
 
+          <Controller
+            name="gender"
+            control={control}
+            render={({ field }) => (
+              <PrimarySelect
+                label="Gender"
+                placeholder="Select Gender"
+                selectedKeys={field.value ? [field.value] : []}
+                onSelectionChange={(keys) => {
+                  const value = Array.from(keys)[0] as "MALE" | "FEMALE";
+                  field.onChange(value);
+                }}
+                isInvalid={!!errors.gender}
+                errorMessage={errors.gender?.message}
+              >
+                <SelectItem key="MALE">Male</SelectItem>
+                <SelectItem key="FEMALE">Female</SelectItem>
+              </PrimarySelect>
+            )}
+          />
+
           <PrimaryInput
             label="Email"
             placeholder="Enter your email here..."
@@ -137,6 +161,7 @@ export default function SignUpForm({ classrooms }: ClassroomProps) {
             errorMessage={errors.password?.message}
             {...register('password')}
           />
+
 
         </div>
 

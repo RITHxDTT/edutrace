@@ -6,7 +6,6 @@ export interface Report {
   period: string;
   generatedAt: string;
   classScope?: string;
-  
 }
 
 export interface ReportSummary {
@@ -62,4 +61,126 @@ export interface taskBaseReport {
   assessmentId: string;
   startDate: string;
   endDate: string;
+}
+
+export interface ScoreDistributionItem {
+  count: number;
+  range: string;
+}
+
+export interface ScoreDistribution {
+  title?: string;
+  xLabel?: string;
+  yLabel?: string;
+  scoreBasis?: string;
+  data: ScoreDistributionItem[];
+}
+
+export interface StudentProps {
+  fullName: string;
+  gender: string;
+  email: string;
+  dob: string | null;
+  profileImage?: string | null;
+  className: string;
+  classroomAbbre: string;
+  submissionStatus: string;
+  averageScore: number;
+}
+
+export interface ClassroomItem {
+  classroomId: string;
+  className: string;
+  classroomAbbre: string;
+  totalStudents: number;
+}
+
+export interface ReportDetailResponse {
+  reportId: string;
+  reportName: string;
+  reportType: string;
+  generatedAt: string;
+
+  reportData: {
+    viewingLabel: string;
+
+    scoreDistribution: ScoreDistribution;
+
+    summary: {
+      late: number;
+      onTime: number;
+      missing: number;
+      averageScore: number;
+      totalStudents: number;
+      totalSubmitted: number;
+      totalSubmissionRate: number;
+    };
+
+    classroom?: ClassroomItem;
+
+    students?: {
+      title: string;
+      total: number;
+      data: StudentProps[];
+    };
+
+    submission?: {
+      late: number;
+      onTime: number;
+      missing: number;
+    };
+
+    classrooms?: ClassroomItem[];
+
+    classComparison?: {
+      title?: string;
+      data: Array<{
+        classroomId: string;
+        className: string;
+        classroomAbbre: string;
+        totalStudents: number;
+        submitted: number;
+        late: number;
+        onTime: number;
+        missing: number;
+        submissionRate: number;
+        averageScore: number;
+      }>;
+    };
+
+    scoreAnalysis?: {
+      title?: string;
+      data: Array<{
+        classroomId: string;
+        className: string;
+        classroomAbbre: string;
+        averageScore: number;
+        submissionRate: number;
+      }>;
+    };
+
+    submissionBreakdownByClass?: {
+      title?: string;
+      data: Array<{
+        classroomId: string;
+        className: string;
+        classroomAbbre: string;
+        late: number;
+        onTime: number;
+        missing: number;
+      }>;
+    };
+  };
+}
+
+export interface Student {
+  studentId: string;
+  fullName: string;
+  email: string;
+  gender: string | null;
+  dob: string | null;
+  averageScore: number;
+  profileImage?: string | null;
+  classroomAbbre: string;
+  submissionStatus: string;
 }

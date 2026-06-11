@@ -1,18 +1,17 @@
 "use client";
 
-import { useNotificationStore } from "@/components/notifications/useNotificationStore";
+import { useState } from "react";
+import { useAppNotifications } from "@/components/notifications/useAppNotifications";
 import NotificationDropdown from "@/components/notifications/NotificationDropdown";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Notification } from "iconsax-react";
 
 export default function NotificationBell() {
-  const unreadCount = useNotificationStore((state) =>
-    state.notifications.filter((n) => !n.isRead).length
-  );
+  const [open, setOpen] = useState(false);
+  const { unreadCount } = useAppNotifications();
 
   return (
-    <Popover>
-      {/* We removed asChild and turned PopoverTrigger into your button */}
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger className="relative cursor-pointer focus:outline-none bg-transparent border-none p-0 flex items-center justify-center">
         <Notification className="w-8 h-8" size={32} color="black" />
         {unreadCount > 0 && (
@@ -22,12 +21,12 @@ export default function NotificationBell() {
         )}
       </PopoverTrigger>
 
-      <PopoverContent 
-        align="end" 
+      <PopoverContent
+        align="end"
         sideOffset={12}
-        className="w-[460px] rounded-[28px] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.06)] border border-gray-100/50 p-0 overflow-hidden z-[9999]"
+        className="z-[9999] w-[calc(100vw-24px)] max-w-[460px] overflow-hidden rounded-[18px] border border-gray-100/70 bg-white p-0 shadow-[0_18px_50px_rgba(15,23,42,0.14)] sm:rounded-[24px]"
       >
-        <NotificationDropdown />
+        <NotificationDropdown onClose={() => setOpen(false)} />
       </PopoverContent>
     </Popover>
   );

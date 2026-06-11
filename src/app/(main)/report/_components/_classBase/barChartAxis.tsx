@@ -3,8 +3,9 @@
 import { BarChart } from "@mui/x-charts/BarChart";
 
 type ScoreItem = {
-  className: string;
-  classroomAbbre: string;
+  
+  className?: string;
+  classroomAbbre?: string;
   averageScore: number;
   secondAverageScore: number;
 };

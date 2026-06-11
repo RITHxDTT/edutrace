@@ -7,6 +7,12 @@ export default async function proxy(req: NextAuthRequest) {
   const { nextUrl } = req;
 
   const isAuthenticated = !!session;
+
+  
+  if (nextUrl.pathname.startsWith("/report/print/")) {
+    return NextResponse.next();
+  }
+
   const isAuthPage =
     nextUrl.pathname === "/login" ||
     nextUrl.pathname === "/register" ||
@@ -26,7 +32,6 @@ export default async function proxy(req: NextAuthRequest) {
 
 export const config = {
   matcher: [
-    "//:path*",
     "/dashboard/:path*",
     "/assessment/:path*",
     "/report/:path*",
@@ -34,6 +39,3 @@ export const config = {
     "/profile/:path*"
   ],
 };
-
-
- 

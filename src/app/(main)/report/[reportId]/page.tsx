@@ -1,7 +1,5 @@
-import { getReportSummaryById, reportMetadata } from "@/services/report.service";
-
-
-import TaskBasedView from "./_components/TaskBasedView"; 
+import { getReportDetail } from "@/services/report.service";
+import TaskBasedView from "./_components/TaskBasedView";
 import ClassBasedView from "./_components/ClassBasedView";
 
 interface PageProps {
@@ -13,20 +11,26 @@ interface PageProps {
 export default async function IndividualReportPage({ params }: PageProps) {
   const { reportId } = await params;
 
-  
-  const [summary, metadata] = await Promise.all([
-    getReportSummaryById(reportId).catch(() => null),
-    reportMetadata(reportId).catch(() => null),
-  ]);
+  const report = await getReportDetail(reportId).catch(() => null);
 
-  
-  const isClassReport = metadata?.reportType === "CLASS";
-
-  
-  if (isClassReport) {
-    return <ClassBasedView summary={summary} metadata={metadata} />;
+  if (!report) {
+    return <div className="p-6">Failed to load report</div>;
   }
 
-  
-  return <TaskBasedView summary={summary} metadata={metadata} />;
+  const isClassReport = report.reportType === "CLASS";
+
+  if (isClassReport) {
+    return <ClassBasedView report={report} />;
+  }
+
+  return (
+    <TaskBasedView
+      summary={report.reportData.summary}
+      metadata={{
+        reportName: report.reportName,
+        generatedAt: report.generatedAt,
+        reportId: report.reportId, 
+      }}
+    />
+  );
 }

@@ -15,7 +15,7 @@ import { CalendarDate } from "@internationalized/date";
   lastName: string;
   email: string;
   password: string;
-  // gender: string
+  gender: "MALE" | "FEMALE";
 }
 
 interface LoginFormData {

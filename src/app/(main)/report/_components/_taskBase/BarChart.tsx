@@ -1,24 +1,22 @@
 "use client";
-import { BarChart } from "@mui/x-charts/BarChart";
 
-type ScoreRange = { range: string; count: number };
+import { BarChart } from "@mui/x-charts/BarChart";
+import { ScoreDistributionItem } from "@/types/report";
 
 type Props = {
-  data: ScoreRange[];
+  data: ScoreDistributionItem[];
 };
 
-
-
-
-
 export default function TickPlacementBars({ data }: Props) {
+  if (!data || !Array.isArray(data)) return null;
+
   const dataset = data.map((d) => ({
     range: d.range,
     count: d.count,
   }));
 
   return (
-    <div style={{ width: "600px" }}>
+    <div className="w-full max-w-[700px]">
       <BarChart
         dataset={dataset}
         xAxis={[
@@ -26,6 +24,9 @@ export default function TickPlacementBars({ data }: Props) {
             dataKey: "range",
             scaleType: "band",
             categoryGapRatio: 0.5,
+            tickLabelStyle: {
+              fontSize: 12,
+            },
           },
         ]}
         series={[
@@ -34,8 +35,9 @@ export default function TickPlacementBars({ data }: Props) {
             color: "#6366f1",
           },
         ]}
-        height={300}
-        margin={{ left: 0 }}
+        
+        height={450}
+        margin={{ left: 10, right: 10, top: 10, bottom: 30 }}
         borderRadius={16}
       />
     </div>

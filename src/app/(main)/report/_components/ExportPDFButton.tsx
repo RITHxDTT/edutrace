@@ -1,14 +1,15 @@
 "use client";
 
-export default function ExportPdfButton() {
+export default function ExportPdfButton({ reportId }: { reportId: string }) {
   const handleExport = () => {
-    window.open("/api/export-pdf", "_blank");
+    // window.open(`/api/export-pdf?reportId=${reportId}`, "_blank");
+    window.print();
   };
 
   return (
     <button
       onClick={handleExport}
-      className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+      className="bg-purple-600 text-white px-4 py-2 rounded-lg"
     >
       Export PDF
     </button>

@@ -2,14 +2,8 @@ import Link from "next/link";
 import SignUpForm from "./_components/SignUpForm";
 
 export default async function page() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/classrooms`
-  );
-
-  const classrooms = await res.json();
-
   return (
-    <div className="flex flex-col justify-center h-screen w-full lg:w-[45%] p-8 sm:p-12 md:p-16 bg-white">
+    <div className="flex flex-col justify-center h-screen w-full xl:w-[45%] p-8 sm:p-12 md:p-16 bg-white">
       <div className="w-full max-w-xl mx-auto my-auto py-8 flex flex-col gap-8">
         
         <div>
@@ -23,7 +17,7 @@ export default async function page() {
         </div>
 
         <div>
-          <SignUpForm classrooms={classrooms.payload} />
+          <SignUpForm />
 
           <div className="text-center">
             <p className="text-sm text-text-color-strong/80 mt-6">

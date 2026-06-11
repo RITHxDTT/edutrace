@@ -7,114 +7,124 @@ import AllClassesActions from "../../_components/_classBase/AllClassesAction";
 import BasicBars from "../../_components/_classBase/barChartThreeLine";
 import HorizontalBars from "../../_components/_classBase/barChartAxis";
 import AiChatWrapper from "../../AI/AiChatWrapper";
+import TableStudent from "./TableStudent";
+import { SubmissionDonutChart } from "../../_components/_taskBase/SubmissionDonutChart";
+import TickPlacementBars from "../../_components/_taskBase/BarChart";
 
-interface ClassBasedViewProps {
-  summary: any;
-  metadata: any;
+import useSWR from "swr";
+import { getReportDetail } from "@/services/report.service";
+import { ReportDetailResponse } from "@/types/report";
+
+interface Props {
+  report: ReportDetailResponse;
+  isExportMode?: boolean;
+}
+
+type ReportMode = "ALL_CLASSES" | "SINGLE_CLASS" | "TASK";
+
+function getReportMode(report: ReportDetailResponse): ReportMode {
+  if (report.reportType === "ASSESSMENT") {
+    return "TASK";
+  }
+
+  const classrooms = report.reportData.classrooms;
+
+  if (classrooms && classrooms.length > 1) {
+    return "ALL_CLASSES";
+  }
+
+  return "SINGLE_CLASS";
 }
 
 export default function ClassBasedView({
-  summary,
-  metadata,
-}: ClassBasedViewProps) {
-  const reportName = metadata?.reportName || "All Classes Performance Report";
-  const viewingLabel = "All Classes Overview";
-  const displayPeriod = metadata?.generatedAt
-    ? new Date(metadata.generatedAt).toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-      })
-    : "Active Analysis";
+  report,
+  isExportMode = false,
+}: Props) {
+  useSWR(
+    !isExportMode && report.reportId ? report.reportId : null,
+    getReportDetail,
+  );
+
+  const summary = report.reportData.summary;
+  const classroom = report.reportData.classroom;
+  const classrooms = report.reportData.classrooms ?? [];
+  const students = report.reportData.students?.data ?? [];
+  const classComparison = report.reportData.classComparison;
+  const scoreAnalysis = report.reportData.scoreAnalysis;
+  const submissionBreakdown = report.reportData.submissionBreakdownByClass;
+  const scoreDistribution = report.reportData.scoreDistribution;
+  const mode = getReportMode(report);
+  const isAllClasses = mode === "ALL_CLASSES";
+  const isSingleClass = mode === "SINGLE_CLASS";
+  const displayPeriod = new Date(report.generatedAt).toLocaleDateString(
+    "en-US",
+    {
+      month: "long",
+      year: "numeric",
+    },
+  );
 
   const kpiCards = [
-    { title: "Total Submitted", value: summary?.totalSubmitted ?? 0 },
+    {
+      title: "Total Submitted",
+      value: summary.totalSubmitted ?? 0,
+    },
     {
       title: "Submission Rate",
-      value: `${summary?.totalSubmissionRate ?? 0}%`,
+      value: `${summary.totalSubmissionRate ?? 0}%`,
     },
-    { title: "Avg. Score", value: `${summary?.averageScore ?? 0}%` },
-    { title: "On-Time", value: summary?.onTime ?? 0 },
-    { title: "Late", value: summary?.late ?? 0 },
-    { title: "Missing", value: summary?.missing ?? 0 },
+    {
+      title: "Avg. Score",
+      value: `${summary.averageScore ?? 0}%`,
+    },
+    {
+      title: "On-Time",
+      value: summary.onTime ?? 0,
+    },
+    {
+      title: "Late",
+      value: summary.late ?? 0,
+    },
+    {
+      title: "Missing",
+      value: summary.missing ?? 0,
+    },
   ];
 
-  const chartsMock = {
-    submissionBreakdownByClass: {
-      data: [
-        {
-          late: 14,
-          onTime: 73,
-          missing: 13,
-          className: "Siem Reap Class",
-          classroomAbbre: "SR",
-        },
-        {
-          late: 7,
-          onTime: 75,
-          missing: 18,
-          className: "Phnom Penh Class",
-          classroomAbbre: "PP",
-        },
-      ],
-    },
-    scoreAnalysis: {
-      data: [
-        {
-          className: "Siem Reap Class",
-          averageScore: 78,
-          classroomAbbre: "SR",
-          secondAverageScore: 81,
-        },
-        {
-          className: "Phnom Penh Class",
-          averageScore: 83,
-          classroomAbbre: "PP",
-          secondAverageScore: 85,
-        },
-      ],
-    },
-    classComparison: {
-      data: [
-        {
-          late: 3,
-          className: "Siem Reap Class",
-          submitted: 19,
-          classroomId: "1",
-          totalStudents: 22,
-        },
-        {
-          late: 2,
-          className: "Phnom Penh Class",
-          submitted: 23,
-          classroomId: "2",
-          totalStudents: 28,
-        },
-      ],
-    },
-  };
-
   return (
-    <div className="pb-8 p-6">
-      <div className="flex justify-between">
+    <div className={isExportMode ? "pb-4 px-2" : "pb-20 px-4 md:px-6"}>
+      {/* HEADER */}
+
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 ">
         <div>
-          <p className="text-[24px] font-medium">{reportName}</p>
+          <h1 className="text-2xl font-semibold">{report.reportName}</h1>
+
           <p className="text-sm text-gray-500">
             {displayPeriod} - Viewing:{" "}
-            <span className="text-blue-600">{viewingLabel}</span>
+            <span className="text-blue-600">
+              {report.reportData.viewingLabel}
+            </span>
           </p>
         </div>
-        <AllClassesActions />
+
+        {!isExportMode && <AllClassesActions reportId={report.reportId} />}
       </div>
 
-      <div className="flex items-start mt-6">
-        <div className="w-111 h-111">
+      {/* KPI */}
+
+      <div className="mt-6 flex flex-col xl:flex-row gap-4">
+        <div className="w-full xl:w-[400px] xl:flex-shrink-0">
           <KpiCardTaskBased
-            totalStudents={summary?.totalStudents ?? 0}
-            className="All Classes"
+            totalStudents={summary.totalStudents}
+            className={
+              isAllClasses
+                ? "All Classes"
+                : `${classroom?.classroomAbbre ?? "Class"} Class`
+            }
           />
         </div>
 
-        <div className="flex-1 grid grid-cols-3 gap-4 ml-4">
+        <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {kpiCards.map((card) => (
             <KpiCardComponent
               key={card.title}
@@ -125,37 +135,115 @@ export default function ClassBasedView({
         </div>
       </div>
 
-      <section className="mt-5 grid grid-cols-4 gap-4">
-        <div className="col-span-3 flex flex-col gap-4">
-          <div className="bg-white p-6 rounded-2xl">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-2xl font-semibold">Submission Breakdown</h3>
+      {/* MULTI CLASS */}
+
+      {isAllClasses && (
+        <section
+          className={`grid grid-cols-1 xl:grid-cols-4 gap-4  ${isExportMode ? "mt-[180px] mb-[180px]" : "mt-6"}`}>
+          <div className={`xl:col-span-3 flex flex-col ${isExportMode ? " gap-15 " :"gap-4" }`}>
+            <div className="bg-white rounded-2xl p-5 ">
+              <h3 className="text-xl font-semibold mb-4">
+                Submission Breakdown
+              </h3>
+
+              <BasicBars data={submissionBreakdown?.data ?? []} />
             </div>
-            <BasicBars data={chartsMock.submissionBreakdownByClass.data} />
+
+            <div className="bg-white rounded-2xl p-5  ">
+              <h3 className="text-xl font-semibold mb-4">Score Analysis</h3>
+
+              <HorizontalBars
+                data={
+                  scoreAnalysis?.data?.map((item: any) => ({
+                    className: item.className,
+
+                    classroomAbbre: item.classroomAbbre,
+
+                    averageScore: item.averageScore,
+
+                    secondAverageScore: item.submissionRate,
+                  })) ?? []
+                }
+              />
+            </div>
           </div>
 
-          <div className="bg-white p-6 rounded-2xl w-full">
-            <h3 className="text-2xl font-semibold mb-4">Score Analysis</h3>
-            <HorizontalBars data={chartsMock.scoreAnalysis.data} />
+          <div className={`flex flex-col ${isExportMode? "gap-12 mt-[190px]": "gap-4"}`}>
+            {classComparison?.data?.map((cls: any) => (
+              <ClassSubmissionCard
+                key={cls.classroomId}
+                lateSubmission={cls.late}
+                submitted={cls.submitted}
+                total={cls.totalStudents}
+                className={cls.className}
+              />
+            ))}
           </div>
-        </div>
+        </section>
+      )}
 
-        <div className="flex flex-col gap-4">
-          {chartsMock.classComparison.data.map((cls) => (
-            <ClassSubmissionCard
-              key={cls.classroomId}
-              late={cls.late}
-              submitted={cls.submitted}
-              total={cls.totalStudents}
-              className={cls.className}
+      {/* SINGLE CLASS */}
+
+      {isSingleClass && (
+        <>
+          {isExportMode ? (
+            <div className="mt-6 flex flex-col gap-4 ">
+              <div className="p-10 bg-white rounded-2xl">
+                <h3 className="font-medium mb-2">Average Scores</h3>
+
+                <TickPlacementBars data={scoreDistribution?.data ?? []} />
+              </div>
+
+              <div className="bg-white rounded-2xl">
+                <SubmissionDonutChart
+                  onTime={summary.onTime}
+                  late={summary.late}
+                  missing={summary.missing}
+                  total={summary.totalStudents}
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-4 p-10">
+              <div className="p-10 bg-white rounded-2xl ">
+                <h3 className="font-medium mb-2 ">Average Scores</h3>
+
+                <TickPlacementBars data={scoreDistribution?.data ?? []} />
+              </div>
+
+              <div className="bg-white rounded-2xl">
+                <SubmissionDonutChart
+                  onTime={summary.onTime}
+                  late={summary.late}
+                  missing={summary.missing}
+                  total={summary.totalStudents}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="mt-6 bg-white rounded-2xl p-5   border-gray-50">
+            <div className="mb-4">
+              <h3 className="text-xl font-semibold">Student List</h3>
+
+              <p className="text-sm text-gray-500">
+                {students.length} Students
+              </p>
+            </div>
+
+            <TableStudent
+              students={students}
+              classroomAbbre={classroom?.classroomAbbre}
             />
-          ))}
-        </div>
+          </div>
+        </>
+      )}
 
-        <div className="fixed bottom-0 right-0 pointer-events-none z-50">
+      {!isExportMode && (
+        <div className="fixed bottom-0 right-0 z-50">
           <AiChatWrapper />
         </div>
-      </section>
+      )}
     </div>
   );
 }

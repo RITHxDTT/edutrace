@@ -1,11 +1,23 @@
+import headerToken from "@/lib/headerToken";
 import { auth } from "@/auth";
-import { ClassroomProps } from "../types/classroom";
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+export const getAllClassroomsService = async () => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/classrooms`,
+    {
+      headers: await headerToken(),
+    },
+  );
+  const result = await res.json();
+  return result;
+};
+
 export async function getClassRoom() {
   const session = await auth();
 
-  if(!session?.access_token) {
+  if (!session?.access_token) {
     throw new Error("Unauthorized");
   }
 

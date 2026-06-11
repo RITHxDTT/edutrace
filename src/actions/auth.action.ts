@@ -1,6 +1,6 @@
 "use server";
 
-import { ForgotPasswordFormData, LoginFormData, OtpFormData, RegisterFormData, ResetPasswordFormData } from "@/types/auth";
+import { ForgotPasswordFormData, LoginFormData, OtpFormData, RegisterFormData } from "@/types/auth";
 import { signIn } from "@/auth";
 import { forgotPasswordService, registerService, resendOtpCodeService, resetPasswordService, verifyOtpService } from "@/services/auth.service";
 
@@ -9,12 +9,12 @@ import { forgotPasswordService, registerService, resendOtpCodeService, resetPass
  */
 export async function loginAction(data: LoginFormData) {
     try {
-        await signIn("credentials", {
+        const res = await signIn("credentials", {
             email: data.email,
             password: data.password,
             redirect: false
         });
-        return { success: true, error: null };
+        return { success: true, error: null, message: res.message, };
     } catch (err) {
         return { success: false, error: "Invalid Credentials." };
     }
@@ -27,7 +27,7 @@ export async function registerAction(
     // data: Omit<RegisterFormData, "birthdate"> & {
     //     birthdate?: string;
     // }
-       data: RegisterFormData
+    data: RegisterFormData
 ) {
     try {
         const res = await registerService(data)
@@ -41,6 +41,7 @@ export async function registerAction(
 }
 
 export async function verifyEmailAction(data: OtpFormData, action: "REGISTRATION" | "FORGOT_PASSWORD") {
+    console.log(data)
     try {
         const res = await verifyOtpService(data, action);
 
@@ -86,9 +87,9 @@ export async function resetPasswordAction(data: ForgotPasswordFormData, token: s
     }
 }
 
-export async function resendEmailAction(email: string, action: "REGISTRATION") {
+export async function resendEmailAction(email: string) {
     try {
-        await resendOtpCodeService(email, action);
+        await resendOtpCodeService(email);
         return { success: true, error: null };
     } catch (err) {
         const message =

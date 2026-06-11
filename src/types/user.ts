@@ -10,4 +10,20 @@ interface ProfileData {
     }
 }
 
-export type { ProfileData }
+type UserProfile = {
+    userId: string;
+    username?: string;
+    firstName?: string;
+    lastName?: string;
+    fullName?: string;
+    email?: string;
+    profileImageUrl?: string;
+    role?: string;
+    classroom?: {
+        classroomId: string;
+        className: string;
+        classroomAbbre: string;
+    };
+};
+
+export type { ProfileData, UserProfile }

@@ -33,30 +33,31 @@ export default function KpiCard({
 
       <div className="relative w-full">
         <div
-          className="w-full shadow-sm"
+          className="w-full "
           style={{
-            aspectRatio: "7 / 4",
+            aspectRatio: "7/4",
             clipPath: "url('#clipPath')",
-            backgroundColor: "white",
+            background: "white",
           }}
         >
-          <div className="flex h-full w-full flex-col justify-between p-5">
+          <div className="flex flex-col justify-between h-full p-4 md:p-5">
             <div>
-              <p className="text-sm leading-5 text-[#8A8A8A]">{title}</p>
-              <h2 className="mt-10 text-4xl font-semibold leading-none text-black">
+              <p className="text-sm text-gray-400">{title}</p>
+
+              <h2 className="mt-6 md:mt-10 text-3xl md:text-4xl font-semibold">
                 {numValue}
               </h2>
             </div>
 
-            <p className="text-sm font-medium text-indigo-500">{subtitle}</p>
+            <p className="text-2xl md:text-sm text-indigo-500">{subtitle}</p>
           </div>
         </div>
 
         <div
-          className="absolute right-0 top-0 flex h-10 w-10 items-center justify-center rounded-xl shadow-sm"
+          className="absolute right-0 top-0 flex h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 items-center justify-center rounded-xl "
           style={{ backgroundColor: "white" }}
         >
-          <ClipboardList className="h-5 w-5 text-black" />
+         <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5 text-black" />
         </div>
       </div>
     </section>
